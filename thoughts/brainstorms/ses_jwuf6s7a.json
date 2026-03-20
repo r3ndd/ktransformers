@@ -1,0 +1,43 @@
+{
+  "session_id": "ses_jwuf6s7a",
+  "browser_session_id": null,
+  "request": "Design approaches to collect detailed MoE routing statistics for Kimi-K2.5 to validate smoothed/sliding-window routing schemes. Need to understand: expert usage patterns per prompt context, temporal locality of expert selection, layer-wise routing behavior, and impact of constraining expert pools.",
+  "created_at": 1774029926895,
+  "updated_at": 1774029926896,
+  "branches": {
+    "approach_a": {
+      "id": "approach_a",
+      "scope": "Instrumentation approach: Hook into kTransformers at submit_forward() to log all topk_ids and topk_weights with full context",
+      "status": "exploring",
+      "questions": [],
+      "finding": null
+    },
+    "approach_b": {
+      "id": "approach_b",
+      "scope": "Simulation approach: Use existing activation statistics collection (--record-kt-gpu-expert-distribution) with custom analysis pipeline",
+      "status": "exploring",
+      "questions": [],
+      "finding": null
+    },
+    "approach_c": {
+      "id": "approach_c",
+      "scope": "Proxy model approach: Use smaller MoE model (Qwen3-MoE, MiniMax) to develop analysis pipeline before scaling to Kimi-K2.5",
+      "status": "exploring",
+      "questions": [],
+      "finding": null
+    },
+    "approach_d": {
+      "id": "approach_d",
+      "scope": "Visualization and analysis tooling: What metrics and visualizations best reveal expert locality patterns?",
+      "status": "exploring",
+      "questions": [],
+      "finding": null
+    }
+  },
+  "branch_order": [
+    "approach_a",
+    "approach_b",
+    "approach_c",
+    "approach_d"
+  ]
+}

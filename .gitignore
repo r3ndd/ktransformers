@@ -33,6 +33,4 @@ sched/
 *.png
 .codanna*
 .fastembed_cache
-thoughts/*
-opencode*
 models/*
