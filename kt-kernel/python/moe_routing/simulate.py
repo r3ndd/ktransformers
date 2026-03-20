@@ -22,7 +22,12 @@ def run_simulation(trace_file: Path, output_dir: Path) -> None:
             m.update({"policy": "sliding_window", "window_size": window, "alpha": alpha})
             runs.append(m)
 
-    (output_dir / "results.json").write_text(json.dumps({"runs": runs}, indent=2))
+    result_doc = {
+        "runs": runs,
+        "cache_identity": "layer_qualified",
+        "metric_note": "partial_hit_rate counts layer-qualified matches",
+    }
+    (output_dir / "results.json").write_text(json.dumps(result_doc, indent=2))
 
     try:
         import matplotlib.pyplot as plt

@@ -14,6 +14,12 @@ def estimate_quality_proxy(hit_rate: float, partial_hit_rate: float, alpha: floa
 
 
 def simulate_policy(traces: pd.DataFrame, policy: BasePolicy, alpha: float) -> dict[str, float]:
+    """Simulate a cache policy on routing traces.
+
+    Uses layer-qualified expert tuples (layer_id, expert_id) to avoid cross-layer
+    collisions where the same expert ID in different layers would be incorrectly
+    treated as the same expert.
+    """
     assert 0.0 <= alpha <= 1.0
     total_tokens = 0
     full_hits = 0
@@ -22,7 +28,9 @@ def simulate_policy(traces: pd.DataFrame, policy: BasePolicy, alpha: float) -> d
     simulated_fetches = 0
 
     for _, row in traces.iterrows():
-        needed = set(row["expert_ids"])
+        layer_id = row["layer_id"]
+        # Create layer-qualified expert tuples to avoid cross-layer collisions
+        needed = {(layer_id, eid) for eid in row["expert_ids"]}
         cache = policy.cached()
         hit = needed & cache
 
@@ -33,6 +41,7 @@ def simulate_policy(traces: pd.DataFrame, policy: BasePolicy, alpha: float) -> d
             full_hits += 1
         simulated_fetches += len(needed - cache)
 
+        # Pass layer-qualified experts to policy
         policy.observe(list(needed))
 
     hit_rate = full_hits / total_tokens if total_tokens else 0.0

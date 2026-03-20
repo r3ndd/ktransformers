@@ -38,3 +38,87 @@ def test_alpha_zero_hard_constraint_increases_degradation():
     df = pd.DataFrame({"layer_id": [0], "expert_ids": [[1, 2, 3, 4, 5, 6]], "expert_weights": [[1, 1, 1, 1, 1, 1]]})
     res = simulate_policy(df, SlidingWindowPolicy(capacity=0, window_size=1), alpha=0.0)
     assert res["partial_hit_rate"] == 0.0
+
+
+def test_cross_layer_collision_regression():
+    """
+    Regression test: experts with the same ID in different layers should NOT collide.
+
+    Before the fix, expert 1 in layer 0 and expert 1 in layer 1 would be treated
+    as the same expert, causing incorrect cache hit calculations. After the fix,
+    each (layer_id, expert_id) pair is treated as a unique expert key.
+    """
+    # Simulate: layer 0 needs expert 1, layer 1 also needs expert 1
+    # These are DIFFERENT experts (same ID, different layers)
+    df = pd.DataFrame(
+        {
+            "layer_id": [0, 1],
+            "expert_ids": [[1, 2, 3, 4, 5, 6], [1, 7, 8, 9, 10, 11]],
+            "expert_weights": [[1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1]],
+        }
+    )
+
+    # Policy with capacity 1, window size 2
+    policy = SlidingWindowPolicy(capacity=1, window_size=2)
+
+    res = simulate_policy(df, policy, alpha=0.5)
+
+    # With layer-qualified keys:
+    # - Token 1 (layer 0): needs (0,1), (0,2), ... cache miss, fetches all
+    # - Token 2 (layer 1): needs (1,1), (1,7), ...
+    #   (1,1) is different from (0,1), so cache miss on (1,1)
+    # Partial hit rate should be 0 since no layer-qualified expert is cached
+    assert (
+        res["partial_hit_rate"] == 0.0
+    ), f"Cross-layer collision detected: partial_hit_rate={res['partial_hit_rate']}, expected 0.0"
+
+
+def test_same_layer_expert_cache_hit():
+    """
+    Test that experts in the same layer are properly cached.
+    """
+    df = pd.DataFrame(
+        {
+            "layer_id": [0, 0],  # Same layer
+            "expert_ids": [[1, 2, 3, 4, 5, 6], [1, 2, 7, 8, 9, 10]],  # Some overlap
+            "expert_weights": [[1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1]],
+        }
+    )
+
+    # Policy with capacity large enough to hold all experts from first token
+    policy = SlidingWindowPolicy(capacity=10, window_size=2)
+
+    res = simulate_policy(df, policy, alpha=0.5)
+
+    # Token 1 (layer 0): needs 6 experts, cache is empty, 0 hits
+    # After observe, cache has all 6 experts from token 1
+    # Token 2 (layer 0): needs 6 experts (1,2,7,8,9,10), cache has (1,2,3,4,5,6)
+    # Hits: (0,1), (0,2) = 2 hits out of 6 needed
+    # Total partial hits: 0 + 2 = 2
+    # Total needed: 6 + 6 = 12
+    # partial_hit_rate = 2/12 = 0.167
+    expected_rate = 2 / 12
+    assert res["partial_hit_rate"] > 0.0, f"Same-layer cache hit failed: partial_hit_rate={res['partial_hit_rate']}"
+    assert (
+        abs(res["partial_hit_rate"] - expected_rate) < 0.001
+    ), f"Expected ~{expected_rate:.3f} partial_hit_rate, got {res['partial_hit_rate']}"
+
+
+def test_layer_qualified_keys_in_cache():
+    """
+    Verify that the cache contains layer-qualified tuples.
+    """
+    policy = SlidingWindowPolicy(capacity=10, window_size=2)
+
+    df = pd.DataFrame({"layer_id": [0, 1], "expert_ids": [[1, 2], [3, 4]], "expert_weights": [[1, 1], [1, 1]]})
+
+    simulate_policy(df, policy, alpha=0.5)
+
+    cached = policy.cached()
+
+    # All cached items should be tuples of (layer_id, expert_id)
+    for item in cached:
+        assert isinstance(item, tuple), f"Cached item {item} is not a tuple"
+        assert len(item) == 2, f"Cached item {item} should have 2 elements"
+        assert isinstance(item[0], int), f"Layer ID {item[0]} should be int"
+        assert isinstance(item[1], int), f"Expert ID {item[1]} should be int"

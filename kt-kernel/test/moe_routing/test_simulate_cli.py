@@ -19,3 +19,6 @@ def test_run_simulation_writes_results(tmp_path: Path):
     run_simulation(in_file, out_dir)
     result = json.loads((out_dir / "results.json").read_text())
     assert len(result["runs"]) > 0
+    # Task 2.1: assert compatibility metadata for stable CLI schema
+    assert result["cache_identity"] == "layer_qualified"
+    assert "partial_hit_rate counts layer-qualified matches" in result["metric_note"]
