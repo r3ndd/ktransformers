@@ -1,0 +1,108 @@
+{
+  "description": "Prompt suite for MoE routing analysis - diverse tasks to exercise different expert patterns",
+  "version": "1.0",
+  "prompts": [
+    {
+      "id": "coding_001",
+      "category": "coding",
+      "description": "Simple algorithmic problem",
+      "prompt": "Write a Python function to find the longest palindromic substring in a given string. Include a brief explanation of your approach and time complexity."
+    },
+    {
+      "id": "coding_002",
+      "category": "coding",
+      "description": "Debugging task",
+      "prompt": "I have this Python code that's supposed to flatten a nested list, but it's not working correctly. Can you debug it?\n\ndef flatten(nested):\n    result = []\n    for item in nested:\n        if isinstance(item, list):\n            result.extend(flatten(item))\n        else:\n            result.append(item)\n    return result\n\n# Test\nprint(flatten([1, [2, 3], [[4, 5], 6]]))  # Expected: [1, 2, 3, 4, 5, 6]"
+    },
+    {
+      "id": "coding_003",
+      "category": "coding",
+      "description": "API design and implementation",
+      "prompt": "Design a simple REST API for a todo list application. Include the endpoints, request/response formats, and provide a basic Python implementation using Flask."
+    },
+    {
+      "id": "reasoning_001",
+      "category": "reasoning",
+      "description": "Mathematical word problem",
+      "prompt": "A train travels from city A to city B at 60 mph and returns at 40 mph. If the total round trip takes 5 hours, how far apart are the two cities? Show your work step by step."
+    },
+    {
+      "id": "reasoning_002",
+      "category": "reasoning",
+      "description": "Logical deduction",
+      "prompt": "Four people (Alice, Bob, Carol, Dave) are sitting in a row. We know:\n1. Alice is not at either end\n2. Bob is to the left of Carol\n3. Dave is not next to Alice\n\nDetermine their seating order from left to right, explaining your reasoning."
+    },
+    {
+      "id": "reasoning_003",
+      "category": "reasoning",
+      "description": "Multi-step analysis",
+      "prompt": "Analyze the following argument: 'If it rains, the ground gets wet. The ground is wet. Therefore, it rained.' Is this valid? What type of logical fallacy might be present, if any?"
+    },
+    {
+      "id": "creative_001",
+      "category": "creative",
+      "description": "Story writing",
+      "prompt": "Write a short story (about 200 words) about a programmer who discovers that their code has become sentient. End with an unexpected twist."
+    },
+    {
+      "id": "creative_002",
+      "category": "creative",
+      "description": "Poetry",
+      "prompt": "Write a haiku about debugging code at 3 AM. Then write a brief explanation of what a haiku is and why you chose those particular images."
+    },
+    {
+      "id": "factual_001",
+      "category": "factual",
+      "description": "Explanation",
+      "prompt": "Explain how garbage collection works in Python. Include a discussion of reference counting, the generational garbage collector, and when memory might not be freed as expected."
+    },
+    {
+      "id": "factual_002",
+      "category": "factual",
+      "description": "Comparison",
+      "prompt": "Compare and contrast the transformer architecture with recurrent neural networks (RNNs). What are the key advantages of transformers that led to their dominance in NLP?"
+    },
+    {
+      "id": "multi_turn_001",
+      "category": "multi_turn",
+      "description": "Iterative refinement simulation",
+      "prompt": "Let's work through a coding problem together. I need to implement a LRU (Least Recently Used) cache in Python.\n\nFirst, can you explain what an LRU cache is and when it's useful?"
+    },
+    {
+      "id": "multi_turn_002",
+      "category": "multi_turn",
+      "description": "Debugging conversation",
+      "prompt": "I'm trying to optimize a SQL query but it's still running slowly. The query joins three tables: users, orders, and products. I've already added indexes on the foreign keys.\n\nWhat other optimization strategies should I consider?"
+    },
+    {
+      "id": "mixed_001",
+      "category": "mixed",
+      "description": "Coding with explanation",
+      "prompt": "Implement a binary search tree in Python with insert, search, and delete operations. For each operation, explain the time complexity and walk through how the algorithm works using a small example."
+    },
+    {
+      "id": "mixed_002",
+      "category": "mixed",
+      "description": "Tool use simulation",
+      "prompt": "I need to analyze a CSV file containing sales data. The file has columns: date, product_id, quantity, price.\n\nWrite a Python script that:\n1. Loads the data\n2. Calculates total revenue per product\n3. Finds the top 5 best-selling products\n4. Generates a simple monthly sales report\n\nInclude comments explaining each section."
+    },
+    {
+      "id": "edge_001",
+      "category": "edge_case",
+      "description": "Ambiguous query",
+      "prompt": "Tell me about it."
+    },
+    {
+      "id": "edge_002",
+      "category": "edge_case",
+      "description": "Very short",
+      "prompt": "Hi"
+    },
+    {
+      "id": "edge_003",
+      "category": "edge_case",
+      "description": "Nonsensical",
+      "prompt": "The purple elephant danced on the quantum waffle while reciting Shakespeare backwards."
+    }
+  ]
+}
