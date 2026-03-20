@@ -37,6 +37,11 @@ dependencies = [
   "sglang-kt",
   # Development dependencies
   "black>=25.9.0",
+  # Analysis dependencies
+  "pyarrow>=15.0.0",
+  "pandas>=2.2.0",
+  "matplotlib>=3.8.0",
+  "seaborn>=0.13.0",
 ]
 
 [project.optional-dependencies]
@@ -60,6 +65,7 @@ packages = [
   "kt_kernel.cli.config",
   "kt_kernel.cli.utils",
   "kt_kernel.cli.completions",
+  "kt_kernel.moe_routing",
 ]
 include-package-data = true
 
@@ -71,6 +77,7 @@ kt_kernel = "python"
 "kt_kernel.cli.config" = "python/cli/config"
 "kt_kernel.cli.utils" = "python/cli/utils"
 "kt_kernel.cli.completions" = "python/cli/completions"
+"kt_kernel.moe_routing" = "python/moe_routing"
 
 [tool.setuptools.package-data]
 "kt_kernel.cli.completions" = ["*.bash", "*.fish", "_kt"]

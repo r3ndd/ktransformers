@@ -1,0 +1,184 @@
+{
+  "runs": [
+    {
+      "hit_rate": 0.3695426195426195,
+      "partial_hit_rate": 0.7148302148302148,
+      "simulated_ssd_fetches": 3292.0,
+      "quality_proxy_degradation": 0.2851697851697852,
+      "policy": "sliding_window",
+      "window_size": 8,
+      "alpha": 0.0
+    },
+    {
+      "hit_rate": 0.3695426195426195,
+      "partial_hit_rate": 0.7148302148302148,
+      "simulated_ssd_fetches": 3292.0,
+      "quality_proxy_degradation": 0.2138773388773389,
+      "policy": "sliding_window",
+      "window_size": 8,
+      "alpha": 0.25
+    },
+    {
+      "hit_rate": 0.3695426195426195,
+      "partial_hit_rate": 0.7148302148302148,
+      "simulated_ssd_fetches": 3292.0,
+      "quality_proxy_degradation": 0.1425848925848926,
+      "policy": "sliding_window",
+      "window_size": 8,
+      "alpha": 0.5
+    },
+    {
+      "hit_rate": 0.3695426195426195,
+      "partial_hit_rate": 0.7148302148302148,
+      "simulated_ssd_fetches": 3292.0,
+      "quality_proxy_degradation": 0.0712924462924463,
+      "policy": "sliding_window",
+      "window_size": 8,
+      "alpha": 0.75
+    },
+    {
+      "hit_rate": 0.3695426195426195,
+      "partial_hit_rate": 0.7148302148302148,
+      "simulated_ssd_fetches": 3292.0,
+      "quality_proxy_degradation": 0.0,
+      "policy": "sliding_window",
+      "window_size": 8,
+      "alpha": 1.0
+    },
+    {
+      "hit_rate": 0.34303534303534305,
+      "partial_hit_rate": 0.7197678447678447,
+      "simulated_ssd_fetches": 3235.0,
+      "quality_proxy_degradation": 0.2802321552321553,
+      "policy": "sliding_window",
+      "window_size": 16,
+      "alpha": 0.0
+    },
+    {
+      "hit_rate": 0.34303534303534305,
+      "partial_hit_rate": 0.7197678447678447,
+      "simulated_ssd_fetches": 3235.0,
+      "quality_proxy_degradation": 0.21017411642411646,
+      "policy": "sliding_window",
+      "window_size": 16,
+      "alpha": 0.25
+    },
+    {
+      "hit_rate": 0.34303534303534305,
+      "partial_hit_rate": 0.7197678447678447,
+      "simulated_ssd_fetches": 3235.0,
+      "quality_proxy_degradation": 0.14011607761607764,
+      "policy": "sliding_window",
+      "window_size": 16,
+      "alpha": 0.5
+    },
+    {
+      "hit_rate": 0.34303534303534305,
+      "partial_hit_rate": 0.7197678447678447,
+      "simulated_ssd_fetches": 3235.0,
+      "quality_proxy_degradation": 0.07005803880803882,
+      "policy": "sliding_window",
+      "window_size": 16,
+      "alpha": 0.75
+    },
+    {
+      "hit_rate": 0.34303534303534305,
+      "partial_hit_rate": 0.7197678447678447,
+      "simulated_ssd_fetches": 3235.0,
+      "quality_proxy_degradation": 0.0,
+      "policy": "sliding_window",
+      "window_size": 16,
+      "alpha": 1.0
+    },
+    {
+      "hit_rate": 0.23804573804573806,
+      "partial_hit_rate": 0.6639812889812889,
+      "simulated_ssd_fetches": 3879.0,
+      "quality_proxy_degradation": 0.33601871101871106,
+      "policy": "sliding_window",
+      "window_size": 32,
+      "alpha": 0.0
+    },
+    {
+      "hit_rate": 0.23804573804573806,
+      "partial_hit_rate": 0.6639812889812889,
+      "simulated_ssd_fetches": 3879.0,
+      "quality_proxy_degradation": 0.25201403326403327,
+      "policy": "sliding_window",
+      "window_size": 32,
+      "alpha": 0.25
+    },
+    {
+      "hit_rate": 0.23804573804573806,
+      "partial_hit_rate": 0.6639812889812889,
+      "simulated_ssd_fetches": 3879.0,
+      "quality_proxy_degradation": 0.16800935550935553,
+      "policy": "sliding_window",
+      "window_size": 32,
+      "alpha": 0.5
+    },
+    {
+      "hit_rate": 0.23804573804573806,
+      "partial_hit_rate": 0.6639812889812889,
+      "simulated_ssd_fetches": 3879.0,
+      "quality_proxy_degradation": 0.08400467775467776,
+      "policy": "sliding_window",
+      "window_size": 32,
+      "alpha": 0.75
+    },
+    {
+      "hit_rate": 0.23804573804573806,
+      "partial_hit_rate": 0.6639812889812889,
+      "simulated_ssd_fetches": 3879.0,
+      "quality_proxy_degradation": 0.0,
+      "policy": "sliding_window",
+      "window_size": 32,
+      "alpha": 1.0
+    },
+    {
+      "hit_rate": 0.09407484407484408,
+      "partial_hit_rate": 0.5947678447678447,
+      "simulated_ssd_fetches": 4678.0,
+      "quality_proxy_degradation": 0.4052321552321553,
+      "policy": "sliding_window",
+      "window_size": 64,
+      "alpha": 0.0
+    },
+    {
+      "hit_rate": 0.09407484407484408,
+      "partial_hit_rate": 0.5947678447678447,
+      "simulated_ssd_fetches": 4678.0,
+      "quality_proxy_degradation": 0.30392411642411643,
+      "policy": "sliding_window",
+      "window_size": 64,
+      "alpha": 0.25
+    },
+    {
+      "hit_rate": 0.09407484407484408,
+      "partial_hit_rate": 0.5947678447678447,
+      "simulated_ssd_fetches": 4678.0,
+      "quality_proxy_degradation": 0.20261607761607764,
+      "policy": "sliding_window",
+      "window_size": 64,
+      "alpha": 0.5
+    },
+    {
+      "hit_rate": 0.09407484407484408,
+      "partial_hit_rate": 0.5947678447678447,
+      "simulated_ssd_fetches": 4678.0,
+      "quality_proxy_degradation": 0.10130803880803882,
+      "policy": "sliding_window",
+      "window_size": 64,
+      "alpha": 0.75
+    },
+    {
+      "hit_rate": 0.09407484407484408,
+      "partial_hit_rate": 0.5947678447678447,
+      "simulated_ssd_fetches": 4678.0,
+      "quality_proxy_degradation": 0.0,
+      "policy": "sliding_window",
+      "window_size": 64,
+      "alpha": 1.0
+    }
+  ]
+}
