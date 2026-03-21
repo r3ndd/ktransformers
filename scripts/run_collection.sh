@@ -150,8 +150,6 @@ for i, prompt_entry in enumerate(prompts):
                 "1",
                 "--enable-p2p-check",
                 "--disable-shared-experts-fusion",
-                "--rl-on-policy-target",
-                "fsdp",
             ],
             env=env,
             stdout=lf,
@@ -170,7 +168,8 @@ for i, prompt_entry in enumerate(prompts):
                     "model": "DeepSeek-V2-Lite-Chat",
                     "messages": [{"role": "user", "content": prompt_text}],
                     "max_tokens": max_tokens,
-                    "temperature": 0.0,
+                    "temperature": 0.7,
+                    "top_p": 0.9,
                 }
             ).encode("utf-8"),
             headers={"Content-Type": "application/json"},
