@@ -1,184 +1,212 @@
 {
   "runs": [
     {
-      "hit_rate": 0.3695426195426195,
-      "partial_hit_rate": 0.7148302148302148,
-      "simulated_ssd_fetches": 3292.0,
-      "quality_proxy_degradation": 0.2851697851697852,
       "policy": "sliding_window",
       "window_size": 8,
-      "alpha": 0.0
+      "alpha": 0.0,
+      "partial_hit_rate": 0.12666850682320827,
+      "simulated_ssd_fetches": 156094.0,
+      "avg_misses_per_token": 194.63092269326683,
+      "quality_proxy_degradation": 0.8733314931767917,
+      "token_count": 802.0
     },
     {
-      "hit_rate": 0.3695426195426195,
-      "partial_hit_rate": 0.7148302148302148,
-      "simulated_ssd_fetches": 3292.0,
-      "quality_proxy_degradation": 0.2138773388773389,
       "policy": "sliding_window",
       "window_size": 8,
-      "alpha": 0.25
+      "alpha": 0.25,
+      "partial_hit_rate": 0.12666850682320827,
+      "simulated_ssd_fetches": 156094.0,
+      "avg_misses_per_token": 194.63092269326683,
+      "quality_proxy_degradation": 0.6549986198825938,
+      "token_count": 802.0
     },
     {
-      "hit_rate": 0.3695426195426195,
-      "partial_hit_rate": 0.7148302148302148,
-      "simulated_ssd_fetches": 3292.0,
-      "quality_proxy_degradation": 0.1425848925848926,
       "policy": "sliding_window",
       "window_size": 8,
-      "alpha": 0.5
+      "alpha": 0.5,
+      "partial_hit_rate": 0.12666850682320827,
+      "simulated_ssd_fetches": 156094.0,
+      "avg_misses_per_token": 194.63092269326683,
+      "quality_proxy_degradation": 0.43666574658839585,
+      "token_count": 802.0
     },
     {
-      "hit_rate": 0.3695426195426195,
-      "partial_hit_rate": 0.7148302148302148,
-      "simulated_ssd_fetches": 3292.0,
-      "quality_proxy_degradation": 0.0712924462924463,
       "policy": "sliding_window",
       "window_size": 8,
-      "alpha": 0.75
+      "alpha": 0.75,
+      "partial_hit_rate": 0.12666850682320827,
+      "simulated_ssd_fetches": 156094.0,
+      "avg_misses_per_token": 194.63092269326683,
+      "quality_proxy_degradation": 0.21833287329419793,
+      "token_count": 802.0
     },
     {
-      "hit_rate": 0.3695426195426195,
-      "partial_hit_rate": 0.7148302148302148,
-      "simulated_ssd_fetches": 3292.0,
+      "policy": "sliding_window",
+      "window_size": 8,
+      "alpha": 1.0,
+      "partial_hit_rate": 0.12666850682320827,
+      "simulated_ssd_fetches": 156094.0,
+      "avg_misses_per_token": 194.63092269326683,
       "quality_proxy_degradation": 0.0,
-      "policy": "sliding_window",
-      "window_size": 8,
-      "alpha": 1.0
+      "token_count": 802.0
     },
     {
-      "hit_rate": 0.34303534303534305,
-      "partial_hit_rate": 0.7197678447678447,
-      "simulated_ssd_fetches": 3235.0,
-      "quality_proxy_degradation": 0.2802321552321553,
       "policy": "sliding_window",
       "window_size": 16,
-      "alpha": 0.0
+      "alpha": 0.0,
+      "partial_hit_rate": 0.10857280999776299,
+      "simulated_ssd_fetches": 159359.0,
+      "avg_misses_per_token": 198.70199501246884,
+      "quality_proxy_degradation": 0.891427190002237,
+      "token_count": 802.0
     },
     {
-      "hit_rate": 0.34303534303534305,
-      "partial_hit_rate": 0.7197678447678447,
-      "simulated_ssd_fetches": 3235.0,
-      "quality_proxy_degradation": 0.21017411642411646,
       "policy": "sliding_window",
       "window_size": 16,
-      "alpha": 0.25
+      "alpha": 0.25,
+      "partial_hit_rate": 0.10857280999776299,
+      "simulated_ssd_fetches": 159359.0,
+      "avg_misses_per_token": 198.70199501246884,
+      "quality_proxy_degradation": 0.6685703925016777,
+      "token_count": 802.0
     },
     {
-      "hit_rate": 0.34303534303534305,
-      "partial_hit_rate": 0.7197678447678447,
-      "simulated_ssd_fetches": 3235.0,
-      "quality_proxy_degradation": 0.14011607761607764,
       "policy": "sliding_window",
       "window_size": 16,
-      "alpha": 0.5
+      "alpha": 0.5,
+      "partial_hit_rate": 0.10857280999776299,
+      "simulated_ssd_fetches": 159359.0,
+      "avg_misses_per_token": 198.70199501246884,
+      "quality_proxy_degradation": 0.4457135950011185,
+      "token_count": 802.0
     },
     {
-      "hit_rate": 0.34303534303534305,
-      "partial_hit_rate": 0.7197678447678447,
-      "simulated_ssd_fetches": 3235.0,
-      "quality_proxy_degradation": 0.07005803880803882,
       "policy": "sliding_window",
       "window_size": 16,
-      "alpha": 0.75
+      "alpha": 0.75,
+      "partial_hit_rate": 0.10857280999776299,
+      "simulated_ssd_fetches": 159359.0,
+      "avg_misses_per_token": 198.70199501246884,
+      "quality_proxy_degradation": 0.22285679750055926,
+      "token_count": 802.0
     },
     {
-      "hit_rate": 0.34303534303534305,
-      "partial_hit_rate": 0.7197678447678447,
-      "simulated_ssd_fetches": 3235.0,
+      "policy": "sliding_window",
+      "window_size": 16,
+      "alpha": 1.0,
+      "partial_hit_rate": 0.10857280999776299,
+      "simulated_ssd_fetches": 159359.0,
+      "avg_misses_per_token": 198.70199501246884,
       "quality_proxy_degradation": 0.0,
-      "policy": "sliding_window",
-      "window_size": 16,
-      "alpha": 1.0
+      "token_count": 802.0
     },
     {
-      "hit_rate": 0.23804573804573806,
-      "partial_hit_rate": 0.6639812889812889,
-      "simulated_ssd_fetches": 3879.0,
-      "quality_proxy_degradation": 0.33601871101871106,
       "policy": "sliding_window",
       "window_size": 32,
-      "alpha": 0.0
+      "alpha": 0.0,
+      "partial_hit_rate": 0.09717536108135078,
+      "simulated_ssd_fetches": 161309.0,
+      "avg_misses_per_token": 201.13341645885288,
+      "quality_proxy_degradation": 0.9028246389186492,
+      "token_count": 802.0
     },
     {
-      "hit_rate": 0.23804573804573806,
-      "partial_hit_rate": 0.6639812889812889,
-      "simulated_ssd_fetches": 3879.0,
-      "quality_proxy_degradation": 0.25201403326403327,
       "policy": "sliding_window",
       "window_size": 32,
-      "alpha": 0.25
+      "alpha": 0.25,
+      "partial_hit_rate": 0.09717536108135078,
+      "simulated_ssd_fetches": 161309.0,
+      "avg_misses_per_token": 201.13341645885288,
+      "quality_proxy_degradation": 0.6771184791889868,
+      "token_count": 802.0
     },
     {
-      "hit_rate": 0.23804573804573806,
-      "partial_hit_rate": 0.6639812889812889,
-      "simulated_ssd_fetches": 3879.0,
-      "quality_proxy_degradation": 0.16800935550935553,
       "policy": "sliding_window",
       "window_size": 32,
-      "alpha": 0.5
+      "alpha": 0.5,
+      "partial_hit_rate": 0.09717536108135078,
+      "simulated_ssd_fetches": 161309.0,
+      "avg_misses_per_token": 201.13341645885288,
+      "quality_proxy_degradation": 0.4514123194593246,
+      "token_count": 802.0
     },
     {
-      "hit_rate": 0.23804573804573806,
-      "partial_hit_rate": 0.6639812889812889,
-      "simulated_ssd_fetches": 3879.0,
-      "quality_proxy_degradation": 0.08400467775467776,
       "policy": "sliding_window",
       "window_size": 32,
-      "alpha": 0.75
+      "alpha": 0.75,
+      "partial_hit_rate": 0.09717536108135078,
+      "simulated_ssd_fetches": 161309.0,
+      "avg_misses_per_token": 201.13341645885288,
+      "quality_proxy_degradation": 0.2257061597296623,
+      "token_count": 802.0
     },
     {
-      "hit_rate": 0.23804573804573806,
-      "partial_hit_rate": 0.6639812889812889,
-      "simulated_ssd_fetches": 3879.0,
+      "policy": "sliding_window",
+      "window_size": 32,
+      "alpha": 1.0,
+      "partial_hit_rate": 0.09717536108135078,
+      "simulated_ssd_fetches": 161309.0,
+      "avg_misses_per_token": 201.13341645885288,
       "quality_proxy_degradation": 0.0,
-      "policy": "sliding_window",
-      "window_size": 32,
-      "alpha": 1.0
+      "token_count": 802.0
     },
     {
-      "hit_rate": 0.09407484407484408,
-      "partial_hit_rate": 0.5947678447678447,
-      "simulated_ssd_fetches": 4678.0,
-      "quality_proxy_degradation": 0.4052321552321553,
       "policy": "sliding_window",
       "window_size": 64,
-      "alpha": 0.0
+      "alpha": 0.0,
+      "partial_hit_rate": 0.09339964559724101,
+      "simulated_ssd_fetches": 161916.0,
+      "avg_misses_per_token": 201.89027431421445,
+      "quality_proxy_degradation": 0.906600354402759,
+      "token_count": 802.0
     },
     {
-      "hit_rate": 0.09407484407484408,
-      "partial_hit_rate": 0.5947678447678447,
-      "simulated_ssd_fetches": 4678.0,
-      "quality_proxy_degradation": 0.30392411642411643,
       "policy": "sliding_window",
       "window_size": 64,
-      "alpha": 0.25
+      "alpha": 0.25,
+      "partial_hit_rate": 0.09339964559724101,
+      "simulated_ssd_fetches": 161916.0,
+      "avg_misses_per_token": 201.89027431421445,
+      "quality_proxy_degradation": 0.6799502658020693,
+      "token_count": 802.0
     },
     {
-      "hit_rate": 0.09407484407484408,
-      "partial_hit_rate": 0.5947678447678447,
-      "simulated_ssd_fetches": 4678.0,
-      "quality_proxy_degradation": 0.20261607761607764,
       "policy": "sliding_window",
       "window_size": 64,
-      "alpha": 0.5
+      "alpha": 0.5,
+      "partial_hit_rate": 0.09339964559724101,
+      "simulated_ssd_fetches": 161916.0,
+      "avg_misses_per_token": 201.89027431421445,
+      "quality_proxy_degradation": 0.4533001772013795,
+      "token_count": 802.0
     },
     {
-      "hit_rate": 0.09407484407484408,
-      "partial_hit_rate": 0.5947678447678447,
-      "simulated_ssd_fetches": 4678.0,
-      "quality_proxy_degradation": 0.10130803880803882,
       "policy": "sliding_window",
       "window_size": 64,
-      "alpha": 0.75
+      "alpha": 0.75,
+      "partial_hit_rate": 0.09339964559724101,
+      "simulated_ssd_fetches": 161916.0,
+      "avg_misses_per_token": 201.89027431421445,
+      "quality_proxy_degradation": 0.22665008860068975,
+      "token_count": 802.0
     },
     {
-      "hit_rate": 0.09407484407484408,
-      "partial_hit_rate": 0.5947678447678447,
-      "simulated_ssd_fetches": 4678.0,
+      "policy": "sliding_window",
+      "window_size": 64,
+      "alpha": 1.0,
+      "partial_hit_rate": 0.09339964559724101,
+      "simulated_ssd_fetches": 161916.0,
+      "avg_misses_per_token": 201.89027431421445,
       "quality_proxy_degradation": 0.0,
-      "policy": "sliding_window",
-      "window_size": 64,
-      "alpha": 1.0
+      "token_count": 802.0
     }
-  ]
+  ],
+  "metric_level": "token_across_layers",
+  "cache_identity": "layer_qualified",
+  "cache_capacity": 156,
+  "token_grouping_key": [
+    "context_id",
+    "token_position"
+  ],
+  "metric_note": "partial_hit_rate is average per-token partial hit across all layers"
 }

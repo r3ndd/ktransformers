@@ -1,0 +1,10 @@
+{
+  "prompt_id": "mixed_002",
+  "category": "mixed",
+  "context_id": "ctx_mixed_002",
+  "prompt_text": "I need to analyze a CSV file containing sales data. The file has columns: date, product_id, quantity, price.\n\nWrite a Python script that:\n1. Loads the data\n2. Calculates total revenue per product\n3. Finds the top 5 best-selling products\n4. Generates a simple monthly sales report\n\nInclude comments explaining each section.",
+  "generated_text": " I battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle",
+  "timestamp": 1774054838.8757148,
+  "trace_file": "/root/ktransformers/scripts/../data/traces/mixed_002_session.parquet",
+  "server_log": "/root/ktransformers/scripts/../data/traces/collection_server_mixed_002.log"
+}

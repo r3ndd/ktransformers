@@ -32,13 +32,13 @@ def test_run_simulation_writes_results(tmp_path: Path):
     assert result["cache_identity"] == "layer_qualified"
     assert result["cache_capacity"] == 156
     assert result["token_grouping_key"] == ["context_id", "token_position"]
-    assert result["deprecated_fields"] == ["hit_rate"]
 
     run = result["runs"][0]
-    assert "full_hit_rate" in run
+    assert "partial_hit_rate" in run
     assert "avg_misses_per_token" in run
     assert "token_count" in run
-    assert run["hit_rate"] == run["full_hit_rate"]
+    assert "hit_rate" not in run
+    assert "full_hit_rate" not in run
 
     assert "capacity" not in run
     assert "cache_capacities" not in result

@@ -1,0 +1,10 @@
+{
+  "prompt_id": "coding_003",
+  "category": "coding",
+  "context_id": "ctx_coding_003",
+  "prompt_text": "Design a simple REST API for a todo list application. Include the endpoints, request/response formats, and provide a basic Python implementation using Flask.",
+  "generated_text": " Development senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior senior",
+  "timestamp": 1774054284.616549,
+  "trace_file": "/root/ktransformers/scripts/../data/traces/coding_003_session.parquet",
+  "server_log": "/root/ktransformers/scripts/../data/traces/collection_server_coding_003.log"
+}

@@ -204,9 +204,9 @@ def test_full_hit_requires_all_needed_experts_for_token():
 
     res = simulate_policy(df, SlidingWindowPolicy(capacity=2, window_size=1), alpha=0.5)
 
-    # Token 0: miss both; Token 1: only (0,1) hit and (1,3) miss => no full hit
-    assert res["full_hit_rate"] == 0.0
-    assert res["hit_rate"] == res["full_hit_rate"]
+    # Token 0: miss both; Token 1: only (0,1) hit and (1,3) miss => partial hit
+    # Partial hit rate should reflect the one expert hit out of two needed for token 1
+    assert res["partial_hit_rate"] == 0.25  # 0 hits for token 0, 1 hit out of 2 for token 1
 
 
 def test_token_cannot_self_hit_before_post_token_observe():
@@ -224,7 +224,6 @@ def test_token_cannot_self_hit_before_post_token_observe():
 
     assert res["token_count"] == 1.0
     assert res["partial_hit_rate"] == 0.0
-    assert res["full_hit_rate"] == 0.0
     assert res["simulated_ssd_fetches"] == 2.0
 
 

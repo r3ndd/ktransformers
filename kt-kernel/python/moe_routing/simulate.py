@@ -34,7 +34,6 @@ def run_simulation(trace_file: Path, output_dir: Path) -> None:
         "cache_identity": "layer_qualified",
         "cache_capacity": fixed_capacity,
         "token_grouping_key": ["context_id", "token_position"],
-        "deprecated_fields": ["hit_rate"],
         "metric_note": "partial_hit_rate is average per-token partial hit across all layers",
     }
     (output_dir / "results.json").write_text(json.dumps(result_doc, indent=2))
