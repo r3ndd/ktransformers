@@ -9,6 +9,10 @@ ROOT_DIR="${SCRIPT_DIR}/.."
 
 MODEL_PATH="${ROOT_DIR}/models/deepseek-ai/DeepSeek-V2-Lite-Chat"
 AMX_PATH="${ROOT_DIR}/models/DeepSeek-V2-Lite-Chat-AMXINT4"
+GGUF_PATH="${ROOT_DIR}/models/DeepSeek-V2-Lite-Chat-GGUF"
+KT_WEIGHT_PATH="${KT_WEIGHT_PATH:-}"
+KT_METHOD="${KT_METHOD:-}"
+PYTHON_BIN="${PYTHON_BIN:-python3}"
 PROMPT_SUITE="${ROOT_DIR}/data/prompt_suite.json"
 OUTPUT_DIR="${ROOT_DIR}/data/traces"
 AGGREGATED_TRACE_FILE="${OUTPUT_DIR}/live_capture.parquet"
@@ -20,8 +24,35 @@ if [ ! -d "${MODEL_PATH}" ]; then
   exit 1
 fi
 
-if [ ! -d "${AMX_PATH}" ]; then
-  echo "Error: AMX weights not found at ${AMX_PATH}"
+if [ -z "${KT_WEIGHT_PATH}" ]; then
+  if [ -d "${AMX_PATH}" ]; then
+    KT_WEIGHT_PATH="${AMX_PATH}"
+    KT_METHOD="${KT_METHOD:-AMXINT4}"
+  elif [ -d "${GGUF_PATH}" ]; then
+    KT_WEIGHT_PATH="${GGUF_PATH}"
+    KT_METHOD="${KT_METHOD:-LLAMAFILE}"
+  else
+    echo "Error: no CPU weight path found. Expected one of:"
+    echo "  - ${AMX_PATH} (for AMXINT4/AMXINT8)"
+    echo "  - ${GGUF_PATH} (for LLAMAFILE with GGUF)"
+    echo "Or provide KT_WEIGHT_PATH and KT_METHOD explicitly."
+    exit 1
+  fi
+fi
+
+if [ -z "${KT_METHOD}" ]; then
+  case "${KT_WEIGHT_PATH}" in
+    *GGUF*|*gguf*)
+      KT_METHOD="LLAMAFILE"
+      ;;
+    *)
+      KT_METHOD="AMXINT4"
+      ;;
+  esac
+fi
+
+if [ ! -d "${KT_WEIGHT_PATH}" ]; then
+  echo "Error: CPU weights path not found at ${KT_WEIGHT_PATH}"
   exit 1
 fi
 
@@ -36,19 +67,21 @@ rm -f "${OUTPUT_DIR}"/output_*.json "${OUTPUT_DIR}/capture_summary.json"
 
 echo "=== MoE Routing Collection (kt-kernel + sglang) ==="
 echo "Model: ${MODEL_PATH}"
-echo "CPU Weights: ${AMX_PATH}"
+echo "CPU Weights: ${KT_WEIGHT_PATH}"
+echo "KT Method: ${KT_METHOD}"
+echo "Python: ${PYTHON_BIN}"
 echo "Prompt source: ${PROMPT_SUITE}"
 echo "Output dir: ${OUTPUT_DIR}"
 echo "Aggregated trace: ${AGGREGATED_TRACE_FILE}"
 
-PROMPTS_JSON=$(python3 -c "
+PROMPTS_JSON=$(${PYTHON_BIN} -c "
 import json
 from pathlib import Path
 suite = json.loads(Path('${PROMPT_SUITE}').read_text())
 print(json.dumps(suite['prompts']))
 ")
 
-TOTAL_PROMPTS=$(python3 - "${PROMPTS_JSON}" <<'PY'
+TOTAL_PROMPTS=$(${PYTHON_BIN} - "${PROMPTS_JSON}" <<'PY'
 import json
 import sys
 print(len(json.loads(sys.argv[1])))
@@ -59,7 +92,7 @@ echo "Total prompts to process: ${TOTAL_PROMPTS}"
 
 export CUDA_HOME=/usr/local/lib/python3.12/dist-packages/nvidia/cuda_runtime
 
-python3 - "${PROMPTS_JSON}" "${MODEL_PATH}" "${AMX_PATH}" "${OUTPUT_DIR}" "${PORT}" "${MAX_TOKENS}" <<'PYEOF'
+${PYTHON_BIN} - "${PROMPTS_JSON}" "${MODEL_PATH}" "${KT_WEIGHT_PATH}" "${KT_METHOD}" "${OUTPUT_DIR}" "${PORT}" "${MAX_TOKENS}" "${PYTHON_BIN}" <<'PYEOF'
 import json
 import os
 import signal
@@ -71,10 +104,12 @@ from pathlib import Path
 
 prompts = json.loads(sys.argv[1])
 model_path = sys.argv[2]
-amx_path = sys.argv[3]
-output_dir = Path(sys.argv[4])
-port = sys.argv[5]
-max_tokens = int(sys.argv[6])
+weight_path = sys.argv[3]
+kt_method = sys.argv[4]
+output_dir = Path(sys.argv[5])
+port = sys.argv[6]
+max_tokens = int(sys.argv[7])
+python_bin = sys.argv[8]
 
 results = []
 
@@ -110,7 +145,7 @@ for i, prompt_entry in enumerate(prompts):
     with open(log_file, "w", encoding="utf-8") as lf:
         server = subprocess.Popen(
             [
-                "python3",
+                python_bin,
                 "-m",
                 "sglang.launch_server",
                 "--host",
@@ -120,7 +155,7 @@ for i, prompt_entry in enumerate(prompts):
                 "--model",
                 model_path,
                 "--kt-weight-path",
-                amx_path,
+                weight_path,
                 "--kt-cpuinfer",
                 "25",
                 "--kt-threadpool-count",
@@ -128,7 +163,7 @@ for i, prompt_entry in enumerate(prompts):
                 "--kt-num-gpu-experts",
                 "1",
                 "--kt-method",
-                "AMXINT4",
+                kt_method,
                 "--kt-gpu-prefill-token-threshold",
                 "4096",
                 "--kt-enable-dynamic-expert-update",

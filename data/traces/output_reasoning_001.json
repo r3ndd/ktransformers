@@ -3,8 +3,8 @@
   "category": "reasoning",
   "context_id": "ctx_reasoning_001",
   "prompt_text": "A train travels from city A to city B at 60 mph and returns at 40 mph. If the total round trip takes 5 hours, how far apart are the two cities? Show your work step by step.",
-  "generated_text": " Step足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足足",
-  "timestamp": 1774054323.36844,
-  "trace_file": "/root/ktransformers/scripts/../data/traces/reasoning_001_session.parquet",
-  "server_log": "/root/ktransformers/scripts/../data/traces/collection_server_reasoning_001.log"
+  "generated_text": "Hereللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللل",
+  "timestamp": 1774241089.6039395,
+  "trace_file": "/home/elliot/Documents/Projects/ktransformers/data/traces/reasoning_001_session.parquet",
+  "server_log": "/home/elliot/Documents/Projects/ktransformers/data/traces/collection_server_reasoning_001.log"
 }
