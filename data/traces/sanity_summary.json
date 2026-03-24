@@ -1,12 +1,14 @@
 {
   "total": 1,
-  "successful": 0,
-  "failed": 1,
+  "successful": 1,
+  "failed": 0,
   "results": [
     {
       "prompt_id": "coding_001",
-      "success": false,
-      "error": "Sanity check failed for coding_001: Trace file missing: /root/ktransformers/data/traces/coding_001_session.parquet"
+      "output_file": "/root/ktransformers/data/traces/output_coding_001.json",
+      "trace_file": "/root/ktransformers/data/traces/coding_001_session.parquet",
+      "server_log": "/root/ktransformers/data/traces/collection_server_coding_001.log",
+      "success": true
     }
   ]
 }

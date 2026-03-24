@@ -218,6 +218,41 @@ def _terminate_server(server: subprocess.Popen) -> None:
         pass
 
 
+def _run_trace_hook_preflight(env: dict[str, str], prompt_id: str, context_id: str) -> None:
+    """Hard-fail preflight: verify env-based trace hook initializes successfully."""
+    preflight_env = env.copy()
+    preflight_env["KT_MOE_ROUTING_PROMPT_ID"] = f"{prompt_id}_preflight"
+    preflight_env["KT_MOE_ROUTING_CONTEXT_ID"] = f"{context_id}_preflight"
+    preflight_env["KT_MOE_ROUTING_TRACE_FILE"] = str(OUTPUT_DIR / f"{prompt_id}_preflight.parquet")
+
+    probe = (
+        "from kt_kernel.experts_base import BaseMoEWrapper\n"
+        "BaseMoEWrapper._env_trace_initialized = False\n"
+        "BaseMoEWrapper._env_trace_collector = None\n"
+        "BaseMoEWrapper.set_trace_hook(None)\n"
+        "BaseMoEWrapper._ensure_env_trace_hook()\n"
+        "hook = BaseMoEWrapper.get_trace_hook()\n"
+        "collector = BaseMoEWrapper._env_trace_collector\n"
+        "if hook is None or collector is None:\n"
+        "    raise RuntimeError('trace hook/collector not initialized from env')\n"
+        "collector.stop()\n"
+        "print('TRACE_PREFLIGHT_OK')\n"
+    )
+
+    result = subprocess.run(
+        [PYTHON_BIN, "-c", probe],
+        env=preflight_env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0 or "TRACE_PREFLIGHT_OK" not in result.stdout:
+        raise RuntimeError(
+            "Trace hook preflight failed. The env-based routing collector did not initialize. "
+            f"stdout={result.stdout.strip()!r} stderr={result.stderr.strip()!r}"
+        )
+
+
 def _aggregate_traces(summary_results: list[dict]) -> None:
     try:
         import pyarrow as pa
@@ -283,6 +318,9 @@ def run_prompt(
     env.setdefault("CUDA_HOME", "/usr/local/lib/python3.12/dist-packages/nvidia/cuda_runtime")
     env.setdefault("SGLANG_DISABLE_CUDNN_CHECK", "1")
 
+    _run_trace_hook_preflight(env=env, prompt_id=prompt_id, context_id=context_id)
+    print("  [preflight] trace hook initialized", flush=True)
+
     with open(log_file, "w", encoding="utf-8") as lf:
         server = subprocess.Popen(
             [
@@ -336,6 +374,8 @@ def run_prompt(
             preexec_fn=os.setsid,
         )
 
+    result_payload: dict | None = None
+
     try:
         _wait_healthy(port, server, log_file)
 
@@ -382,11 +422,8 @@ def run_prompt(
             encoding="utf-8",
         )
 
-        if not trace_file.exists():
-            raise RuntimeError(f"Trace file missing: {trace_file}")
-
         print(f"  [ok] output: {output_file}", flush=True)
-        return {
+        result_payload = {
             "prompt_id": prompt_id,
             "output_file": str(output_file),
             "trace_file": str(trace_file),
@@ -421,6 +458,16 @@ def run_prompt(
     finally:
         _terminate_server(server)
         time.sleep(1)
+
+    # Trace file may be finalized on shutdown; verify after server cleanup.
+    if result_payload is not None:
+        for _ in range(12):
+            if trace_file.exists():
+                break
+            time.sleep(0.5)
+        if not trace_file.exists():
+            raise RuntimeError(f"Trace file missing after server shutdown: {trace_file}")
+        return result_payload
 
 
 def parse_args() -> argparse.Namespace:

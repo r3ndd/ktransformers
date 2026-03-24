@@ -3,8 +3,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
 
-TOP_K = 6
-
 
 @dataclass(slots=True)
 class RoutingRecord:
@@ -19,7 +17,9 @@ class RoutingRecord:
     token_text: Optional[str] = None
 
     def __post_init__(self) -> None:
-        if len(self.expert_ids) != TOP_K or len(self.expert_weights) != TOP_K:
-            raise ValueError("top-k expert_ids/expert_weights must each be length 6")
+        if len(self.expert_ids) != len(self.expert_weights):
+            raise ValueError("expert_ids and expert_weights must have the same length")
+        if len(self.expert_ids) == 0:
+            raise ValueError("expert_ids/expert_weights must be non-empty")
         if self.layer_id < 0:
             raise ValueError("layer_id must be >= 0")
