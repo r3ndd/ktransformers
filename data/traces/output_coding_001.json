@@ -3,8 +3,8 @@
   "category": "coding",
   "context_id": "ctx_coding_001",
   "prompt_text": "Write a Python function to find the longest palindromic substring in a given string. Include a brief explanation of your approach and time complexity.",
-  "generated_text": "Theللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللل",
-  "timestamp": 1774240996.3092391,
-  "trace_file": "/home/elliot/Documents/Projects/ktransformers/data/traces/coding_001_session.parquet",
-  "server_log": "/home/elliot/Documents/Projects/ktransformers/data/traces/collection_server_coding_001.log"
+  "generated_text": "This is a request for a Python function to find the longest palindromic substring in a given string. I need to include a brief explanation of the approach and time complexity.\n\nI need to be the request is a Python function to find the palindromic substring in a given string. I need to be",
+  "timestamp": 1774317001.6879907,
+  "trace_file": "/root/ktransformers/data/traces/coding_001_session.parquet",
+  "server_log": "/root/ktransformers/data/traces/collection_server_coding_001.log"
 }
