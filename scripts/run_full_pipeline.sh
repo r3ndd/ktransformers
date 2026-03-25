@@ -2,35 +2,61 @@
 # End-to-end MoE Routing Analysis Pipeline
 # Runs: Setup → Collection → Analysis → Simulation
 
-set -e
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR/.."
+ROOT_DIR="${SCRIPT_DIR}/.."
+cd "${ROOT_DIR}"
 
 echo "==============================================="
 echo "  MoE Routing Analysis - Full Pipeline"
 echo "==============================================="
 echo ""
 
+MODEL_PATH="${ROOT_DIR}/models/Qwen3.5-35B-A3B"
+GGUF_PATH="${ROOT_DIR}/models/Qwen3.5-35B-A3B-GGUF-Q4_K_M"
+GGUF_FILE="${GGUF_PATH}/Qwen3.5-35B-A3B-Q4_K_M.gguf"
+
 # Phase 0: Setup
-if [ ! -f "models/DeepSeek-V2-Lite-Chat-GGUF/DeepSeek-V2-Lite-Chat.Q4_K_M.gguf" ]; then
-    echo "📦 Phase 0: Setup - Downloading model..."
-    ./scripts/setup_deepseek_v2_lite.sh
+echo ""
+echo "📦 Phase 0: Setup - Ensuring Qwen3.5 models are available..."
+
+if ! command -v hf >/dev/null 2>&1; then
+    echo "Error: Hugging Face CLI (hf) not found in PATH."
+    echo "Install it first, then re-run this pipeline."
+    exit 1
+fi
+
+mkdir -p "${ROOT_DIR}/models"
+
+if [ ! -d "${MODEL_PATH}" ]; then
+    echo "Downloading base model to ${MODEL_PATH} ..."
+    hf download "Qwen/Qwen3.5-35B-A3B" --local-dir "${MODEL_PATH}"
 else
-    echo "✓ Model already downloaded"
+    echo "✓ Base model directory already exists: ${MODEL_PATH}"
+fi
+
+if [ ! -f "${GGUF_FILE}" ]; then
+    echo "Downloading GGUF Q4_K_M weights to ${GGUF_PATH} ..."
+    hf download \
+        "unsloth/Qwen3.5-35B-A3B-GGUF" \
+        "Qwen3.5-35B-A3B-Q4_K_M.gguf" \
+        --local-dir "${GGUF_PATH}"
+else
+    echo "✓ GGUF file already exists: ${GGUF_FILE}"
 fi
 
 # Phase 1: Data Collection
 echo ""
 echo "📊 Phase 1: Collecting MoE routing traces..."
-if [ -d "data/traces" ] && [ "$(ls -A data/traces/*.parquet 2>/dev/null | wc -l)" -gt 0 ]; then
+if [ -d "data/traces" ] && [ "$(ls -A data/traces/*_session.parquet 2>/dev/null | wc -l)" -gt 0 ]; then
     echo "Traces already exist. Skip collection? (y/n)"
     read -r skip
     if [ "$skip" != "y" ]; then
-        ./scripts/run_collection.sh
+        python3 scripts/run_collection.py
     fi
 else
-    ./scripts/run_collection.sh
+    python3 scripts/run_collection.py
 fi
 
 # Phase 2: Analysis
@@ -38,7 +64,7 @@ echo ""
 echo "🔍 Phase 2: Analyzing locality metrics..."
 mkdir -p data/analysis
 python -m kt_kernel.moe_routing.analyze \
-    --trace-file data/traces/*.parquet \
+    --trace-file data/traces/live_capture.parquet \
     --output-dir data/analysis
 
 # Phase 3: Simulation
@@ -46,7 +72,7 @@ echo ""
 echo "🎯 Phase 3: Simulating cache policies..."
 mkdir -p data/simulation
 python -m kt_kernel.moe_routing.simulate \
-    --trace-file data/traces/*.parquet \
+    --trace-file data/traces/live_capture.parquet \
     --output-dir data/simulation
 
 echo ""
@@ -55,7 +81,7 @@ echo "  Pipeline Complete!"
 echo "==============================================="
 echo ""
 echo "Results:"
-echo "  Traces:     data/traces/*.parquet"
+echo "  Traces:     data/traces/live_capture.parquet"
 echo "  Analysis:   data/analysis/metrics.json"
 echo "  Plots:      data/analysis/plots/"
 echo "  Simulation: data/simulation/results.json"

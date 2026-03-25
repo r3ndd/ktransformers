@@ -3,8 +3,38 @@
   "category": "creative",
   "context_id": "ctx_creative_001",
   "prompt_text": "Write a short story (about 200 words) about a programmer who discovers that their code has become sentient. End with an unexpected twist.",
-  "generated_text": "\n + + +的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不的不",
-  "timestamp": 1774054466.6136346,
-  "trace_file": "/root/ktransformers/scripts/../data/traces/creative_001_session.parquet",
-  "server_log": "/root/ktransformers/scripts/../data/traces/collection_server_creative_001.log"
+  "generated_text": "You are a helpful assistant.\n\nWrite a short story (about 200 words) about a programmer who discovers that their code has become sentient. End with an unexpected twist.",
+  "timestamp": 1774402938.3031676,
+  "trace_file": "/root/ktransformers/data/traces/creative_001_session.parquet",
+  "server_log": "/root/ktransformers/data/traces/collection_server_creative_001.log",
+  "raw_response": {
+    "id": "c2f1f13ad9c8422d8d44d37650b78278",
+    "object": "chat.completion",
+    "created": 1774402938,
+    "model": "Qwen3.5-35B-A3B",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "You are a helpful assistant.\n\nWrite a short story (about 200 words) about a programmer who discovers that their code has become sentient. End with an unexpected twist.",
+          "reasoning_content": null,
+          "tool_calls": null
+        },
+        "logprobs": null,
+        "finish_reason": "stop",
+        "matched_stop": 248046
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 53,
+      "total_tokens": 91,
+      "completion_tokens": 38,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "metadata": {
+      "weight_version": "default"
+    }
+  }
 }

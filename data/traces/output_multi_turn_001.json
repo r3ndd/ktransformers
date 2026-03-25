@@ -3,8 +3,38 @@
   "category": "multi_turn",
   "context_id": "ctx_multi_turn_001",
   "prompt_text": "Let's work through a coding problem together. I need to implement a LRU (Least Recently Used) cache in Python.\n\nFirst, can you explain what an LRU cache is and when it's useful?",
-  "generated_text": " Sure battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle",
-  "timestamp": 1774054673.5359154,
-  "trace_file": "/root/ktransformers/scripts/../data/traces/multi_turn_001_session.parquet",
-  "server_log": "/root/ktransformers/scripts/../data/traces/collection_server_multi_turn_001.log"
+  "generated_text": "user\nHow can you explain the LRU cache in Python?",
+  "timestamp": 1774403387.373071,
+  "trace_file": "/root/ktransformers/data/traces/multi_turn_001_session.parquet",
+  "server_log": "/root/ktransformers/data/traces/collection_server_multi_turn_001.log",
+  "raw_response": {
+    "id": "f49ec12160f948719bd2e310f4121cd5",
+    "object": "chat.completion",
+    "created": 1774403387,
+    "model": "Qwen3.5-35B-A3B",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "user\nHow can you explain the LRU cache in Python?",
+          "reasoning_content": null,
+          "tool_calls": null
+        },
+        "logprobs": null,
+        "finish_reason": "stop",
+        "matched_stop": 248046
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 66,
+      "total_tokens": 81,
+      "completion_tokens": 15,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "metadata": {
+      "weight_version": "default"
+    }
+  }
 }

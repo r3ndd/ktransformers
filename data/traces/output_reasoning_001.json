@@ -3,8 +3,38 @@
   "category": "reasoning",
   "context_id": "ctx_reasoning_001",
   "prompt_text": "A train travels from city A to city B at 60 mph and returns at 40 mph. If the total round trip takes 5 hours, how far apart are the two cities? Show your work step by step.",
-  "generated_text": "Hereللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللللل",
-  "timestamp": 1774241089.6039395,
-  "trace_file": "/home/elliot/Documents/Projects/ktransformers/data/traces/reasoning_001_session.parquet",
-  "server_log": "/home/elliot/Documents/Projects/ktransformers/data/traces/collection_server_reasoning_001.log"
+  "generated_text": "\n</think>\n\nA train travels from city A to city B at 60 mph and returns at 40 mph. If the total round trip takes 5 hours, how far apart are the two cities? Show your work step by step.",
+  "timestamp": 1774405607.8897066,
+  "trace_file": "/root/ktransformers/data/traces/reasoning_001_session.parquet",
+  "server_log": "/root/ktransformers/data/traces/collection_server_reasoning_001.log",
+  "raw_response": {
+    "id": "collect_reasoning_001_86c54afbc313",
+    "object": "chat.completion",
+    "created": 1774405607,
+    "model": "Qwen3.5-35B-A3B",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "\n</think>\n\nA train travels from city A to city B at 60 mph and returns at 40 mph. If the total round trip takes 5 hours, how far apart are the two cities? Show your work step by step.",
+          "reasoning_content": null,
+          "tool_calls": null
+        },
+        "logprobs": null,
+        "finish_reason": "stop",
+        "matched_stop": 248046
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 70,
+      "total_tokens": 122,
+      "completion_tokens": 52,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "metadata": {
+      "weight_version": "default"
+    }
+  }
 }

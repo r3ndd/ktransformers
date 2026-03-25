@@ -3,8 +3,38 @@
   "category": "coding",
   "context_id": "ctx_coding_002",
   "prompt_text": "I have this Python code that's supposed to flatten a nested list, but it's not working correctly. Can you debug it?\n\ndef flatten(nested):\n    result = []\n    for item in nested:\n        if isinstance(item, list):\n            result.extend(flatten(item))\n        else:\n            result.append(item)\n    return result\n\n# Test\nprint(flatten([1, [2, 3], [[4, 5], 6]]))  # Expected: [1, 2, 3, 4, 5, 6]",
-  "generated_text": "... battle senior battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle senior battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle battle senior senior battle battle battle battle",
-  "timestamp": 1774054243.6549807,
-  "trace_file": "/root/ktransformers/scripts/../data/traces/coding_002_session.parquet",
-  "server_log": "/root/ktransformers/scripts/../data/traces/collection_server_coding_002.log"
+  "generated_text": "you have a helpful assistant.\n\nYou are a helpful assistant.",
+  "timestamp": 1774405470.2232695,
+  "trace_file": "/root/ktransformers/data/traces/coding_002_session.parquet",
+  "server_log": "/root/ktransformers/data/traces/collection_server_coding_002.log",
+  "raw_response": {
+    "id": "collect_coding_002_e1b12680f421",
+    "object": "chat.completion",
+    "created": 1774405470,
+    "model": "Qwen3.5-35B-A3B",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "you have a helpful assistant.\n\nYou are a helpful assistant.",
+          "reasoning_content": null,
+          "tool_calls": null
+        },
+        "logprobs": null,
+        "finish_reason": "stop",
+        "matched_stop": 248046
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 145,
+      "total_tokens": 159,
+      "completion_tokens": 14,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "metadata": {
+      "weight_version": "default"
+    }
+  }
 }
