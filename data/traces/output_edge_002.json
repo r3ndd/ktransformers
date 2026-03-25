@@ -1,0 +1,40 @@
+{
+  "prompt_id": "edge_002",
+  "category": "edge_case",
+  "context_id": "ctx_edge_002",
+  "prompt_text": "Hi",
+  "generated_text": "Hello! How can I help you today?",
+  "timestamp": 1774417130.0607755,
+  "trace_file": "/root/ktransformers/data/traces/edge_002_session.parquet",
+  "server_log": "/root/ktransformers/data/traces/collection_server_edge_002.log",
+  "raw_response": {
+    "id": "collect_edge_002_23de6119837b",
+    "object": "chat.completion",
+    "created": 1774417130,
+    "model": "Qwen3.5-35B-A3B",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "Hello! How can I help you today?",
+          "reasoning_content": null,
+          "tool_calls": null
+        },
+        "logprobs": null,
+        "finish_reason": "stop",
+        "matched_stop": 248046
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 24,
+      "total_tokens": 34,
+      "completion_tokens": 10,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "metadata": {
+      "weight_version": "default"
+    }
+  }
+}

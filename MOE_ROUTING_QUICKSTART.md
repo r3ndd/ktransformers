@@ -1,6 +1,6 @@
 # MoE Routing Analysis - Quick Start Guide
 
-This directory contains a complete system for analyzing MoE expert routing patterns in DeepSeek-V2-Lite, designed to validate smoothed routing hypotheses for consumer hardware.
+This directory contains a complete system for analyzing MoE expert routing patterns in **Qwen3.5-35B-A3B**, designed to validate smoothed routing hypotheses for consumer hardware.
 
 ## System Overview
 
@@ -14,9 +14,9 @@ This directory contains a complete system for analyzing MoE expert routing patte
 
 ## Hardware Requirements
 
-- **RAM**: 32GB+ (128GB recommended for comfort)
-- **VRAM**: 8GB+ (16GB comfortable)
-- **Storage**: ~10GB for model + traces
+- **RAM**: 64GB+ (128GB recommended for comfort)
+- **VRAM**: 16GB+ (24GB comfortable)
+- **Storage**: ~30GB for model + traces
 
 ## Quick Start
 
@@ -24,13 +24,13 @@ This directory contains a complete system for analyzing MoE expert routing patte
 
 ```bash
 cd /root/ktransformers
-./scripts/setup_deepseek_v2_lite.sh
+./scripts/run_full_pipeline.sh
 ```
 
-This downloads:
-- DeepSeek-V2-Lite Q4_K_M GGUF model (~8GB)
+The setup phase will automatically download:
+- Qwen3.5-35B-A3B base model (~70GB)
+- Qwen3.5-35B-A3B-GGUF-Q4_K_M weights (~20GB)
 - Model config files from HuggingFace
-- Python dependencies
 
 ### 2. Run Full Pipeline
 
@@ -45,7 +45,7 @@ This executes all three phases automatically.
 ### Phase 1: Data Collection
 
 ```bash
-./scripts/run_collection.sh
+python3 scripts/run_collection.py
 ```
 
 Processes 17 diverse prompts across categories:
@@ -117,15 +117,17 @@ After running the pipeline, check these files:
 
 ## Architecture Details
 
-### DeepSeek-V2-Lite MoE Characteristics
+### Qwen3.5-35B-A3B MoE Characteristics
 
 | Property | Value |
 |----------|-------|
-| Total params | 14B |
-| Active params | ~2B |
-| Experts | 64 |
-| Experts per token | 6 (top-6 routing) |
-| Layers | 26 |
+| Total params | ~35B |
+| Active params | ~3B |
+| Experts | 256 |
+| Experts per token | 8 (top-8 routing) |
+| Layers | 40 |
+| Hidden size | 2048 |
+| MoE intermediate size | 512 |
 
 ### Constraint Parameter (α)
 
@@ -165,15 +167,20 @@ The analysis pipeline computes per-layer metrics. Check `data/analysis/metrics.j
 ### Model Download Fails
 
 ```bash
-# Manual download
-mkdir -p models/DeepSeek-V2-Lite-Chat-GGUF
-wget -O models/DeepSeek-V2-Lite-Chat-GGUF/DeepSeek-V2-Lite-Chat.Q4_K_M.gguf \
-    "https://huggingface.co/mradermacher/DeepSeek-V2-Lite-GGUF/resolve/main/DeepSeek-V2-Lite.Q4_K_M.gguf"
+# Manual download using huggingface-cli
+mkdir -p models/Qwen3.5-35B-A3B
+huggingface-cli download "Qwen/Qwen3.5-35B-A3B" --local-dir models/Qwen3.5-35B-A3B
+
+mkdir -p models/Qwen3.5-35B-A3B-GGUF-Q4_K_M
+huggingface-cli download \
+    "unsloth/Qwen3.5-35B-A3B-GGUF" \
+    "Qwen3.5-35B-A3B-Q4_K_M.gguf" \
+    --local-dir models/Qwen3.5-35B-A3B-GGUF-Q4_K_M
 ```
 
 ### Out of Memory
 
-Reduce `MAX_TOKENS` in `scripts/run_collection.sh` (default: 500).
+Reduce `MAX_TOKENS` in `scripts/run_collection.py` (default: 500) or adjust `max_total_tokens` in the server configuration.
 
 ### Slow Collection
 
@@ -190,9 +197,9 @@ Your smoothed routing hypothesis is viable if:
 
 ## Next Steps
 
-After validating on DeepSeek-V2-Lite:
+After validating on Qwen3.5-35B-A3B:
 
-1. **Scale up**: Test on Qwen3.5-35B-A3B or Kimi-K2.5 (requires more RAM)
+1. **Scale up**: Test on larger models like Kimi-K2.5 or Qwen3.5-235B-A22B (requires more RAM)
 2. **Implement**: Build the actual smoothed routing engine in kTransformers
 3. **Benchmark**: Measure real-world tokens/sec improvement on consumer hardware
 
@@ -201,9 +208,9 @@ After validating on DeepSeek-V2-Lite:
 ```
 .
 ├── scripts/
-│   ├── setup_deepseek_v2_lite.sh    # Model download
-│   ├── run_collection.sh            # Phase 1: Data collection
-│   └── run_full_pipeline.sh         # All phases
+│   ├── run_collection.py            # Phase 1: Data collection
+│   ├── run_full_pipeline.sh         # All phases (setup → collection → analysis → simulation)
+│   └── sanity_check.py              # Quick validation test
 ├── data/
 │   ├── prompt_suite.json            # Test prompts
 │   ├── traces/                      # Raw routing traces
