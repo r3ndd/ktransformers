@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from .cache_policies import SlidingWindowPolicy
-from .simulator import simulate_policy
+from .routing_schemes import SlidingWindowAdaptivePoolRouting
+from .simulator import simulate_routing_scheme
 from .token_indexing import add_absolute_token_position
 
 
@@ -17,18 +17,31 @@ def _safe_context_filename(context_id: str) -> str:
     return safe or "context"
 
 
-def _run_grid(traces: pd.DataFrame, capacity: int) -> list[dict]:
+def _run_grid(
+    traces: pd.DataFrame,
+    pool_size_per_layer: int,
+    update_interval_tokens: int,
+) -> list[dict]:
     token_count = int(traces["absolute_token_position"].nunique()) if len(traces) > 0 else 0
-    runs = []
-    for window in [4, 8, 16, 32, 64]:
-        if window > token_count:
+    runs: list[dict] = []
+    if token_count == 0:
+        return runs
+
+    for window_size in [4, 8, 16, 32, 64]:
+        if window_size > token_count:
             continue
         for alpha in [0.0, 0.25, 0.5, 0.75, 1.0]:
-            policy = SlidingWindowPolicy(capacity=capacity, window_size=window)
-            m = simulate_policy(traces, policy, alpha=alpha)
+            scheme = SlidingWindowAdaptivePoolRouting(
+                window_size=window_size,
+                pool_size_per_layer=pool_size_per_layer,
+                update_interval_tokens=update_interval_tokens,
+            )
+            m = simulate_routing_scheme(traces, scheme=scheme, alpha=alpha)
             run = {
-                "policy": "sliding_window",
-                "window_size": window,
+                "scheme": "sliding_window_adaptive_pool",
+                "window_size": window_size,
+                "pool_size_per_layer": pool_size_per_layer,
+                "update_interval_tokens": update_interval_tokens,
                 "alpha": alpha,
                 **m,
             }
@@ -40,27 +53,36 @@ def _average_runs(per_context_runs: list[list[dict]]) -> list[dict]:
     if not per_context_runs:
         return []
 
-    buckets: dict[tuple[str, int, float], list[dict]] = {}
+    buckets: dict[tuple[str, int, int, int, float], list[dict]] = {}
     for runs in per_context_runs:
         for run in runs:
-            key = (str(run["policy"]), int(run["window_size"]), float(run["alpha"]))
+            key = (
+                str(run["scheme"]),
+                int(run["window_size"]),
+                int(run["pool_size_per_layer"]),
+                int(run["update_interval_tokens"]),
+                float(run["alpha"]),
+            )
             buckets.setdefault(key, []).append(run)
 
     averaged: list[dict] = []
-    for key in sorted(buckets.keys(), key=lambda k: (k[1], k[2])):
+    for key in sorted(buckets.keys(), key=lambda k: (k[1], k[4])):
         rows = buckets[key]
         base = {
-            "policy": key[0],
+            "scheme": key[0],
             "window_size": key[1],
-            "alpha": key[2],
+            "pool_size_per_layer": key[2],
+            "update_interval_tokens": key[3],
+            "alpha": key[4],
             "contexts_included": float(len(rows)),
         }
         numeric_keys = [
-            "partial_hit_rate",
-            "simulated_ssd_fetches",
-            "avg_misses_per_token",
-            "quality_proxy_degradation",
+            "hit_rate",
+            "ssd_fetches_per_token",
+            "quality_degradation",
+            "speedup_ratio",
             "token_count",
+            "experts_per_token",
         ]
         for k in numeric_keys:
             base[k] = float(sum(r[k] for r in rows) / len(rows))
@@ -73,6 +95,7 @@ def run_simulation(trace_file: Path, output_dir: Path) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     context_results_dir = output_dir / "contexts"
     context_results_dir.mkdir(exist_ok=True)
+
     traces = pd.read_parquet(trace_file)
     if "context_id" not in traces.columns:
         traces = traces.copy()
@@ -80,7 +103,8 @@ def run_simulation(trace_file: Path, output_dir: Path) -> None:
 
     traces = add_absolute_token_position(traces)
 
-    fixed_capacity = 1024
+    pool_size_per_layer = 32
+    update_interval_tokens = 1
 
     context_token_counts: dict[str, int] = {}
     for context_id, g in traces.groupby("context_id", sort=False):
@@ -95,19 +119,23 @@ def run_simulation(trace_file: Path, output_dir: Path) -> None:
             else context_traces
         )
 
-        runs = _run_grid(context_traces, fixed_capacity)
+        runs = _run_grid(
+            context_traces,
+            pool_size_per_layer=pool_size_per_layer,
+            update_interval_tokens=update_interval_tokens,
+        )
         per_context_runs.append(runs)
 
         context_doc = {
             "context_id": context_id,
             "runs": runs,
-            "metric_level": "token_across_layers",
-            "cache_identity": "layer_qualified",
-            "cache_capacity": fixed_capacity,
-            "token_grouping_key": ["context_id", "absolute_token_position"],
+            "scheme": "sliding_window_adaptive_pool",
+            "token_grouping_key": ["context_id", "absolute_token_position", "layer_id"],
             "context_token_count": context_token_counts[str(context_id)],
-            "skipped_window_sizes": [w for w in [4, 8, 16, 32, 64] if w > context_token_counts[str(context_id)]],
-            "metric_note": "partial_hit_rate is average per-token partial hit across all layers",
+            "pool_size_per_layer": pool_size_per_layer,
+            "update_interval_tokens": update_interval_tokens,
+            "window_candidates": [4, 8, 16, 32, 64],
+            "metric_note": "hit_rate is routed-vs-baseline expert overlap averaged across token-layer steps",
         }
         context_file = context_results_dir / f"{_safe_context_filename(str(context_id))}.json"
         context_file.write_text(json.dumps(context_doc, indent=2))
@@ -116,33 +144,30 @@ def run_simulation(trace_file: Path, output_dir: Path) -> None:
 
     result_doc = {
         "runs": runs,
-        "metric_level": "token_across_layers",
-        "cache_identity": "layer_qualified",
-        "cache_capacity": fixed_capacity,
-        "token_grouping_key": ["context_id", "absolute_token_position"],
+        "scheme": "sliding_window_adaptive_pool",
+        "token_grouping_key": ["context_id", "absolute_token_position", "layer_id"],
         "context_count": len(context_token_counts),
         "context_token_counts": context_token_counts,
         "per_context_dir": str(context_results_dir),
-        "averaging_note": "Average simulation metrics are computed per parameter set by averaging over contexts that had enough tokens to run that parameter set.",
-        "metric_note": "partial_hit_rate is average per-token partial hit across all layers",
+        "averaging_note": "Average metrics are computed per parameter set over contexts that included that parameter set.",
+        "metric_note": "quality_degradation is mean(routed_score_avg / baseline_score_avg) over token-layer steps.",
     }
     (output_dir / "results.json").write_text(json.dumps(result_doc, indent=2))
 
     try:
         import matplotlib.pyplot as plt
 
-        xs = [r["partial_hit_rate"] for r in runs]
-        ys = [1.0 - r["quality_proxy_degradation"] for r in runs]
+        xs = [r["hit_rate"] for r in runs]
+        ys = [r["quality_degradation"] for r in runs]
         plt.figure(figsize=(6, 5))
         plt.scatter(xs, ys)
-        plt.xlabel("Partial Hit Rate")
-        plt.ylabel("Quality Proxy (1 - degradation)")
-        plt.title("Cache Tradeoff Frontier")
+        plt.xlabel("Hit Rate")
+        plt.ylabel("Quality Degradation Ratio")
+        plt.title("Routing Scheme Tradeoff Frontier")
         plt.tight_layout()
         plt.savefig(output_dir / "tradeoff_curves.png")
         plt.close()
     except Exception:
-        # JSON results are primary; plotting is best-effort.
         pass
 
 
