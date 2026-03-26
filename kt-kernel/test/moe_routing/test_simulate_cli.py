@@ -39,17 +39,32 @@ def test_run_simulation_writes_routing_scheme_results(tmp_path: Path):
 
     result = json.loads((out_dir / "results.json").read_text())
     assert len(result["runs"]) > 0
-    assert result["scheme"] == "sliding_window_score_averaging"
+    assert result["scheme"] == "mixed"
     assert result["token_grouping_key"] == ["context_id", "absolute_token_position", "layer_id"]
+    assert "scheme_candidates" in result
 
     run = result["runs"][0]
-    assert run["scheme"] == "sliding_window_score_averaging"
-    assert "window_size" in run
+    assert run["scheme"] in {
+        "sliding_window_score_averaging",
+        "ema_score_averaging",
+        "two_timescale_ema",
+        "two_timescale_softmax",
+    }
+    if run["scheme"] == "sliding_window_score_averaging":
+        assert "window_size" in run
+    if run["scheme"] == "ema_score_averaging":
+        assert "ema_beta" in run
+    if run["scheme"] == "two_timescale_ema":
+        assert "mix_lambda" in run
+    if run["scheme"] == "two_timescale_softmax":
+        assert "mix_lambda" in run
+        assert "rho" in run
     assert "hit_rate" in run
     assert "ssd_fetches_per_token" in run
     assert "baseline_overlap" in run
     assert "quality_degradation" in run
     assert "speedup_ratio" in run
+    assert "quality_speed_score" in run
     assert "token_count" in run
     assert "contexts_included" in run
     assert "alpha" not in run
@@ -63,8 +78,20 @@ def test_run_simulation_includes_window_1_baseline_equivalent(tmp_path: Path):
     run_simulation(in_file, out_dir)
     result = json.loads((out_dir / "results.json").read_text())
 
-    run_w1 = next(r for r in result["runs"] if int(r["window_size"]) == 1)
+    run_w1 = next(
+        r for r in result["runs"] if r["scheme"] == "sliding_window_score_averaging" and int(r["window_size"]) == 1
+    )
     assert run_w1["baseline_overlap"] == 1.0
+
+    run_tt = next(r for r in result["runs"] if r["scheme"] == "two_timescale_ema" and float(r["mix_lambda"]) == 0.4)
+    assert "baseline_overlap" in run_tt
+
+    run_tt_curr = next(
+        r
+        for r in result["runs"]
+        if r["scheme"] == "two_timescale_softmax" and float(r["mix_lambda"]) == 0.2 and float(r["rho"]) == 0.25
+    )
+    assert "baseline_overlap" in run_tt_curr
 
 
 def test_group_average_uses_available_contexts_per_parameter_set(tmp_path: Path):
@@ -86,7 +113,7 @@ def test_group_average_uses_available_contexts_per_parameter_set(tmp_path: Path)
             }
         )
 
-    for tok in range(8):
+    for tok in range(20):
         long_rows.append(
             {
                 "token_id": tok,
@@ -105,7 +132,11 @@ def test_group_average_uses_available_contexts_per_parameter_set(tmp_path: Path)
     run_simulation(in_file, out_dir)
     result = json.loads((out_dir / "results.json").read_text())
 
-    run_w4 = next(r for r in result["runs"] if int(r["window_size"]) == 4)
-    run_w8 = next(r for r in result["runs"] if int(r["window_size"]) == 8)
+    run_w4 = next(
+        r for r in result["runs"] if r["scheme"] == "sliding_window_score_averaging" and int(r["window_size"]) == 4
+    )
+    run_w16 = next(
+        r for r in result["runs"] if r["scheme"] == "sliding_window_score_averaging" and int(r["window_size"]) == 16
+    )
     assert run_w4["contexts_included"] == 2.0
-    assert run_w8["contexts_included"] == 1.0
+    assert run_w16["contexts_included"] == 1.0

@@ -31,23 +31,48 @@ Implementation note:
 - History is maintained per layer and per context token order.
 - Scores are full vectors from parquet `expert_scores_all`.
 
-## Scheme 2 (planned): EMA score averaging
+## Scheme 2: EMA score averaging
 
-Alternative smoothing with exponential decay:
+Alternative smoothing with exponential decay (implemented):
 
 - `s'_t = beta * s_t + (1-beta) * s'_{t-1}`
 - Parameter: `ema_beta`.
 
+Current sweep:
+
+- `ema_beta` in `[0.9, 0.7, 0.5, 0.3, 0.1, 0.05]`.
+
 This keeps the same framework: transform full scores, then top-k.
 
-## Scheme 3 (planned): Two-timescale averaging
+## Scheme 3: Two-timescale EMA averaging
 
-Combine short and long horizon smoothing:
+Combine short and long horizon EMA smoothing (implemented):
 
 - `s'_t = lambda * short_window_avg + (1-lambda) * long_window_avg`
-- Parameters: `short_W`, `long_W`, `lambda`.
+- `short_t = EMA(beta=0.5)`
+- `long_t = EMA(beta=0.05)`
+- Parameter sweep: `mix_lambda` in `[0.1, 0.2, 0.3, 0.4]`.
 
 Again, no discrete pool logic; routing is still top-k on transformed full scores.
+
+## Scheme 4: Two-timescale softmax
+
+This is a scaled-softmax-input version of scheme 3:
+
+- `x_t = softmax(rho * s_t)`
+- `short_t = EMA_beta_0.5(x_t)`
+- `long_t = EMA_beta_0.05(x_t)`
+- `s'_t = mix_lambda * short_t + (1-mix_lambda) * long_t`
+
+where:
+
+- `s_t` is current token full expert score vector (logits)
+- `rho` scales logits before softmax (`rho >= 0` in implementation)
+
+Current sweep:
+
+- fixed `mix_lambda = 0.2`
+- `rho` in `[0.25, 1.0, 4.0, 16.0, 64.0, 256.0, 1024.0]`
 
 ## Metrics (current simulation)
 
@@ -56,16 +81,25 @@ For simulated chosen experts vs baseline trace experts:
 - `hit_rate`: percentage of chosen experts already cached from the previous token state.
 - `ssd_fetches_per_token`: average over tokens of sum across layers of uncached chosen experts.
 - `baseline_overlap`: percentage of chosen experts that overlap baseline chosen experts.
-- `quality_degradation`: ratio of average score of chosen experts to average score of baseline experts.
-- `speedup_ratio`: `(1 + baseline_ssd_fetches_per_token) / (1 + ssd_fetches_per_token)`.
+- `quality_degradation`: ratio of average softmax probability mass of chosen experts to baseline experts.
+- `speedup_ratio`: `(0.1 + baseline_extra_seconds_per_token) / (0.1 + extra_seconds_per_token)` where extra seconds are derived from SSD fetch counts.
+- `quality_speed_score`: `quality_degradation * speedup_ratio`.
 
 `baseline_ssd_fetches_per_token` is computed from baseline trace routing under the same cache accounting rule.
 
+Cache accounting currently uses per-layer LRU with fixed `capacity_per_layer=25` (about 1000 expert slots total for 40 layers).
+
 ## Practical sweep recommendation
 
-For the sliding-window scheme:
+Current sweeps:
 
-- Sweep `window_size` over `[1, 2, 4, 8, 16, 32, 64]`.
+- Scheme 1 (`sliding_window_score_averaging`): `window_size` in `[1, 4, 16, 64]`
+- Scheme 2 (`ema_score_averaging`): `ema_beta` in `[0.9, 0.7, 0.5, 0.3, 0.1, 0.05]`
+- Scheme 3 (`two_timescale_ema`): `mix_lambda` in `[0.1, 0.2, 0.3, 0.4]`
+- Scheme 4 (`two_timescale_softmax`): fixed `mix_lambda=0.2`, `rho` in `[0.25, 1.0, 4.0, 16.0, 64.0, 256.0, 1024.0]`
+
+Suggested analysis views:
+
 - Start analysis with:
   - `baseline_overlap` vs `ssd_fetches_per_token`
   - `quality_degradation` vs `speedup_ratio`

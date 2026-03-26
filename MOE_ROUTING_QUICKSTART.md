@@ -66,6 +66,8 @@ python -m kt_kernel.moe_routing.analyze \
 Current metrics:
 - `temporal_reuse_curve` (distance capped to available tokens, max 64)
 - `previous_token_reuse_curve` (reuse vs immediate previous token)
+- `sliding_window_hit_rate` (window sweep currently 4/8/16/32/64)
+- `context_switch_churn`
 - `expert_entropy_by_layer`
 
 Implementation details:
@@ -87,10 +89,17 @@ python -m kt_kernel.moe_routing.simulate \
 ```
 
 Current simulation scope:
-- Routing scheme: **SlidingWindowScoreAveragingRouting**
-- Window sizes: `[1, 2, 4, 8, 16, 32, 64]`
-- `W=1` is baseline-equivalent (current token scores only)
-- Skips windows larger than each context length
+- Schemes:
+  - `sliding_window_score_averaging`
+  - `ema_score_averaging`
+  - `two_timescale_ema`
+  - `two_timescale_softmax`
+- Parameter sweeps:
+  - sliding window: `window_size` in `[1, 4, 16, 64]`
+  - EMA: `ema_beta` in `[0.9, 0.7, 0.5, 0.3, 0.1, 0.05]`
+  - two-timescale EMA: `mix_lambda` in `[0.1, 0.2, 0.3, 0.4]`
+  - two-timescale softmax: fixed `mix_lambda=0.2`, `rho` in `[0.25, 1.0, 4.0, 16.0, 64.0, 256.0, 1024.0]`
+- Baseline-equivalent reference remains `window_size=1` for sliding-window.
 
 Current simulation metrics:
 - `hit_rate`
@@ -98,7 +107,15 @@ Current simulation metrics:
 - `baseline_overlap`
 - `quality_degradation`
 - `speedup_ratio`
+- `quality_speed_score`
 - `baseline_ssd_fetches_per_token`
+
+Simulation notes:
+- Cache accounting uses per-layer LRU with `capacity_per_layer=25` (~1000 total expert slots for 40 layers).
+- `quality_degradation` uses softmax-probability mass ratio (chosen vs baseline) over token-layer steps.
+- `speedup_ratio` uses a timing model:
+  - `speedup_ratio = (0.1 + baseline_extra_seconds_per_token) / (0.1 + extra_seconds_per_token)`
+  - with `extra_seconds_per_token = ssd_fetches_per_token * 0.0015`.
 
 Outputs:
 - `data/simulation/results.json`
@@ -154,14 +171,12 @@ Use `expert_entropy_by_layer` values from:
 
 The following items are **not yet wired into the current CLI pipeline**:
 
-1. Additional score-transform routing schemes:
-   - EMA score averaging
-   - Two-timescale averaging
-2. Analysis metrics/plots:
-   - Sliding-window hit-rate analysis output/plot
-   - Context-switch churn metric
-3. Runtime benchmarking:
+1. Runtime benchmarking:
    - Direct tokens/sec evaluation on hardware for selected scheme/parameter settings.
+2. Additional analysis visualizations:
+   - richer multi-scheme frontier plots and per-scheme dashboards
+3. Auto-tuning / adaptive sweep selection:
+   - narrowing parameter ranges from previous runs
 
 ## Troubleshooting
 
@@ -188,9 +203,9 @@ Initial runs may compile CUDA kernels and warm dependencies; later runs are usua
 
 ## Next Steps
 
-1. Add EMA and multi-timescale score-transform schemes to `simulate.py`.
-2. Add sliding-window/churn plots to `analyze.py`.
-3. Benchmark runtime impact on consumer hardware.
+1. Benchmark runtime impact on consumer hardware.
+2. Add richer comparative plots across all four schemes.
+3. Add auto-tuned sweep presets from prior run results.
 
 ## File Structure
 
