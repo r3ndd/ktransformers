@@ -14,6 +14,7 @@ class RoutingRecord:
     expert_weights: list[float]
     timestamp_us: int
     token_category: str
+    expert_scores_all: Optional[list[float]] = None
     token_text: Optional[str] = None
 
     def __post_init__(self) -> None:

@@ -1,44 +1,43 @@
 # MoE Routing Analysis - Quick Start Guide
 
-This directory contains a complete system for analyzing MoE expert routing patterns in **Qwen3.5-35B-A3B**, designed to validate smoothed routing hypotheses for consumer hardware.
+This directory contains an end-to-end pipeline for collecting, analyzing, and simulating MoE expert routing traces on **Qwen3.5-35B-A3B**.
+
+This document reflects the **current implementation**. A short roadmap section near the end lists items that are still planned.
 
 ## System Overview
 
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
 │   Collection    │────▶│    Analysis     │────▶│   Simulation    │
-│  (inference +   │     │ (locality metrics│     │ (cache policy   │
-│   trace capture)│     │  + visualizations)│    │   tradeoffs)    │
+│  (inference +   │     │ (locality metrics│     │ (routing scheme │
+│   trace capture)│     │  + summaries)    │     │   tradeoffs)    │
 └─────────────────┘     └─────────────────┘     └─────────────────┘
 ```
 
 ## Hardware Requirements
 
-- **RAM**: 64GB+ (128GB recommended for comfort)
+- **RAM**: 64GB+ (128GB recommended)
 - **VRAM**: 16GB+ (24GB comfortable)
-- **Storage**: ~30GB for model + traces
+- **Storage**: ~30GB+ for models and traces
 
 ## Quick Start
 
-### 1. Setup (One-time)
+Run the full pipeline:
 
 ```bash
 cd /root/ktransformers
 ./scripts/run_full_pipeline.sh
 ```
 
-The setup phase will automatically download:
-- Qwen3.5-35B-A3B base model (~70GB)
-- Qwen3.5-35B-A3B-GGUF-Q4_K_M weights (~20GB)
-- Model config files from HuggingFace
+`run_full_pipeline.sh` performs:
+1. Model setup/download checks
+2. Trace collection
+3. Analysis
+4. Simulation
 
-### 2. Run Full Pipeline
-
-```bash
-./scripts/run_full_pipeline.sh
-```
-
-This executes all three phases automatically.
+Notes:
+- It uses Hugging Face CLI command `hf download`.
+- If trace files already exist, the script may prompt to skip collection.
 
 ## Manual Phase Execution
 
@@ -48,72 +47,74 @@ This executes all three phases automatically.
 python3 scripts/run_collection.py
 ```
 
-Processes 17 diverse prompts across categories:
-- **coding**: Algorithmic problems, debugging, API design
-- **reasoning**: Math, logic puzzles, argument analysis
-- **creative**: Story writing, poetry
-- **factual**: Explanations, comparisons
-- **multi_turn**: Simulated conversations
-- **mixed**: Combined tasks (coding + explanation)
-- **edge**: Ambiguous, short, nonsensical inputs
-
-**Output**: `data/traces/{prompt_id}.parquet`
+Current behavior:
+- Loads prompts from `data/prompt_suite.json` (currently 17 prompts).
+- Runs one server session per prompt.
+- Writes per-prompt outputs/logs plus per-prompt session parquet traces.
+- Records full per-layer expert score vectors in `expert_scores_all` when enabled (float16 list).
+- Aggregates successful traces into:
+  - `data/traces/live_capture.parquet`
 
 ### Phase 2: Analysis
 
 ```bash
 python -m kt_kernel.moe_routing.analyze \
-    --trace-file data/traces/*.parquet \
-    --output-dir data/analysis
+  --trace-file data/traces/live_capture.parquet \
+  --output-dir data/analysis
 ```
 
-**Computes**:
-- Temporal reuse curve: P(expert at t+n | expert at t)
-- Sliding window hit rates for various window sizes
-- Expert entropy by layer
-- Context switch churn
+Current metrics:
+- `temporal_reuse_curve` (distance capped to available tokens, max 64)
+- `previous_token_reuse_curve` (reuse vs immediate previous token)
+- `expert_entropy_by_layer`
 
-**Output**:
-- `data/analysis/metrics.json` - Raw metrics
-- `data/analysis/plots/` - Visualization plots
+Implementation details:
+- Adds robust `absolute_token_position` derived from trace order and microbatch boundaries.
+- Computes per-context metrics and writes them under `data/analysis/contexts/`.
+- Computes overall averages using context alignment to minimum token count.
+
+Outputs:
+- `data/analysis/metrics.json`
+- `data/analysis/contexts/*.json`
+- `data/analysis/plots/temporal_reuse_curve.png` (best-effort plotting)
 
 ### Phase 3: Simulation
 
 ```bash
 python -m kt_kernel.moe_routing.simulate \
-    --trace-file data/traces/*.parquet \
-    --output-dir data/simulation
+  --trace-file data/traces/live_capture.parquet \
+  --output-dir data/simulation
 ```
 
-**Simulates**:
-- Baseline (no caching)
-- Fixed hot pool (most frequent experts)
-- Sliding window (recent experts)
-- Exponential decay (weighted recency)
-- **Alpha constraint**: Continuous parameter from hard (α=0) to soft (α=1) constraints
+Current simulation scope:
+- Routing scheme: **SlidingWindowScoreAveragingRouting**
+- Window sizes: `[1, 2, 4, 8, 16, 32, 64]`
+- `W=1` is baseline-equivalent (current token scores only)
+- Skips windows larger than each context length
 
-**Output**:
-- `data/simulation/results.json` - Hit rates, fetch counts
-- `data/simulation/tradeoff_curves.png` - Quality vs speed Pareto frontier
+Current simulation metrics:
+- `hit_rate`
+- `ssd_fetches_per_token`
+- `baseline_overlap`
+- `quality_degradation`
+- `speedup_ratio`
+- `baseline_ssd_fetches_per_token`
 
-## Key Results to Examine
+Outputs:
+- `data/simulation/results.json`
+- `data/simulation/contexts/*.json`
+- `data/simulation/tradeoff_curves.png` (best-effort plotting)
 
-After running the pipeline, check these files:
+## Key Artifacts to Inspect
 
-### 1. Temporal Reuse Curve
-`data/analysis/plots/temporal_reuse_curve.png`
-
-**What to look for**: High reuse probability at small n (e.g., >60% at n=10). This validates the core assumption that experts exhibit temporal locality.
-
-### 2. Sliding Window Hit Rate
-`data/analysis/plots/sliding_window_hit_rate.png`
-
-**What to look for**: >70% hit rate with 32-expert window. This indicates a manageable working set size.
-
-### 3. Tradeoff Curves
-`data/simulation/tradeoff_curves.png`
-
-**What to look for**: Soft constraints (α=0.5) achieving >80% hit rate with minimal quality degradation. This shows the viability of smoothed routing.
+1. `data/analysis/metrics.json`
+   - Global aligned averages and context token counts.
+2. `data/analysis/contexts/*.json`
+   - Per-context locality behavior.
+3. `data/simulation/results.json`
+   - Aggregated routing-scheme tradeoffs and context inclusion counts.
+4. `data/simulation/tradeoff_curves.png`
+   - Hit-rate vs quality-degradation scatter.
 
 ## Architecture Details
 
@@ -129,99 +130,87 @@ After running the pipeline, check these files:
 | Hidden size | 2048 |
 | MoE intermediate size | 512 |
 
-### Constraint Parameter (α)
+### Important Trace Indexing Detail
 
-The simulator implements a continuous constraint:
+The trace hook emits batch-local `token_position`. For batched decoding this repeats across microbatches. The pipeline derives `absolute_token_position` so analysis/simulation operate on true per-context token order.
 
-- **α = 0**: Hard constraint - router can ONLY select from cached experts
-- **α = 0.5**: Soft constraint - uncached experts' scores multiplied by 0.5
-- **α = 1**: No constraint - router selects from all experts (baseline)
+## Extending the Analysis Today
 
-This allows exploring the full spectrum from aggressive caching to unconstrained routing.
+### Add or modify prompts
 
-## Extending the Analysis
+Edit `data/prompt_suite.json` and add entries to the `prompts` array.
 
-### Add Custom Prompts
+### Add new routing schemes
 
-Edit `data/prompt_suite.json` and add prompts to the `prompts` array:
+Implement scheme classes in `kt-kernel/python/moe_routing/routing_schemes.py`, then wire them into `kt-kernel/python/moe_routing/simulate.py`.
 
-```json
-{
-  "id": "your_custom_001",
-  "category": "your_category",
-  "description": "Brief description",
-  "prompt": "Your prompt text here..."
-}
-```
+### Layer-level inspection
 
-### Test Different Cache Policies
+Use `expert_entropy_by_layer` values from:
+- `data/analysis/metrics.json`
+- `data/analysis/contexts/*.json`
 
-Modify `kt-kernel/python/moe_routing/cache_policies.py` to add new policies, then re-run simulation.
+## Planned / Not Yet Implemented
 
-### Analyze Specific Layers
+The following items are **not yet wired into the current CLI pipeline**:
 
-The analysis pipeline computes per-layer metrics. Check `data/analysis/metrics.json` for layer-wise breakdowns.
+1. Additional score-transform routing schemes:
+   - EMA score averaging
+   - Two-timescale averaging
+2. Analysis metrics/plots:
+   - Sliding-window hit-rate analysis output/plot
+   - Context-switch churn metric
+3. Runtime benchmarking:
+   - Direct tokens/sec evaluation on hardware for selected scheme/parameter settings.
 
 ## Troubleshooting
 
-### Model Download Fails
+### Model download fails
 
 ```bash
-# Manual download using huggingface-cli
 mkdir -p models/Qwen3.5-35B-A3B
-huggingface-cli download "Qwen/Qwen3.5-35B-A3B" --local-dir models/Qwen3.5-35B-A3B
+hf download "Qwen/Qwen3.5-35B-A3B" --local-dir models/Qwen3.5-35B-A3B
 
 mkdir -p models/Qwen3.5-35B-A3B-GGUF-Q4_K_M
-huggingface-cli download \
-    "unsloth/Qwen3.5-35B-A3B-GGUF" \
-    "Qwen3.5-35B-A3B-Q4_K_M.gguf" \
-    --local-dir models/Qwen3.5-35B-A3B-GGUF-Q4_K_M
+hf download \
+  "unsloth/Qwen3.5-35B-A3B-GGUF" \
+  "Qwen3.5-35B-A3B-Q4_K_M.gguf" \
+  --local-dir models/Qwen3.5-35B-A3B-GGUF-Q4_K_M
 ```
 
-### Out of Memory
+### Out of memory
 
-Reduce `MAX_TOKENS` in `scripts/run_collection.py` (default: 500) or adjust `max_total_tokens` in the server configuration.
+Tune collection settings in `scripts/run_collection.py` (for example `COLLECTION_MAX_TOKENS` / `MAX_TOKENS`) and server token limits.
 
-### Slow Collection
+### Slow first run
 
-This is expected - first run compiles CUDA kernels. Subsequent runs are faster.
-
-## Success Criteria
-
-Your smoothed routing hypothesis is viable if:
-
-1. **Temporal locality**: >60% expert reuse at distance 10
-2. **Bounded working set**: 32-expert window captures >70% of needs
-3. **Graceful degradation**: α=0.5 achieves >80% hit rate with <10% quality loss
-4. **Layer heterogeneity**: Different layers show different optimal cache sizes
+Initial runs may compile CUDA kernels and warm dependencies; later runs are usually faster.
 
 ## Next Steps
 
-After validating on Qwen3.5-35B-A3B:
-
-1. **Scale up**: Test on larger models like Kimi-K2.5 or Qwen3.5-235B-A22B (requires more RAM)
-2. **Implement**: Build the actual smoothed routing engine in kTransformers
-3. **Benchmark**: Measure real-world tokens/sec improvement on consumer hardware
+1. Add EMA and multi-timescale score-transform schemes to `simulate.py`.
+2. Add sliding-window/churn plots to `analyze.py`.
+3. Benchmark runtime impact on consumer hardware.
 
 ## File Structure
 
 ```
 .
 ├── scripts/
-│   ├── run_collection.py            # Phase 1: Data collection
-│   ├── run_full_pipeline.sh         # All phases (setup → collection → analysis → simulation)
-│   └── sanity_check.py              # Quick validation test
+│   ├── run_collection.py
+│   ├── run_full_pipeline.sh
+│   └── sanity_check.py
 ├── data/
-│   ├── prompt_suite.json            # Test prompts
-│   ├── traces/                      # Raw routing traces
-│   ├── analysis/                    # Metrics + plots
-│   └── simulation/                  # Policy simulation results
-└── kt-kernel/python/moe_routing/    # Analysis system code
+│   ├── prompt_suite.json
+│   ├── traces/
+│   ├── analysis/
+│   └── simulation/
+└── kt-kernel/python/moe_routing/
 ```
 
 ## Citation
 
-If you use this analysis system in research, cite kTransformers:
+If you use this system in research, cite kTransformers:
 
 ```bibtex
 @inproceedings{10.1145/3731569.3764843,

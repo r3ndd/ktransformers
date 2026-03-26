@@ -80,6 +80,7 @@ CHAT_TEMPLATE_PATH = Path(
     )
 ).resolve()
 VENDORED_SGLANG_PYTHON = (ROOT / "third_party/sglang/python").resolve()
+VENDORED_SGLANG_LAUNCH = (VENDORED_SGLANG_PYTHON / "sglang/launch_server.py").resolve()
 
 AGGREGATED_TRACE_FILE = OUTPUT_DIR / "live_capture.parquet"
 
@@ -168,6 +169,11 @@ def _validate_inputs(weight_path: Path) -> None:
     if not VENDORED_SGLANG_PYTHON.is_dir():
         raise FileNotFoundError(
             f"Vendored SGLang python path not found at: {VENDORED_SGLANG_PYTHON}"
+        )
+
+    if not VENDORED_SGLANG_LAUNCH.is_file():
+        raise FileNotFoundError(
+            f"Vendored SGLang launch_server.py not found at: {VENDORED_SGLANG_LAUNCH}"
         )
 
     if not weight_path.is_dir():
@@ -293,6 +299,23 @@ def _run_trace_hook_preflight(env: dict[str, str], prompt_id: str, context_id: s
         )
 
 
+def _probe_sglang_module_path(env: dict[str, str]) -> str:
+    probe = (
+        "import sglang\n"
+        "print(getattr(sglang, '__file__', '<unknown>'))\n"
+    )
+    result = subprocess.run(
+        [PYTHON_BIN, "-c", probe],
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        return f"<probe failed: {result.stderr.strip() or 'unknown error'}>"
+    return result.stdout.strip() or "<unknown>"
+
+
 def _aggregate_traces(summary_results: list[dict]) -> None:
     try:
         import pyarrow as pa
@@ -350,6 +373,10 @@ def run_prompt(
 
     env = os.environ.copy()
     env["KT_MOE_ROUTING_RECORD"] = "true"
+    env["KT_MOE_ROUTING_RECORD_ALL_EXPERT_SCORES"] = os.environ.get(
+        "COLLECTION_RECORD_ALL_EXPERT_SCORES",
+        "true",
+    )
     env["KT_MOE_ROUTING_TRACE_DIR"] = str(OUTPUT_DIR)
     env["KT_MOE_ROUTING_TRACE_FILE"] = str(trace_file)
     env["KT_MOE_ROUTING_PROMPT_ID"] = prompt_id
@@ -363,6 +390,7 @@ def run_prompt(
             env["PYTHONPATH"] = f"{vendored_path}:{existing_pythonpath}"
     else:
         env["PYTHONPATH"] = vendored_path
+    env.setdefault("PYTHONNOUSERSITE", "1")
     env.setdefault(
         "SGLANG_DEBUG_PROMPT_FILE",
         str(OUTPUT_DIR / "debug_prompts.jsonl"),
@@ -378,8 +406,7 @@ def run_prompt(
         server = subprocess.Popen(
             [
                 PYTHON_BIN,
-                "-m",
-                "sglang.launch_server",
+                str(VENDORED_SGLANG_LAUNCH),
                 "--host",
                 "0.0.0.0",
                 "--port",
@@ -599,10 +626,22 @@ def main() -> int:
     print(f"Python: {PYTHON_BIN}", flush=True)
     print(f"Prompt source: {PROMPT_SUITE}", flush=True)
     print(f"Vendored SGLang PYTHONPATH: {VENDORED_SGLANG_PYTHON}", flush=True)
+    print(f"Vendored SGLang launcher: {VENDORED_SGLANG_LAUNCH}", flush=True)
     print(f"Chat template: {CHAT_TEMPLATE_PATH}", flush=True)
     print(f"Output dir: {OUTPUT_DIR}", flush=True)
     print(f"Aggregated trace: {AGGREGATED_TRACE_FILE}", flush=True)
     print(f"Total prompts to process: {len(prompts)}", flush=True)
+
+    startup_env = os.environ.copy()
+    startup_env["PYTHONPATH"] = (
+        f"{VENDORED_SGLANG_PYTHON}:{startup_env['PYTHONPATH']}"
+        if startup_env.get("PYTHONPATH")
+        else str(VENDORED_SGLANG_PYTHON)
+    )
+    startup_env.setdefault("PYTHONNOUSERSITE", "1")
+    sglang_module_path = _probe_sglang_module_path(startup_env)
+    if str(VENDORED_SGLANG_PYTHON) not in sglang_module_path:
+        print(f"[warning] sglang import resolved outside vendored tree: {sglang_module_path}", flush=True)
 
     results: list[dict] = []
     for index, prompt in enumerate(prompts, start=1):

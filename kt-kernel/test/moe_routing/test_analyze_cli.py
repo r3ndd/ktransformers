@@ -28,8 +28,14 @@ def test_run_analysis_writes_metrics(tmp_path: Path):
     metrics = json.loads((out_dir / "metrics.json").read_text())
     assert "temporal_reuse_curve" in metrics
     assert "previous_token_reuse_curve" in metrics
+    assert "sliding_window_hit_rate" in metrics
+    assert "context_switch_churn" in metrics
     assert "aligned_token_count" in metrics
     assert (out_dir / "contexts" / "default.json").exists()
+
+    per_context = json.loads((out_dir / "contexts" / "default.json").read_text())
+    assert "sliding_window_hit_rate" in per_context
+    assert "context_switch_churn" in per_context
 
 
 def test_run_analysis_writes_one_file_per_context_and_aligns_by_min_tokens(tmp_path: Path):
@@ -54,5 +60,7 @@ def test_run_analysis_writes_one_file_per_context_and_aligns_by_min_tokens(tmp_p
     assert metrics["aligned_token_count"] == 2
     assert metrics["context_count"] == 2
     assert "previous_token_reuse_curve" in metrics
+    assert "sliding_window_hit_rate" in metrics
+    assert "context_switch_churn" in metrics
     assert (out_dir / "contexts" / "a.json").exists()
     assert (out_dir / "contexts" / "b.json").exists()

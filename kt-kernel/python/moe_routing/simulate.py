@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from .routing_schemes import SlidingWindowAdaptivePoolRouting
+from .routing_schemes import SlidingWindowScoreAveragingRouting
 from .simulator import simulate_routing_scheme
 from .token_indexing import add_absolute_token_position
 
@@ -17,35 +17,23 @@ def _safe_context_filename(context_id: str) -> str:
     return safe or "context"
 
 
-def _run_grid(
-    traces: pd.DataFrame,
-    pool_size_per_layer: int,
-    update_interval_tokens: int,
-) -> list[dict]:
+def _run_grid(traces: pd.DataFrame) -> list[dict]:
     token_count = int(traces["absolute_token_position"].nunique()) if len(traces) > 0 else 0
     runs: list[dict] = []
     if token_count == 0:
         return runs
 
-    for window_size in [4, 8, 16, 32, 64]:
+    for window_size in [1, 2, 4, 8, 16, 32, 64]:
         if window_size > token_count:
             continue
-        for alpha in [0.0, 0.25, 0.5, 0.75, 1.0]:
-            scheme = SlidingWindowAdaptivePoolRouting(
-                window_size=window_size,
-                pool_size_per_layer=pool_size_per_layer,
-                update_interval_tokens=update_interval_tokens,
-            )
-            m = simulate_routing_scheme(traces, scheme=scheme, alpha=alpha)
-            run = {
-                "scheme": "sliding_window_adaptive_pool",
-                "window_size": window_size,
-                "pool_size_per_layer": pool_size_per_layer,
-                "update_interval_tokens": update_interval_tokens,
-                "alpha": alpha,
-                **m,
-            }
-            runs.append(run)
+        scheme = SlidingWindowScoreAveragingRouting(window_size=window_size)
+        m = simulate_routing_scheme(traces, scheme=scheme)
+        run = {
+            "scheme": "sliding_window_score_averaging",
+            "window_size": window_size,
+            **m,
+        }
+        runs.append(run)
     return runs
 
 
@@ -53,36 +41,29 @@ def _average_runs(per_context_runs: list[list[dict]]) -> list[dict]:
     if not per_context_runs:
         return []
 
-    buckets: dict[tuple[str, int, int, int, float], list[dict]] = {}
+    buckets: dict[tuple[str, int], list[dict]] = {}
     for runs in per_context_runs:
         for run in runs:
-            key = (
-                str(run["scheme"]),
-                int(run["window_size"]),
-                int(run["pool_size_per_layer"]),
-                int(run["update_interval_tokens"]),
-                float(run["alpha"]),
-            )
+            key = (str(run["scheme"]), int(run["window_size"]))
             buckets.setdefault(key, []).append(run)
 
     averaged: list[dict] = []
-    for key in sorted(buckets.keys(), key=lambda k: (k[1], k[4])):
+    for key in sorted(buckets.keys(), key=lambda k: k[1]):
         rows = buckets[key]
         base = {
             "scheme": key[0],
             "window_size": key[1],
-            "pool_size_per_layer": key[2],
-            "update_interval_tokens": key[3],
-            "alpha": key[4],
             "contexts_included": float(len(rows)),
         }
         numeric_keys = [
             "hit_rate",
             "ssd_fetches_per_token",
+            "baseline_overlap",
             "quality_degradation",
             "speedup_ratio",
             "token_count",
             "experts_per_token",
+            "baseline_ssd_fetches_per_token",
         ]
         for k in numeric_keys:
             base[k] = float(sum(r[k] for r in rows) / len(rows))
@@ -103,9 +84,6 @@ def run_simulation(trace_file: Path, output_dir: Path) -> None:
 
     traces = add_absolute_token_position(traces)
 
-    pool_size_per_layer = 32
-    update_interval_tokens = 1
-
     context_token_counts: dict[str, int] = {}
     for context_id, g in traces.groupby("context_id", sort=False):
         context_token_counts[str(context_id)] = int(g["absolute_token_position"].nunique())
@@ -119,23 +97,17 @@ def run_simulation(trace_file: Path, output_dir: Path) -> None:
             else context_traces
         )
 
-        runs = _run_grid(
-            context_traces,
-            pool_size_per_layer=pool_size_per_layer,
-            update_interval_tokens=update_interval_tokens,
-        )
+        runs = _run_grid(context_traces)
         per_context_runs.append(runs)
 
         context_doc = {
             "context_id": context_id,
             "runs": runs,
-            "scheme": "sliding_window_adaptive_pool",
+            "scheme": "sliding_window_score_averaging",
             "token_grouping_key": ["context_id", "absolute_token_position", "layer_id"],
             "context_token_count": context_token_counts[str(context_id)],
-            "pool_size_per_layer": pool_size_per_layer,
-            "update_interval_tokens": update_interval_tokens,
-            "window_candidates": [4, 8, 16, 32, 64],
-            "metric_note": "hit_rate is routed-vs-baseline expert overlap averaged across token-layer steps",
+            "window_candidates": [1, 2, 4, 8, 16, 32, 64],
+            "metric_note": "hit_rate is percentage of chosen experts already in previous-token fast-memory state",
         }
         context_file = context_results_dir / f"{_safe_context_filename(str(context_id))}.json"
         context_file.write_text(json.dumps(context_doc, indent=2))
@@ -144,13 +116,13 @@ def run_simulation(trace_file: Path, output_dir: Path) -> None:
 
     result_doc = {
         "runs": runs,
-        "scheme": "sliding_window_adaptive_pool",
+        "scheme": "sliding_window_score_averaging",
         "token_grouping_key": ["context_id", "absolute_token_position", "layer_id"],
         "context_count": len(context_token_counts),
         "context_token_counts": context_token_counts,
         "per_context_dir": str(context_results_dir),
         "averaging_note": "Average metrics are computed per parameter set over contexts that included that parameter set.",
-        "metric_note": "quality_degradation is mean(routed_score_avg / baseline_score_avg) over token-layer steps.",
+        "metric_note": "baseline_overlap is chosen-vs-baseline overlap averaged across token-layer steps.",
     }
     (output_dir / "results.json").write_text(json.dumps(result_doc, indent=2))
 

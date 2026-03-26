@@ -39,6 +39,7 @@ class RoutingTraceCollector:
         token_position: int,
         expert_ids: list[int],
         expert_weights: list[float],
+        expert_scores_all: list[float] | None = None,
         token_text: str | None = None,
     ) -> None:
         if self._writer is None:
@@ -52,9 +53,10 @@ class RoutingTraceCollector:
                 token_position=token_position,
                 expert_ids=expert_ids,
                 expert_weights=expert_weights,
-                token_text=token_text,
                 timestamp_us=ts_us,
                 token_category=self.token_category,
+                expert_scores_all=expert_scores_all,
+                token_text=token_text,
             )
         )
         self._token_id += 1

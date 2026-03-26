@@ -20,6 +20,7 @@ SlidingWindowPolicy = cache_policies.SlidingWindowPolicy
 FixedHotPolicy = cache_policies.FixedHotPolicy
 BaselinePolicy = cache_policies.BaselinePolicy
 LayerAwareSlidingWindowPolicy = cache_policies.LayerAwareSlidingWindowPolicy
+PerLayerLRUPolicy = cache_policies.PerLayerLRUPolicy
 build_hotset = cache_policies.build_hotset
 ExpertKey = cache_policies.ExpertKey
 QualifiedExpertId = cache_policies.QualifiedExpertId
@@ -264,6 +265,37 @@ def test_layer_aware_policy_invalid_layer():
 
 
 # =============================================================================
+# PerLayerLRUPolicy Tests
+# =============================================================================
+
+
+def test_per_layer_lru_keeps_recent_per_layer():
+    p = PerLayerLRUPolicy(capacity_per_layer=2)
+    p.observe([(0, 1), (0, 2), (1, 1)])
+    assert p.cached_for_layer(0) == {1, 2}
+    assert p.cached_for_layer(1) == {1}
+
+    # Access and add should evict least-recent on layer 0 only
+    p.observe([(0, 1), (0, 3)])
+    assert p.cached_for_layer(0) == {1, 3}
+    assert p.cached_for_layer(1) == {1}
+
+
+def test_per_layer_lru_capacity_zero_caches_nothing():
+    p = PerLayerLRUPolicy(capacity_per_layer=0)
+    p.observe([(0, 1), (1, 2)])
+    assert p.cached() == set()
+
+
+def test_per_layer_lru_reset_clears_all_layers():
+    p = PerLayerLRUPolicy(capacity_per_layer=2)
+    p.observe([(0, 1), (1, 2)])
+    assert len(p.cached()) == 2
+    p.reset()
+    assert p.cached() == set()
+
+
+# =============================================================================
 # build_hotset Tests
 # =============================================================================
 
@@ -381,4 +413,5 @@ def test_classes_exported():
     assert hasattr(cache_policies, "SlidingWindowPolicy")
     assert hasattr(cache_policies, "FixedHotPolicy")
     assert hasattr(cache_policies, "LayerAwareSlidingWindowPolicy")
+    assert hasattr(cache_policies, "PerLayerLRUPolicy")
     assert hasattr(cache_policies, "build_hotset")

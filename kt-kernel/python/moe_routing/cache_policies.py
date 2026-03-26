@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections import Counter, deque
+from collections import Counter, OrderedDict, deque
 from typing import TypeAlias, Union
 
 # Type alias for layer-qualified expert: (layer_id, expert_id)
@@ -174,3 +174,44 @@ class LayerAwareSlidingWindowPolicy(BasePolicy):
     def reset(self) -> None:
         for window in self.layer_windows.values():
             window.clear()
+
+
+class PerLayerLRUPolicy(BasePolicy):
+    """Per-layer LRU cache with fixed expert slots per layer.
+
+    The cache tracks recency independently for each layer and returns
+    layer-qualified keys ``(layer_id, expert_id)``.
+    """
+
+    def __init__(self, capacity_per_layer: int):
+        if capacity_per_layer < 0:
+            raise ValueError(f"capacity_per_layer must be >= 0; got {capacity_per_layer}")
+        self.capacity_per_layer = capacity_per_layer
+        self._layers: dict[int, OrderedDict[int, None]] = {}
+
+    def observe(self, experts: list[ExpertKey]) -> None:
+        if self.capacity_per_layer == 0:
+            return
+
+        for layer_id, expert_id in sorted(experts):
+            lru = self._layers.setdefault(layer_id, OrderedDict())
+            if expert_id in lru:
+                lru.move_to_end(expert_id)
+            else:
+                lru[expert_id] = None
+            while len(lru) > self.capacity_per_layer:
+                lru.popitem(last=False)
+
+    def cached(self) -> set[ExpertKey]:
+        out: set[ExpertKey] = set()
+        for layer_id, lru in self._layers.items():
+            for expert_id in lru.keys():
+                out.add((layer_id, expert_id))
+        return out
+
+    def cached_for_layer(self, layer_id: int) -> set[int]:
+        lru = self._layers.get(layer_id)
+        return set(lru.keys()) if lru is not None else set()
+
+    def reset(self) -> None:
+        self._layers.clear()

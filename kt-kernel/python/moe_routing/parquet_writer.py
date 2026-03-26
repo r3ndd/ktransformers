@@ -49,22 +49,23 @@ class AsyncParquetWriter:
             writer.close()
 
     def _flush(self, rows: list[RoutingRecord], writer: pq.ParquetWriter | None) -> pq.ParquetWriter:
-        table = pa.Table.from_pylist(
-            [
-                {
-                    "token_id": r.token_id,
-                    "context_id": r.context_id,
-                    "layer_id": r.layer_id,
-                    "token_position": r.token_position,
-                    "expert_ids": r.expert_ids,
-                    "expert_weights": r.expert_weights,
-                    "token_text": r.token_text,
-                    "timestamp": r.timestamp_us,
-                    "token_category": r.token_category,
-                }
-                for r in rows
-            ]
-        )
+        data = {
+            "token_id": pa.array([r.token_id for r in rows], type=pa.int64()),
+            "context_id": pa.array([r.context_id for r in rows], type=pa.string()),
+            "layer_id": pa.array([r.layer_id for r in rows], type=pa.int32()),
+            "token_position": pa.array([r.token_position for r in rows], type=pa.int32()),
+            "expert_ids": pa.array([r.expert_ids for r in rows], type=pa.list_(pa.int32())),
+            "expert_weights": pa.array([r.expert_weights for r in rows], type=pa.list_(pa.float32())),
+            "token_text": pa.array([r.token_text for r in rows], type=pa.string()),
+            "timestamp": pa.array([r.timestamp_us for r in rows], type=pa.int64()),
+            "token_category": pa.array([r.token_category for r in rows], type=pa.string()),
+            "expert_scores_all": pa.array(
+                [r.expert_scores_all for r in rows],
+                type=pa.list_(pa.float16()),
+            ),
+        }
+
+        table = pa.table(data)
         if writer is None:
             writer = pq.ParquetWriter(self.output_path, table.schema, compression="zstd")
         writer.write_table(table)

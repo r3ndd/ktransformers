@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 from collections import Counter
+from collections import deque
 
 import pandas as pd
 
@@ -72,3 +73,74 @@ def previous_token_reuse_curve(traces: pd.DataFrame) -> dict[int, float]:
 
     steps = sorted(by_step_total.keys())
     return {step: (by_step_hits.get(step, 0) / by_step_total[step]) for step in steps if by_step_total[step] > 0}
+
+
+def sliding_window_hit_rate(
+    traces: pd.DataFrame, window_sizes: list[int] | tuple[int, ...] = (4, 8, 16, 32, 64)
+) -> dict[int, float]:
+    """Compute layer-qualified sliding-window hit rates by window size.
+
+    For each context and layer, each token's expert set is compared against the
+    union of experts seen in the previous ``window_size`` tokens in that same
+    context/layer stream. The returned hit rate is:
+
+        total_hits / total_requested
+
+    where hits are experts already present in the history window.
+    """
+    traces = add_absolute_token_position(traces)
+    traces = traces.sort_values(["context_id", "layer_id", "absolute_token_position"]).reset_index(drop=True)
+
+    out: dict[int, float] = {}
+    for window_size in window_sizes:
+        if int(window_size) <= 0:
+            continue
+
+        total_hits = 0
+        total_requested = 0
+
+        for _, g in traces.groupby(["context_id", "layer_id"]):
+            history: deque[set[int]] = deque(maxlen=int(window_size))
+            for ids in g["expert_ids"]:
+                current = set(ids)
+                cached: set[int] = set()
+                for prev in history:
+                    cached.update(prev)
+
+                total_hits += len(current & cached)
+                total_requested += len(current)
+
+                history.append(current)
+
+        out[int(window_size)] = (total_hits / total_requested) if total_requested else 0.0
+
+    return out
+
+
+def context_switch_churn(traces: pd.DataFrame) -> float:
+    """Average per-step expert churn between consecutive tokens.
+
+    Churn at a step is measured per context/layer stream as:
+
+        1 - (|prev ∩ curr| / |curr|)
+
+    This is the fraction of current-token experts that were not present in the
+    immediate previous token.
+    """
+    traces = add_absolute_token_position(traces)
+    traces = traces.sort_values(["context_id", "layer_id", "absolute_token_position"]).reset_index(drop=True)
+
+    churn_sum = 0.0
+    churn_count = 0
+
+    for _, g in traces.groupby(["context_id", "layer_id"]):
+        prev_ids: set[int] | None = None
+        for ids in g["expert_ids"]:
+            current = set(ids)
+            if prev_ids is not None and len(current) > 0:
+                reuse = len(prev_ids & current) / len(current)
+                churn_sum += 1.0 - reuse
+                churn_count += 1
+            prev_ids = current
+
+    return (churn_sum / churn_count) if churn_count else 0.0

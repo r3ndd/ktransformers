@@ -317,6 +317,7 @@ class BaseMoEWrapper(ABC):
         topk_ids: torch.Tensor,
         topk_weights: torch.Tensor,
         cuda_stream,
+        all_expert_scores: Optional[torch.Tensor] = None,
     ):
         """
         Submit forward inference task to CPU (non-blocking).
@@ -341,7 +342,13 @@ class BaseMoEWrapper(ABC):
 
         if trace_hook is not None and not is_capturing:
             try:
-                trace_hook(self.layer_idx, topk_ids.detach().cpu(), topk_weights.detach().cpu())
+                topk_ids_cpu = topk_ids.detach().cpu()
+                topk_weights_cpu = topk_weights.detach().cpu()
+                if all_expert_scores is not None:
+                    all_scores_cpu = all_expert_scores.detach().to(device="cpu", dtype=torch.float16)
+                    trace_hook(self.layer_idx, topk_ids_cpu, topk_weights_cpu, all_scores_cpu)
+                else:
+                    trace_hook(self.layer_idx, topk_ids_cpu, topk_weights_cpu)
             except Exception:
                 # Never break inference for telemetry
                 pass
@@ -511,14 +518,14 @@ class BaseMoEWrapper(ABC):
         KExpertsCPUBuffer.temp_bs = 0
         KExpertsCPUBuffer.temp_buffer = tuple()
 
-    _trace_hook: Callable[[int, torch.Tensor, torch.Tensor], None] | None = None
+    _trace_hook: Callable[..., None] | None = None
 
     @staticmethod
-    def set_trace_hook(hook: Callable[[int, torch.Tensor, torch.Tensor], None] | None) -> None:
+    def set_trace_hook(hook: Callable[..., None] | None) -> None:
         BaseMoEWrapper._trace_hook = hook
 
     @staticmethod
-    def get_trace_hook() -> Callable[[int, torch.Tensor, torch.Tensor], None] | None:
+    def get_trace_hook() -> Callable[..., None] | None:
         return BaseMoEWrapper._trace_hook
 
     @staticmethod
@@ -553,13 +560,19 @@ class BaseMoEWrapper(ABC):
             prompt_id = os.getenv("KT_MOE_ROUTING_PROMPT_ID") or os.getenv("KT_MOE_ROUTING_CONTEXT_ID") or "session"
             context_id = os.getenv("KT_MOE_ROUTING_CONTEXT_ID") or prompt_id
             token_category = os.getenv("KT_MOE_ROUTING_TOKEN_CATEGORY", "assistant")
+            record_all_scores = os.getenv("KT_MOE_ROUTING_RECORD_ALL_EXPERT_SCORES", "").lower() in {
+                "1",
+                "true",
+                "yes",
+                "on",
+            }
             trace_file_env = os.getenv("KT_MOE_ROUTING_TRACE_FILE")
             trace_output_path = Path(trace_file_env) if trace_file_env else None
 
             collector = RoutingTraceCollector(output_dir=output_dir, prompt_id=prompt_id, token_category=token_category)
             collector.start(context_id=context_id, output_path=trace_output_path)
 
-            def hook(layer_id, topk_ids, topk_weights):
+            def hook(layer_id, topk_ids, topk_weights, all_expert_scores=None):
                 _env_trace_logger.debug("Hook invoked for layer %s", layer_id)
                 if not BaseMoEWrapper._env_trace_first_record_logged:
                     _env_trace_logger.info(
@@ -568,12 +581,16 @@ class BaseMoEWrapper(ABC):
                         topk_ids.shape[-1] if len(topk_ids.shape) >= 2 else "unknown",
                     )
                     BaseMoEWrapper._env_trace_first_record_logged = True
+                per_token_scores = None
+                if record_all_scores and all_expert_scores is not None:
+                    per_token_scores = all_expert_scores
                 for pos in range(topk_ids.shape[0]):
                     collector.record(
                         layer_id=layer_id,
                         token_position=pos,
                         expert_ids=topk_ids[pos].tolist(),
                         expert_weights=topk_weights[pos].tolist(),
+                        expert_scores_all=(per_token_scores[pos].tolist() if per_token_scores is not None else None),
                     )
 
             BaseMoEWrapper._env_trace_collector = collector

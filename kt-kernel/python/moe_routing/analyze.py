@@ -7,7 +7,13 @@ from pathlib import Path
 
 import pandas as pd
 
-from .metrics import expert_entropy_by_layer, previous_token_reuse_curve, temporal_reuse_curve
+from .metrics import (
+    context_switch_churn,
+    expert_entropy_by_layer,
+    previous_token_reuse_curve,
+    sliding_window_hit_rate,
+    temporal_reuse_curve,
+)
 from .token_indexing import add_absolute_token_position
 
 
@@ -43,7 +49,9 @@ def run_analysis(trace_file: Path, output_dir: Path) -> None:
 
     context_payloads: list[dict] = []
     context_reuse_curves: list[dict[int, float]] = []
+    context_sliding_window_maps: list[dict[int, float]] = []
     context_entropy_maps: list[dict[int, float]] = []
+    context_churn_values: list[float] = []
     context_token_counts: dict[str, int] = {}
 
     for context_id, g in traces.groupby("context_id", sort=False):
@@ -52,10 +60,14 @@ def run_analysis(trace_file: Path, output_dir: Path) -> None:
 
         reuse = temporal_reuse_curve(g, max_distance=max_distance)
         prev_reuse = previous_token_reuse_curve(g)
+        sliding_hits = sliding_window_hit_rate(g)
         entropy = expert_entropy_by_layer(g)
+        churn = context_switch_churn(g)
 
         context_reuse_curves.append(reuse)
+        context_sliding_window_maps.append(sliding_hits)
         context_entropy_maps.append(entropy)
+        context_churn_values.append(churn)
         context_token_counts[str(context_id)] = token_count
 
         payload = {
@@ -63,7 +75,9 @@ def run_analysis(trace_file: Path, output_dir: Path) -> None:
             "token_count": token_count,
             "temporal_reuse_curve": reuse,
             "previous_token_reuse_curve": prev_reuse,
+            "sliding_window_hit_rate": sliding_hits,
             "expert_entropy_by_layer": entropy,
+            "context_switch_churn": churn,
         }
         context_payloads.append(payload)
 
@@ -77,27 +91,37 @@ def run_analysis(trace_file: Path, output_dir: Path) -> None:
 
     aligned_reuse_curves: list[dict[int, float]] = []
     aligned_prev_reuse_curves: list[dict[int, float]] = []
+    aligned_sliding_window_maps: list[dict[int, float]] = []
     aligned_entropy_maps: list[dict[int, float]] = []
+    aligned_churn_values: list[float] = []
     if min_tokens > 0:
         for context_id, g in traces.groupby("context_id", sort=False):
             aligned = g[g["absolute_token_position"] < min_tokens]
             aligned_reuse = temporal_reuse_curve(aligned, max_distance=min(64, max(0, min_tokens - 1)))
             aligned_prev_reuse = previous_token_reuse_curve(aligned)
+            aligned_sliding_hits = sliding_window_hit_rate(aligned)
             aligned_entropy = expert_entropy_by_layer(aligned)
+            aligned_churn = context_switch_churn(aligned)
             aligned_reuse_curves.append(aligned_reuse)
             aligned_prev_reuse_curves.append(aligned_prev_reuse)
+            aligned_sliding_window_maps.append(aligned_sliding_hits)
             aligned_entropy_maps.append(aligned_entropy)
+            aligned_churn_values.append(aligned_churn)
 
     reuse = _average_numeric_dicts(aligned_reuse_curves)
     prev_reuse = _average_numeric_dicts(aligned_prev_reuse_curves)
+    sliding_hits = _average_numeric_dicts(aligned_sliding_window_maps)
     entropy = _average_numeric_dicts(aligned_entropy_maps)
+    churn = (float(sum(aligned_churn_values) / len(aligned_churn_values))) if aligned_churn_values else 0.0
 
     (output_dir / "metrics.json").write_text(
         json.dumps(
             {
                 "temporal_reuse_curve": reuse,
                 "previous_token_reuse_curve": prev_reuse,
+                "sliding_window_hit_rate": sliding_hits,
                 "expert_entropy_by_layer": entropy,
+                "context_switch_churn": churn,
                 "context_count": len(context_token_counts),
                 "aligned_token_count": min_tokens,
                 "averaging_note": "Overall metrics average per-context metrics over the first N tokens, where N is the minimum token count across contexts.",

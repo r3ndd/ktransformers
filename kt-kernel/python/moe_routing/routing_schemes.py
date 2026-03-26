@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from collections import Counter, defaultdict, deque
+from collections import defaultdict, deque
 
 
 class BaseRoutingScheme:
-    def get_pool(self, layer_id: int) -> set[int]:
+    def smooth_scores(self, layer_id: int, current_scores: list[float]) -> list[float]:
         raise NotImplementedError
 
-    def observe(self, layer_id: int, routed_experts: list[int]) -> None:
+    def observe(self, layer_id: int, current_scores: list[float]) -> None:
         raise NotImplementedError
 
     def end_token(self) -> None:
@@ -17,58 +17,41 @@ class BaseRoutingScheme:
         raise NotImplementedError
 
 
-class SlidingWindowAdaptivePoolRouting(BaseRoutingScheme):
-    """Per-layer sliding-window adaptive expert pool.
+class SlidingWindowScoreAveragingRouting(BaseRoutingScheme):
+    """Per-layer sliding-window score smoothing.
 
-    The active pool for a layer is the top ``pool_size_per_layer`` experts by
-    frequency over the previous ``window_size`` tokens.
+    For each token/layer, smoothed scores are the mean of previous ``window_size-1``
+    full score vectors and the current score vector. ``window_size=1`` is the
+    baseline-equivalent (no smoothing) case.
     """
 
-    def __init__(self, window_size: int, pool_size_per_layer: int, update_interval_tokens: int = 1):
+    def __init__(self, window_size: int):
         if window_size <= 0:
             raise ValueError(f"window_size must be > 0; got {window_size}")
-        if pool_size_per_layer < 0:
-            raise ValueError(f"pool_size_per_layer must be >= 0; got {pool_size_per_layer}")
-        if update_interval_tokens <= 0:
-            raise ValueError(f"update_interval_tokens must be > 0; got {update_interval_tokens}")
-
         self.window_size = window_size
-        self.pool_size_per_layer = pool_size_per_layer
-        self.update_interval_tokens = update_interval_tokens
+        self._history: dict[int, deque[list[float]]] = defaultdict(lambda: deque(maxlen=self.window_size - 1))
 
-        self._histories: dict[int, deque[set[int]]] = defaultdict(lambda: deque(maxlen=self.window_size))
-        self._pools: dict[int, set[int]] = defaultdict(set)
-        self._token_counter = 0
+    def smooth_scores(self, layer_id: int, current_scores: list[float]) -> list[float]:
+        prev = self._history[layer_id]
+        if not prev:
+            return list(current_scores)
 
-    def get_pool(self, layer_id: int) -> set[int]:
-        return set(self._pools.get(layer_id, set()))
+        n = len(current_scores)
+        denom = float(len(prev) + 1)
+        out = [0.0] * n
 
-    def observe(self, layer_id: int, routed_experts: list[int]) -> None:
-        self._histories[layer_id].append(set(routed_experts))
+        for i in range(n):
+            s = current_scores[i]
+            for vec in prev:
+                s += vec[i]
+            out[i] = s / denom
+        return out
 
-    def _recompute_pools(self) -> None:
-        if self.pool_size_per_layer == 0:
-            self._pools = defaultdict(set)
-            return
-
-        out: dict[int, set[int]] = {}
-        for layer_id, history in self._histories.items():
-            freq: Counter[int] = Counter()
-            for token_experts in history:
-                for expert_id in token_experts:
-                    freq[expert_id] += 1
-
-            ordered = sorted(freq.items(), key=lambda x: (-x[1], x[0]))
-            out[layer_id] = {expert_id for expert_id, _ in ordered[: self.pool_size_per_layer]}
-
-        self._pools = defaultdict(set, out)
+    def observe(self, layer_id: int, current_scores: list[float]) -> None:
+        self._history[layer_id].append(list(current_scores))
 
     def end_token(self) -> None:
-        self._token_counter += 1
-        if self._token_counter % self.update_interval_tokens == 0:
-            self._recompute_pools()
+        return
 
     def reset(self) -> None:
-        self._histories.clear()
-        self._pools.clear()
-        self._token_counter = 0
+        self._history.clear()
