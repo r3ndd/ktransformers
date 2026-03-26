@@ -174,6 +174,28 @@ def test_token_grouping_merges_layers_for_same_token_key():
     assert res["avg_misses_per_token"] == 2.0
 
 
+def test_token_grouping_does_not_merge_same_batch_local_position_across_microbatches():
+    # Two microbatches, each with one token at position 0 across two layers.
+    # token_position repeats but should map to distinct absolute token positions.
+    df = pd.DataFrame(
+        {
+            "token_id": [0, 1, 2, 3],
+            "context_id": [0, 0, 0, 0],
+            "token_position": [0, 0, 0, 0],
+            "layer_id": [0, 1, 0, 1],
+            "expert_ids": [[1], [2], [1], [3]],
+            "expert_weights": [[1], [1], [1], [1]],
+        }
+    )
+
+    # Token 0 (abs=0): miss 2 experts
+    # Token 1 (abs=1): hit (0,1), miss (1,3) => miss 1
+    res = simulate_policy(df, SlidingWindowPolicy(capacity=2, window_size=1), alpha=0.5)
+
+    assert res["token_count"] == 2.0
+    assert res["simulated_ssd_fetches"] == 3.0
+
+
 def test_partial_hit_rate_is_average_of_per_token_partials():
     df = pd.DataFrame(
         {

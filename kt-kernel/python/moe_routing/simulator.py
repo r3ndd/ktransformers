@@ -4,8 +4,10 @@ import pandas as pd
 
 try:
     from .cache_policies import BasePolicy
+    from .token_indexing import add_absolute_token_position
 except ImportError:
     from cache_policies import BasePolicy
+    from token_indexing import add_absolute_token_position
 
 
 def estimate_quality_proxy(partial_hit_rate: float, alpha: float) -> float:
@@ -19,11 +21,13 @@ def _build_token_needed_experts(traces: pd.DataFrame) -> list[set[tuple[int, int
     if missing:
         raise ValueError(f"simulate_policy requires columns {sorted(required_columns)}; missing {missing}")
 
+    traces = add_absolute_token_position(traces)
+
     token_groups: dict[tuple[int, int], set[tuple[int, int]]] = {}
-    for context_id, token_position, layer_id, expert_ids in traces[
-        ["context_id", "token_position", "layer_id", "expert_ids"]
+    for context_id, absolute_token_position, layer_id, expert_ids in traces[
+        ["context_id", "absolute_token_position", "layer_id", "expert_ids"]
     ].itertuples(index=False, name=None):
-        token_key = (context_id, token_position)
+        token_key = (context_id, absolute_token_position)
 
         needed = token_groups.setdefault(token_key, set())
         for expert_id in expert_ids:
