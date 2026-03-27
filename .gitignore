@@ -34,3 +34,4 @@ sched/
 .codanna*
 .fastembed_cache
 models/*
+*.parquet

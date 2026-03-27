@@ -4,13 +4,13 @@
   "context_id": "ctx_edge_002",
   "prompt_text": "Hi",
   "generated_text": "Hello! How can I help you today?",
-  "timestamp": 1774417130.0607755,
+  "timestamp": 1774549471.610896,
   "trace_file": "/root/ktransformers/data/traces/edge_002_session.parquet",
   "server_log": "/root/ktransformers/data/traces/collection_server_edge_002.log",
   "raw_response": {
-    "id": "collect_edge_002_23de6119837b",
+    "id": "collect_edge_002_fc41eca90687",
     "object": "chat.completion",
-    "created": 1774417130,
+    "created": 1774549471,
     "model": "Qwen3.5-35B-A3B",
     "choices": [
       {
