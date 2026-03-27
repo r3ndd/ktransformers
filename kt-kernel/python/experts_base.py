@@ -10,12 +10,19 @@ This module contains base classes and utilities shared across all backend implem
 from __future__ import annotations
 
 import torch
-from typing import Dict, List, Optional, Tuple
+from typing import Callable, Dict, List, Optional, Tuple
 from abc import ABC, abstractmethod
 import os
 import ctypes
+import atexit
+import signal
+from pathlib import Path
+import logging
 
 from kt_kernel import kt_kernel_ext
+
+# Lightweight logger for env trace debugging
+_env_trace_logger = logging.getLogger("kt_kernel.env_trace")
 
 
 def generate_gpu_experts_masks(
@@ -148,6 +155,14 @@ class BaseMoEWrapper(ABC):
 
     _cpu_infer_instance = None
     _layer_has_pending_deferred: Dict[int, bool] = {}
+    _env_trace_initialized: bool = False
+    _env_trace_collector = None
+    _env_trace_signal_handlers_installed: bool = False
+    _env_trace_first_record_logged: bool = False
+
+    @staticmethod
+    def _force_cpu_sync_mode() -> bool:
+        return os.getenv("KT_FORCE_CPU_SYNC", "").lower() in {"1", "true", "yes", "on"}
 
     def __init__(
         self,
@@ -302,6 +317,7 @@ class BaseMoEWrapper(ABC):
         topk_ids: torch.Tensor,
         topk_weights: torch.Tensor,
         cuda_stream,
+        all_expert_scores: Optional[torch.Tensor] = None,
     ):
         """
         Submit forward inference task to CPU (non-blocking).
@@ -312,6 +328,30 @@ class BaseMoEWrapper(ABC):
             topk_weights: Top-k expert weights [batch_size, num_experts_per_tok]
             cuda_stream: CUDA stream for synchronization
         """
+        self._ensure_env_trace_hook()
+        trace_hook = BaseMoEWrapper._trace_hook
+        # Avoid CPU-side telemetry work during CUDA graph capture.
+        # Captured regions must remain capture-safe and deterministic.
+        is_capturing = False
+        try:
+            if topk_ids.is_cuda:
+                is_capturing = torch.cuda.is_current_stream_capturing()
+        except Exception:
+            # Best effort only; never let telemetry checks affect inference.
+            is_capturing = False
+
+        if trace_hook is not None and not is_capturing:
+            try:
+                topk_ids_cpu = topk_ids.detach().cpu()
+                topk_weights_cpu = topk_weights.detach().cpu()
+                if all_expert_scores is not None:
+                    all_scores_cpu = all_expert_scores.detach().to(device="cpu", dtype=torch.float16)
+                    trace_hook(self.layer_idx, topk_ids_cpu, topk_weights_cpu, all_scores_cpu)
+                else:
+                    trace_hook(self.layer_idx, topk_ids_cpu, topk_weights_cpu)
+            except Exception:
+                # Never break inference for telemetry
+                pass
         flat_hidden_states = hidden_states.view(-1, hidden_states.shape[-1])
         batch_size = flat_hidden_states.shape[0]
 
@@ -341,39 +381,49 @@ class BaseMoEWrapper(ABC):
             immediate_ids = topk_ids_long
             deferred_ids = None
 
-        input_tensor_cpu[current_slot].copy_(flat_hidden_states, non_blocking=True)
-        weights_cpu[current_slot].copy_(topk_weights, non_blocking=True)
-        immediate_experts_ids_cpu[current_slot].copy_(immediate_ids, non_blocking=True)
+        force_sync = BaseMoEWrapper._force_cpu_sync_mode()
+        input_tensor_cpu[current_slot].copy_(flat_hidden_states, non_blocking=not force_sync)
+        weights_cpu[current_slot].copy_(topk_weights, non_blocking=not force_sync)
+        immediate_experts_ids_cpu[current_slot].copy_(immediate_ids, non_blocking=not force_sync)
+        if force_sync and topk_ids.is_cuda:
+            torch.cuda.current_stream().synchronize()
 
         incremental = BaseMoEWrapper._layer_has_pending_deferred.get(self.layer_idx - 1, False)
-        self.cpu_infer.submit_with_cuda_stream(
-            cuda_stream,
-            self.moe.forward_task(
-                bsz_slot_tensor.data_ptr(),
-                immediate_experts_ids_cpu[current_slot].size(-1),
-                immediate_experts_ids_cpu[current_slot].data_ptr(),
-                weights_cpu[current_slot].data_ptr(),
-                input_tensor_cpu[current_slot].data_ptr(),
-                output_cpu[current_slot].data_ptr(),
-                incremental,
-            ),
+        assert self.moe is not None
+        task = self.moe.forward_task(
+            bsz_slot_tensor.data_ptr(),
+            immediate_experts_ids_cpu[current_slot].size(-1),
+            immediate_experts_ids_cpu[current_slot].data_ptr(),
+            weights_cpu[current_slot].data_ptr(),
+            input_tensor_cpu[current_slot].data_ptr(),
+            output_cpu[current_slot].data_ptr(),
+            incremental,
         )
+        if (not force_sync) and hasattr(self.cpu_infer, "submit_with_cuda_stream"):
+            self.cpu_infer.submit_with_cuda_stream(cuda_stream, task)
+        else:
+            # Backward compatibility for kt-kernel builds exposing submit()/sync()
+            self.cpu_infer.submit(task)
 
         BaseMoEWrapper._layer_has_pending_deferred[self.layer_idx] = False
         if deferred_ids is not None:
-            deferred_experts_ids_cpu[current_slot].copy_(deferred_ids, non_blocking=True)
-            self.cpu_infer.submit_with_cuda_stream(
-                cuda_stream,
-                self.moe.forward_task(
-                    bsz_slot_tensor.data_ptr(),
-                    deferred_experts_ids_cpu[current_slot].size(-1),
-                    deferred_experts_ids_cpu[current_slot].data_ptr(),
-                    weights_cpu[current_slot].data_ptr(),
-                    input_tensor_cpu[current_slot].data_ptr(),
-                    output_cpu[next_slot].data_ptr(),
-                    False,
-                ),
+            deferred_experts_ids_cpu[current_slot].copy_(deferred_ids, non_blocking=not force_sync)
+            if force_sync and deferred_ids.is_cuda:
+                torch.cuda.current_stream().synchronize()
+            assert self.moe is not None
+            deferred_task = self.moe.forward_task(
+                bsz_slot_tensor.data_ptr(),
+                deferred_experts_ids_cpu[current_slot].size(-1),
+                deferred_experts_ids_cpu[current_slot].data_ptr(),
+                weights_cpu[current_slot].data_ptr(),
+                input_tensor_cpu[current_slot].data_ptr(),
+                output_cpu[next_slot].data_ptr(),
+                False,
             )
+            if (not force_sync) and hasattr(self.cpu_infer, "submit_with_cuda_stream"):
+                self.cpu_infer.submit_with_cuda_stream(cuda_stream, deferred_task)
+            else:
+                self.cpu_infer.submit(deferred_task)
             BaseMoEWrapper._layer_has_pending_deferred[self.layer_idx] = True
 
     def sync_forward(self, hidden_states: torch.Tensor, cuda_stream) -> torch.Tensor:
@@ -400,7 +450,11 @@ class BaseMoEWrapper(ABC):
 
         current_slot = self.layer_idx % KExpertsCPUBuffer.buffer_depth
         allow_pending = 1 if BaseMoEWrapper._layer_has_pending_deferred.get(self.layer_idx, False) else 0
-        self.cpu_infer.sync_with_cuda_stream(cuda_stream, allow_pending)
+        force_sync = BaseMoEWrapper._force_cpu_sync_mode()
+        if (not force_sync) and hasattr(self.cpu_infer, "sync_with_cuda_stream"):
+            self.cpu_infer.sync_with_cuda_stream(cuda_stream, allow_pending)
+        else:
+            self.cpu_infer.sync()
         output_gpu[current_slot].copy_(output_cpu[current_slot], non_blocking=True)
         return output_gpu[current_slot]
 
@@ -463,3 +517,114 @@ class BaseMoEWrapper(ABC):
         KExpertsCPUBuffer.capture_buffers.clear()
         KExpertsCPUBuffer.temp_bs = 0
         KExpertsCPUBuffer.temp_buffer = tuple()
+
+    _trace_hook: Callable[..., None] | None = None
+
+    @staticmethod
+    def set_trace_hook(hook: Callable[..., None] | None) -> None:
+        BaseMoEWrapper._trace_hook = hook
+
+    @staticmethod
+    def get_trace_hook() -> Callable[..., None] | None:
+        return BaseMoEWrapper._trace_hook
+
+    @staticmethod
+    def _ensure_env_trace_hook() -> None:
+        if BaseMoEWrapper._env_trace_initialized:
+            return
+
+        if BaseMoEWrapper._trace_hook is not None:
+            # External hook already set; mark initialized and skip env setup
+            BaseMoEWrapper._env_trace_initialized = True
+            _env_trace_logger.debug("Env trace hook already set externally, skipping env setup")
+            return
+
+        if os.getenv("KT_MOE_ROUTING_RECORD", "").lower() not in {"1", "true", "yes", "on"}:
+            # No env request; mark initialized to avoid re-checking
+            BaseMoEWrapper._env_trace_initialized = True
+            _env_trace_logger.debug("KT_MOE_ROUTING_RECORD not enabled, skipping env trace setup")
+            return
+
+        trace_dir = os.getenv("KT_MOE_ROUTING_TRACE_DIR")
+        if not trace_dir:
+            # Missing required config; mark initialized to avoid re-checking
+            BaseMoEWrapper._env_trace_initialized = True
+            _env_trace_logger.debug("KT_MOE_ROUTING_TRACE_DIR not set, skipping env trace setup")
+            return
+
+        try:
+            from kt_kernel.moe_routing.trace_collector import RoutingTraceCollector
+
+            output_dir = Path(trace_dir)
+            output_dir.mkdir(parents=True, exist_ok=True)
+            prompt_id = os.getenv("KT_MOE_ROUTING_PROMPT_ID") or os.getenv("KT_MOE_ROUTING_CONTEXT_ID") or "session"
+            context_id = os.getenv("KT_MOE_ROUTING_CONTEXT_ID") or prompt_id
+            token_category = os.getenv("KT_MOE_ROUTING_TOKEN_CATEGORY", "assistant")
+            record_all_scores = os.getenv("KT_MOE_ROUTING_RECORD_ALL_EXPERT_SCORES", "").lower() in {
+                "1",
+                "true",
+                "yes",
+                "on",
+            }
+            trace_file_env = os.getenv("KT_MOE_ROUTING_TRACE_FILE")
+            trace_output_path = Path(trace_file_env) if trace_file_env else None
+
+            collector = RoutingTraceCollector(output_dir=output_dir, prompt_id=prompt_id, token_category=token_category)
+            collector.start(context_id=context_id, output_path=trace_output_path)
+
+            def hook(layer_id, topk_ids, topk_weights, all_expert_scores=None):
+                _env_trace_logger.debug("Hook invoked for layer %s", layer_id)
+                if not BaseMoEWrapper._env_trace_first_record_logged:
+                    _env_trace_logger.info(
+                        "MoE routing trace hook active (layer=%s, topk=%s)",
+                        layer_id,
+                        topk_ids.shape[-1] if len(topk_ids.shape) >= 2 else "unknown",
+                    )
+                    BaseMoEWrapper._env_trace_first_record_logged = True
+                per_token_scores = None
+                if record_all_scores and all_expert_scores is not None:
+                    per_token_scores = all_expert_scores
+                for pos in range(topk_ids.shape[0]):
+                    collector.record(
+                        layer_id=layer_id,
+                        token_position=pos,
+                        expert_ids=topk_ids[pos].tolist(),
+                        expert_weights=topk_weights[pos].tolist(),
+                        expert_scores_all=(per_token_scores[pos].tolist() if per_token_scores is not None else None),
+                    )
+
+            BaseMoEWrapper._env_trace_collector = collector
+            BaseMoEWrapper.set_trace_hook(hook)
+
+            def _shutdown_trace_collector():
+                c = BaseMoEWrapper._env_trace_collector
+                if c is not None:
+                    c.stop()
+
+            atexit.register(_shutdown_trace_collector)
+
+            if not BaseMoEWrapper._env_trace_signal_handlers_installed:
+
+                def _handle_trace_shutdown(signum, _frame):
+                    _shutdown_trace_collector()
+                    raise SystemExit(0)
+
+                signal.signal(signal.SIGINT, _handle_trace_shutdown)
+                signal.signal(signal.SIGTERM, _handle_trace_shutdown)
+                BaseMoEWrapper._env_trace_signal_handlers_installed = True
+            # Mark initialized ONLY after successful setup
+            BaseMoEWrapper._env_trace_initialized = True
+            BaseMoEWrapper._env_trace_first_record_logged = False
+            _env_trace_logger.info(
+                "MoE routing trace collector initialized (trace_file=%s, prompt_id=%s, context_id=%s)",
+                str(trace_output_path) if trace_output_path else "<auto>",
+                prompt_id,
+                context_id,
+            )
+            _env_trace_logger.debug("Env trace hook initialized successfully (dir=%s)", trace_dir)
+        except Exception as e:
+            # Never break inference for telemetry setup errors
+            # Mark initialized to avoid repeated failed attempts
+            BaseMoEWrapper._env_trace_initialized = True
+            _env_trace_logger.debug("Env trace hook init failed: %s", e)
+            pass

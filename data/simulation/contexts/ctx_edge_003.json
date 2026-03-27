@@ -1,0 +1,335 @@
+{
+  "context_id": "ctx_edge_003",
+  "runs": [
+    {
+      "scheme": "sliding_window_score_averaging",
+      "window_size": 1,
+      "hit_rate": 0.6280133928571429,
+      "ssd_fetches_per_token": 119.03571428571429,
+      "baseline_overlap": 1.0,
+      "quality_degradation": 1.0,
+      "speedup_ratio": 1.0,
+      "quality_speed_score": 1.0,
+      "token_count": 112.0,
+      "experts_per_token": 8.0,
+      "baseline_ssd_fetches_per_token": 119.03571428571429
+    },
+    {
+      "scheme": "sliding_window_score_averaging",
+      "window_size": 4,
+      "hit_rate": 0.8415457589285714,
+      "ssd_fetches_per_token": 50.705357142857146,
+      "baseline_overlap": 0.5132533482142857,
+      "quality_degradation": 0.7369342889334034,
+      "speedup_ratio": 1.5821690290843622,
+      "quality_speed_score": 1.1659546084207377,
+      "token_count": 112.0,
+      "experts_per_token": 8.0,
+      "baseline_ssd_fetches_per_token": 119.03571428571429
+    },
+    {
+      "scheme": "sliding_window_score_averaging",
+      "window_size": 16,
+      "hit_rate": 0.9406529017857143,
+      "ssd_fetches_per_token": 18.991071428571427,
+      "baseline_overlap": 0.34813058035714284,
+      "quality_degradation": 0.5820768771146358,
+      "speedup_ratio": 2.167958027865606,
+      "quality_speed_score": 1.2619182385756165,
+      "token_count": 112.0,
+      "experts_per_token": 8.0,
+      "baseline_ssd_fetches_per_token": 119.03571428571429
+    },
+    {
+      "scheme": "sliding_window_score_averaging",
+      "window_size": 64,
+      "hit_rate": 0.9621651785714286,
+      "ssd_fetches_per_token": 12.107142857142858,
+      "baseline_overlap": 0.24732142857142858,
+      "quality_degradation": 0.48627334404703415,
+      "speedup_ratio": 2.3574127247997585,
+      "quality_speed_score": 1.1463469689874093,
+      "token_count": 112.0,
+      "experts_per_token": 8.0,
+      "baseline_ssd_fetches_per_token": 119.03571428571429
+    },
+    {
+      "scheme": "ema_score_averaging",
+      "ema_beta": 0.9,
+      "hit_rate": 0.6564732142857143,
+      "ssd_fetches_per_token": 109.92857142857143,
+      "baseline_overlap": 0.9337611607142857,
+      "quality_degradation": 0.996126060622656,
+      "speedup_ratio": 1.05157071592288,
+      "quality_speed_score": 1.0474969947184045,
+      "token_count": 112.0,
+      "experts_per_token": 8.0,
+      "baseline_ssd_fetches_per_token": 119.03571428571429
+    },
+    {
+      "scheme": "ema_score_averaging",
+      "ema_beta": 0.7,
+      "hit_rate": 0.7210379464285714,
+      "ssd_fetches_per_token": 89.26785714285714,
+      "baseline_overlap": 0.8089006696428571,
+      "quality_degradation": 0.9551507384300071,
+      "speedup_ratio": 1.1908997213421386,
+      "quality_speed_score": 1.1374887482360334,
+      "token_count": 112.0,
+      "experts_per_token": 8.0,
+      "baseline_ssd_fetches_per_token": 119.03571428571429
+    },
+    {
+      "scheme": "ema_score_averaging",
+      "ema_beta": 0.5,
+      "hit_rate": 0.7958147321428571,
+      "ssd_fetches_per_token": 65.33928571428571,
+      "baseline_overlap": 0.6817522321428572,
+      "quality_degradation": 0.8754164234893691,
+      "speedup_ratio": 1.4067727826126168,
+      "quality_speed_score": 1.2315119980169247,
+      "token_count": 112.0,
+      "experts_per_token": 8.0,
+      "baseline_ssd_fetches_per_token": 119.03571428571429
+    },
+    {
+      "scheme": "ema_score_averaging",
+      "ema_beta": 0.3,
+      "hit_rate": 0.8725167410714286,
+      "ssd_fetches_per_token": 40.794642857142854,
+      "baseline_overlap": 0.5513950892857142,
+      "quality_degradation": 0.7748432856564016,
+      "speedup_ratio": 1.7280859667100565,
+      "quality_speed_score": 1.3389958083423392,
+      "token_count": 112.0,
+      "experts_per_token": 8.0,
+      "baseline_ssd_fetches_per_token": 119.03571428571429
+    },
+    {
+      "scheme": "ema_score_averaging",
+      "ema_beta": 0.1,
+      "hit_rate": 0.9441964285714286,
+      "ssd_fetches_per_token": 17.857142857142858,
+      "baseline_overlap": 0.3795200892857143,
+      "quality_degradation": 0.6159714448560177,
+      "speedup_ratio": 2.197042253521127,
+      "quality_speed_score": 1.3533152913111297,
+      "token_count": 112.0,
+      "experts_per_token": 8.0,
+      "baseline_ssd_fetches_per_token": 119.03571428571429
+    },
+    {
+      "scheme": "ema_score_averaging",
+      "ema_beta": 0.05,
+      "hit_rate": 0.9607700892857143,
+      "ssd_fetches_per_token": 12.553571428571429,
+      "baseline_overlap": 0.2927455357142857,
+      "quality_degradation": 0.5255130597642517,
+      "speedup_ratio": 2.3441280336614323,
+      "quality_speed_score": 1.231869895448578,
+      "token_count": 112.0,
+      "experts_per_token": 8.0,
+      "baseline_ssd_fetches_per_token": 119.03571428571429
+    },
+    {
+      "scheme": "two_timescale_ema",
+      "mix_lambda": 0.1,
+      "hit_rate": 0.9548270089285714,
+      "ssd_fetches_per_token": 14.455357142857142,
+      "baseline_overlap": 0.3298270089285714,
+      "quality_degradation": 0.5678937047436536,
+      "speedup_ratio": 2.2891734233407934,
+      "quality_speed_score": 1.3000071761817154,
+      "token_count": 112.0,
+      "experts_per_token": 8.0,
+      "baseline_ssd_fetches_per_token": 119.03571428571429
+    },
+    {
+      "scheme": "two_timescale_ema",
+      "mix_lambda": 0.2,
+      "hit_rate": 0.9462053571428571,
+      "ssd_fetches_per_token": 17.214285714285715,
+      "baseline_overlap": 0.3704799107142857,
+      "quality_degradation": 0.6122545315481298,
+      "speedup_ratio": 2.213880215725234,
+      "quality_speed_score": 1.355458194382526,
+      "token_count": 112.0,
+      "experts_per_token": 8.0,
+      "baseline_ssd_fetches_per_token": 119.03571428571429
+    },
+    {
+      "scheme": "two_timescale_ema",
+      "mix_lambda": 0.3,
+      "hit_rate": 0.9354910714285715,
+      "ssd_fetches_per_token": 20.642857142857142,
+      "baseline_overlap": 0.41598772321428573,
+      "quality_degradation": 0.6579741562192729,
+      "speedup_ratio": 2.126943005181347,
+      "quality_speed_score": 1.3994735291606815,
+      "token_count": 112.0,
+      "experts_per_token": 8.0,
+      "baseline_ssd_fetches_per_token": 119.03571428571429
+    },
+    {
+      "scheme": "two_timescale_ema",
+      "mix_lambda": 0.4,
+      "hit_rate": 0.91953125,
+      "ssd_fetches_per_token": 25.75,
+      "baseline_overlap": 0.4616629464285714,
+      "quality_degradation": 0.7017508479116767,
+      "speedup_ratio": 2.009403581089785,
+      "quality_speed_score": 1.4101006668265164,
+      "token_count": 112.0,
+      "experts_per_token": 8.0,
+      "baseline_ssd_fetches_per_token": 119.03571428571429
+    },
+    {
+      "scheme": "two_timescale_softmax",
+      "mix_lambda": 0.2,
+      "rho": 0.25,
+      "hit_rate": 0.9466517857142858,
+      "ssd_fetches_per_token": 17.071428571428573,
+      "baseline_overlap": 0.3918247767857143,
+      "quality_degradation": 0.6274376189047941,
+      "speedup_ratio": 2.217657094114302,
+      "quality_speed_score": 1.3914414866784026,
+      "token_count": 112.0,
+      "experts_per_token": 8.0,
+      "baseline_ssd_fetches_per_token": 119.03571428571429
+    },
+    {
+      "scheme": "two_timescale_softmax",
+      "mix_lambda": 0.2,
+      "rho": 1.0,
+      "hit_rate": 0.9323939732142857,
+      "ssd_fetches_per_token": 21.633928571428573,
+      "baseline_overlap": 0.4499720982142857,
+      "quality_degradation": 0.6838072399061039,
+      "speedup_ratio": 2.1030705450133134,
+      "quality_speed_score": 1.4380948647133796,
+      "token_count": 112.0,
+      "experts_per_token": 8.0,
+      "baseline_ssd_fetches_per_token": 119.03571428571429
+    },
+    {
+      "scheme": "two_timescale_softmax",
+      "mix_lambda": 0.2,
+      "rho": 4.0,
+      "hit_rate": 0.9244698660714286,
+      "ssd_fetches_per_token": 24.169642857142858,
+      "baseline_overlap": 0.42296316964285713,
+      "quality_degradation": 0.6700037682453293,
+      "speedup_ratio": 2.044362897677009,
+      "quality_speed_score": 1.3697308451045367,
+      "token_count": 112.0,
+      "experts_per_token": 8.0,
+      "baseline_ssd_fetches_per_token": 119.03571428571429
+    },
+    {
+      "scheme": "two_timescale_softmax",
+      "mix_lambda": 0.2,
+      "rho": 16.0,
+      "hit_rate": 0.9344308035714286,
+      "ssd_fetches_per_token": 20.982142857142858,
+      "baseline_overlap": 0.35251116071428573,
+      "quality_degradation": 0.594038037265434,
+      "speedup_ratio": 2.118709677419355,
+      "quality_speed_score": 1.2585941383094743,
+      "token_count": 112.0,
+      "experts_per_token": 8.0,
+      "baseline_ssd_fetches_per_token": 119.03571428571429
+    },
+    {
+      "scheme": "two_timescale_softmax",
+      "mix_lambda": 0.2,
+      "rho": 64.0,
+      "hit_rate": 0.9383928571428571,
+      "ssd_fetches_per_token": 19.714285714285715,
+      "baseline_overlap": 0.3374720982142857,
+      "quality_degradation": 0.5756002629770863,
+      "speedup_ratio": 2.1498070562293274,
+      "quality_speed_score": 1.2374295069155967,
+      "token_count": 112.0,
+      "experts_per_token": 8.0,
+      "baseline_ssd_fetches_per_token": 119.03571428571429
+    },
+    {
+      "scheme": "two_timescale_softmax",
+      "mix_lambda": 0.2,
+      "rho": 256.0,
+      "hit_rate": 0.9379185267857143,
+      "ssd_fetches_per_token": 19.866071428571427,
+      "baseline_overlap": 0.32896205357142855,
+      "quality_degradation": 0.5703599383324166,
+      "speedup_ratio": 2.1460361134995702,
+      "quality_speed_score": 1.2240130253547539,
+      "token_count": 112.0,
+      "experts_per_token": 8.0,
+      "baseline_ssd_fetches_per_token": 119.03571428571429
+    },
+    {
+      "scheme": "two_timescale_softmax",
+      "mix_lambda": 0.2,
+      "rho": 1024.0,
+      "hit_rate": 0.9399832589285714,
+      "ssd_fetches_per_token": 19.205357142857142,
+      "baseline_overlap": 0.31328125,
+      "quality_degradation": 0.5609675829509932,
+      "speedup_ratio": 2.1625480885869752,
+      "quality_speed_score": 1.213119374269926,
+      "token_count": 112.0,
+      "experts_per_token": 8.0,
+      "baseline_ssd_fetches_per_token": 119.03571428571429
+    }
+  ],
+  "scheme": "mixed",
+  "token_grouping_key": [
+    "context_id",
+    "absolute_token_position",
+    "layer_id"
+  ],
+  "context_token_count": 112,
+  "scheme_candidates": {
+    "sliding_window_score_averaging": {
+      "window_size": [
+        1,
+        4,
+        16,
+        64
+      ]
+    },
+    "ema_score_averaging": {
+      "ema_beta": [
+        0.9,
+        0.7,
+        0.5,
+        0.3,
+        0.1,
+        0.05
+      ]
+    },
+    "two_timescale_ema": {
+      "mix_lambda": [
+        0.1,
+        0.2,
+        0.3,
+        0.4
+      ]
+    },
+    "two_timescale_softmax": {
+      "mix_lambda": [
+        0.2
+      ],
+      "rho": [
+        0.25,
+        1.0,
+        4.0,
+        16.0,
+        64.0,
+        256.0,
+        1024.0
+      ]
+    }
+  },
+  "metric_note": "hit_rate is percentage of chosen experts already in previous-token fast-memory state"
+}
