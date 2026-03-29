@@ -403,6 +403,18 @@ def _jaccard_similarity(a: str | None, b: str | None) -> float:
     return float(len(sa & sb) / len(sa | sb))
 
 
+def _percentile(sorted_values: list[float], p: float) -> float | None:
+    if not sorted_values:
+        return None
+    if p <= 0:
+        return sorted_values[0]
+    if p >= 100:
+        return sorted_values[-1]
+    idx = int(round((p / 100.0) * (len(sorted_values) - 1)))
+    idx = max(0, min(idx, len(sorted_values) - 1))
+    return sorted_values[idx]
+
+
 def _run_single_request(
     port: int,
     prompt_entry: dict,
@@ -473,6 +485,7 @@ def _run_single_request(
     t_first_token: float | None = None
     t_end: float | None = None
     generated_parts: list[str] = []
+    token_chunk_timestamps: list[float] = []
     finish_reason = None
     usage: dict = {}
     chunk_count = 0
@@ -506,8 +519,10 @@ def _run_single_request(
                 delta = c0.get("delta") or {}
                 delta_text = delta.get("content")
                 if isinstance(delta_text, str) and delta_text:
+                    now = time.perf_counter()
                     if t_first_token is None:
-                        t_first_token = time.perf_counter()
+                        t_first_token = now
+                    token_chunk_timestamps.append(now)
                     generated_parts.append(delta_text)
 
     if t_end is None:
@@ -524,6 +539,14 @@ def _run_single_request(
     prefill_latency_s = (float(t_first_token - t0) if t_first_token is not None else None)
     decode_latency_s = (float(t_end - t_first_token) if t_first_token is not None else None)
     e2e_latency_s = elapsed_s
+
+    itl_ms: list[float] = []
+    for i in range(1, len(token_chunk_timestamps)):
+        itl_ms.append(float((token_chunk_timestamps[i] - token_chunk_timestamps[i - 1]) * 1000.0))
+    itl_sorted = sorted(itl_ms)
+    itl_mean_ms = (float(sum(itl_ms) / len(itl_ms)) if itl_ms else None)
+    itl_p50_ms = _percentile(itl_sorted, 50.0)
+    itl_p95_ms = _percentile(itl_sorted, 95.0)
 
     prefill_toks_per_sec = (
         float(prompt_tokens / prefill_latency_s)
@@ -546,9 +569,14 @@ def _run_single_request(
         "seed": SEED,
         "elapsed_seconds": e2e_latency_s,
         "ttft_seconds": prefill_latency_s,
+        "ttft_ms": (float(prefill_latency_s * 1000.0) if prefill_latency_s is not None else None),
         "prefill_latency_seconds": prefill_latency_s,
         "decode_latency_seconds": decode_latency_s,
         "e2e_latency_seconds": e2e_latency_s,
+        "itl_mean_ms": itl_mean_ms,
+        "itl_p50_ms": itl_p50_ms,
+        "itl_p95_ms": itl_p95_ms,
+        "itl_count": len(itl_ms),
         "decode_tokens_per_second": decode_toks_per_sec,
         "prefill_tokens_per_second": prefill_toks_per_sec,
         "e2e_tokens_per_second": e2e_toks_per_sec,
@@ -654,9 +682,13 @@ def _aggregate_results(results: list[dict], experiments: list[dict]) -> dict:
             "avg_completion_tokens": _avg(ok_rows, "completion_tokens"),
             "avg_elapsed_seconds": _avg(ok_rows, "elapsed_seconds"),
             "avg_ttft_seconds": _avg(ok_rows, "ttft_seconds"),
+            "avg_ttft_ms": _avg(ok_rows, "ttft_ms"),
             "avg_prefill_latency_seconds": _avg(ok_rows, "prefill_latency_seconds"),
             "avg_decode_latency_seconds": _avg(ok_rows, "decode_latency_seconds"),
             "avg_e2e_latency_seconds": _avg(ok_rows, "e2e_latency_seconds"),
+            "avg_itl_mean_ms": _avg(ok_rows, "itl_mean_ms"),
+            "avg_itl_p50_ms": _avg(ok_rows, "itl_p50_ms"),
+            "avg_itl_p95_ms": _avg(ok_rows, "itl_p95_ms"),
             "avg_decode_tokens_per_second": _avg(ok_rows, "decode_tokens_per_second"),
             "avg_prefill_tokens_per_second": _avg(ok_rows, "prefill_tokens_per_second"),
             "avg_e2e_tokens_per_second": _avg(ok_rows, "e2e_tokens_per_second"),
@@ -678,9 +710,13 @@ def _aggregate_results(results: list[dict], experiments: list[dict]) -> dict:
             "quality_jaccard": "token-set Jaccard similarity against baseline text for same prompt_id and seed",
             "quality_degradation": "1.0 - quality_jaccard",
             "ttft_seconds": "time from request send to first streamed content token",
+            "ttft_ms": "ttft_seconds converted to milliseconds",
             "prefill_latency_seconds": "time from request send to first streamed content token",
             "decode_latency_seconds": "time from first streamed content token to end of stream",
             "e2e_latency_seconds": "time from request send to end of stream",
+            "itl_mean_ms": "mean inter-token latency (ms) between streamed content chunks",
+            "itl_p50_ms": "p50 inter-token latency (ms) between streamed content chunks",
+            "itl_p95_ms": "p95 inter-token latency (ms) between streamed content chunks",
             "decode_tokens_per_second": "completion_tokens / decode_latency_seconds",
             "prefill_tokens_per_second": "prompt_tokens / prefill_latency_seconds",
             "e2e_tokens_per_second": "total_tokens / e2e_latency_seconds",
