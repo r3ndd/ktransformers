@@ -8,6 +8,7 @@ real speed + quality-proxy metrics.
 Outputs include:
 - per-run records with generated text
 - per-experiment aggregated metrics
+- streaming-derived split timing/throughput metrics (prefill/decode/e2e)
 - simulation-like tradeoff metrics (`quality_degradation`, `speedup_ratio`,
   `quality_speed_score`) computed from real inference runs.
 """
@@ -457,6 +458,8 @@ def _run_single_request(
         "min_p": MIN_P,
         "presence_penalty": PRESENCE_PENALTY,
         "repetition_penalty": REPETITION_PENALTY,
+        "stream": True,
+        "stream_options": {"include_usage": True},
         "custom_params": custom_params or None,
     }
 
@@ -467,27 +470,72 @@ def _run_single_request(
     )
 
     t0 = time.perf_counter()
-    with urllib.request.urlopen(req, timeout=900) as response:
-        payload = json.loads(response.read().decode("utf-8"))
-    elapsed_s = float(time.perf_counter() - t0)
+    t_first_token: float | None = None
+    t_end: float | None = None
+    generated_parts: list[str] = []
+    finish_reason = None
+    usage: dict = {}
+    chunk_count = 0
+    done_seen = False
 
-    choices = payload.get("choices") or []
-    if not choices:
-        raise RuntimeError(f"No choices returned by server. Payload keys: {list(payload.keys())}")
-    first_choice = choices[0]
-    message = first_choice.get("message") or {}
-    generated_text = message.get("content")
-    finish_reason = first_choice.get("finish_reason")
-    usage = payload.get("usage") or {}
+    with urllib.request.urlopen(req, timeout=900) as response:
+        for raw_line in response:
+            line = raw_line.decode("utf-8", errors="ignore").strip()
+            if not line or not line.startswith("data:"):
+                continue
+            data = line[5:].strip()
+            if not data:
+                continue
+            if data == "[DONE]":
+                done_seen = True
+                t_end = time.perf_counter()
+                break
+
+            chunk_count += 1
+            obj = json.loads(data)
+
+            chunk_usage = obj.get("usage")
+            if isinstance(chunk_usage, dict):
+                usage = chunk_usage
+
+            choices = obj.get("choices") or []
+            if choices:
+                c0 = choices[0]
+                if c0.get("finish_reason") is not None:
+                    finish_reason = c0.get("finish_reason")
+                delta = c0.get("delta") or {}
+                delta_text = delta.get("content")
+                if isinstance(delta_text, str) and delta_text:
+                    if t_first_token is None:
+                        t_first_token = time.perf_counter()
+                    generated_parts.append(delta_text)
+
+    if t_end is None:
+        t_end = time.perf_counter()
+    elapsed_s = float(max(0.0, t_end - t0))
+    generated_text = "".join(generated_parts)
+
+    if not done_seen and not generated_text:
+        raise RuntimeError("Streaming response ended without any generated content")
 
     prompt_tokens = int(usage.get("prompt_tokens") or 0)
     completion_tokens = int(usage.get("completion_tokens") or 0)
     total_tokens = int(usage.get("total_tokens") or (prompt_tokens + completion_tokens))
-    decode_toks_per_sec = (
-        float(completion_tokens / elapsed_s) if elapsed_s > 0 and completion_tokens > 0 else 0.0
+    prefill_latency_s = (float(t_first_token - t0) if t_first_token is not None else None)
+    decode_latency_s = (float(t_end - t_first_token) if t_first_token is not None else None)
+    e2e_latency_s = elapsed_s
+
+    prefill_toks_per_sec = (
+        float(prompt_tokens / prefill_latency_s)
+        if prefill_latency_s is not None and prefill_latency_s > 0 and prompt_tokens > 0
+        else None
     )
-    prefill_toks_per_sec = float(prompt_tokens / elapsed_s) if elapsed_s > 0 and prompt_tokens > 0 else 0.0
-    e2e_toks_per_sec = float(total_tokens / elapsed_s) if elapsed_s > 0 and total_tokens > 0 else 0.0
+    decode_toks_per_sec = (
+        float(completion_tokens / decode_latency_s)
+        if decode_latency_s is not None and decode_latency_s > 0 and completion_tokens > 0
+        else None
+    )
+    e2e_toks_per_sec = float(total_tokens / e2e_latency_s) if e2e_latency_s > 0 and total_tokens > 0 else None
 
     rec = {
         "prompt_id": prompt_id,
@@ -496,7 +544,11 @@ def _run_single_request(
         "moe_routing": experiment.get("moe_routing"),
         "context_id": context_id,
         "seed": SEED,
-        "elapsed_seconds": elapsed_s,
+        "elapsed_seconds": e2e_latency_s,
+        "ttft_seconds": prefill_latency_s,
+        "prefill_latency_seconds": prefill_latency_s,
+        "decode_latency_seconds": decode_latency_s,
+        "e2e_latency_seconds": e2e_latency_s,
         "decode_tokens_per_second": decode_toks_per_sec,
         "prefill_tokens_per_second": prefill_toks_per_sec,
         "e2e_tokens_per_second": e2e_toks_per_sec,
@@ -514,7 +566,12 @@ def _run_single_request(
             {
                 **rec,
                 "prompt_text": prompt_text,
-                "raw_response": payload,
+                "stream_meta": {
+                    "chunks": chunk_count,
+                    "done_seen": done_seen,
+                    "usage": usage,
+                    "finish_reason": finish_reason,
+                },
             },
             indent=2,
             ensure_ascii=False,
@@ -596,6 +653,10 @@ def _aggregate_results(results: list[dict], experiments: list[dict]) -> dict:
             "avg_prompt_tokens": _avg(ok_rows, "prompt_tokens"),
             "avg_completion_tokens": _avg(ok_rows, "completion_tokens"),
             "avg_elapsed_seconds": _avg(ok_rows, "elapsed_seconds"),
+            "avg_ttft_seconds": _avg(ok_rows, "ttft_seconds"),
+            "avg_prefill_latency_seconds": _avg(ok_rows, "prefill_latency_seconds"),
+            "avg_decode_latency_seconds": _avg(ok_rows, "decode_latency_seconds"),
+            "avg_e2e_latency_seconds": _avg(ok_rows, "e2e_latency_seconds"),
             "avg_decode_tokens_per_second": _avg(ok_rows, "decode_tokens_per_second"),
             "avg_prefill_tokens_per_second": _avg(ok_rows, "prefill_tokens_per_second"),
             "avg_e2e_tokens_per_second": _avg(ok_rows, "e2e_tokens_per_second"),
@@ -616,9 +677,13 @@ def _aggregate_results(results: list[dict], experiments: list[dict]) -> dict:
         "metric_note": {
             "quality_jaccard": "token-set Jaccard similarity against baseline text for same prompt_id and seed",
             "quality_degradation": "1.0 - quality_jaccard",
-            "decode_tokens_per_second": "completion_tokens / elapsed_seconds",
-            "prefill_tokens_per_second": "prompt_tokens / elapsed_seconds",
-            "e2e_tokens_per_second": "total_tokens / elapsed_seconds (prefill + decode)",
+            "ttft_seconds": "time from request send to first streamed content token",
+            "prefill_latency_seconds": "time from request send to first streamed content token",
+            "decode_latency_seconds": "time from first streamed content token to end of stream",
+            "e2e_latency_seconds": "time from request send to end of stream",
+            "decode_tokens_per_second": "completion_tokens / decode_latency_seconds",
+            "prefill_tokens_per_second": "prompt_tokens / prefill_latency_seconds",
+            "e2e_tokens_per_second": "total_tokens / e2e_latency_seconds",
             "speedup_ratio": "e2e_tokens_per_second / baseline_e2e_tokens_per_second for same prompt_id",
             "decode_speedup_ratio": "decode_tokens_per_second / baseline_decode_tokens_per_second for same prompt_id",
             "quality_speed_score": "quality_jaccard * speedup_ratio",
