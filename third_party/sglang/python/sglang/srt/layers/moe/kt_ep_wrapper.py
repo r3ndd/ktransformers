@@ -25,8 +25,10 @@ from sglang.srt.distributed import (
     get_tensor_model_parallel_world_size,
     get_tp_group,
 )
+from sglang.srt.layers.moe.expert_tier_cache import ExpertTierResidencyManager
 from sglang.srt.layers.quantization.base_config import FusedMoEMethodBase
 from sglang.srt.layers.quantization.marlin_utils import marlin_permute_scales
+from sglang.srt.server_args import get_global_server_args
 from sglang.srt.utils import get_compiler_backend, is_cuda
 
 if is_cuda():
@@ -2015,6 +2017,7 @@ class KTEPWrapperMethod(FusedMoEMethodBase):
         # Shared staging buffer reference (initialized in create_weights, shared across all layers)
         self._shared_staging_buffer: Optional[SharedStagingBuffer] = None
         self._staging_buffer_max_size: int = kt_config.chunked_prefill_size or 8192
+        self._tier_manager: Optional[ExpertTierResidencyManager] = None
 
     def create_weights(
         self,
@@ -2107,6 +2110,29 @@ class KTEPWrapperMethod(FusedMoEMethodBase):
                 max_deferred_experts_per_token=layer_max_deferred,
             )
 
+        if self._tier_manager is None:
+            sargs = get_global_server_args()
+            mode = getattr(sargs, "kt_expert_cache_mode", "layerwise")
+            gpu_cap = int(getattr(sargs, "kt_expert_gpu_cache_capacity", 0) or 0)
+            cpu_cap = int(getattr(sargs, "kt_expert_cpu_cache_capacity", 0) or 0)
+            self._tier_manager = ExpertTierResidencyManager(
+                num_layers=kt_config.num_layers or (kt_config.layer_idx + 1),
+                num_experts=num_experts,
+                cache_mode=mode,
+                gpu_capacity=gpu_cap,
+                cpu_capacity=cpu_cap,
+            )
+            try:
+                total_gpu_bytes = int(torch.get_device_properties(target_device).total_memory)
+                ExpertTierResidencyManager.validate_budget_or_raise(
+                    gpu_total_bytes=total_gpu_bytes,
+                    core_weights_bytes=int(getattr(sargs, "kt_expert_core_reservation_bytes", 0) or 0),
+                    kv_reservation_bytes=int(getattr(sargs, "kt_expert_kv_reservation_bytes", 0) or 0),
+                )
+            except Exception:
+                if self.tp_rank == 0:
+                    logger.warning("KT expert-tier budget validation failed; continuing with current settings")
+
     def process_weights_after_loading(self, layer: torch.nn.Module) -> None:
         """Process weights after loading from checkpoint.
 
@@ -2193,6 +2219,12 @@ class KTEPWrapperMethod(FusedMoEMethodBase):
         x = dispatch_output.hidden_states
         topk_output = dispatch_output.topk_output
         topk_weights, topk_ids, _ = topk_output
+
+        if self._tier_manager is not None:
+            self._tier_manager.observe_experts(
+                layer_id=self.kt_config.layer_idx,
+                expert_ids=topk_ids.reshape(-1).tolist(),
+            )
         router_logits = getattr(topk_output, "router_logits", None)
 
         # Submit forward task to CPU (non-blocking)
@@ -2245,6 +2277,12 @@ class KTEPWrapperMethod(FusedMoEMethodBase):
 
         topk_output = dispatch_output.topk_output
         topk_weights, topk_ids, _ = topk_output
+
+        if self._tier_manager is not None:
+            self._tier_manager.observe_experts(
+                layer_id=self.kt_config.layer_idx,
+                expert_ids=topk_ids.reshape(-1).tolist(),
+            )
         router_logits = getattr(topk_output, "router_logits", None)
 
         # Submit forward task using staged buffer

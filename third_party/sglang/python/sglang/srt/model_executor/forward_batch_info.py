@@ -32,7 +32,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import IntEnum, auto
 from functools import total_ordering
-from typing import TYPE_CHECKING, Dict, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 
 import torch
 import triton
@@ -55,6 +55,7 @@ from sglang.srt.layers.dp_attention import (
 from sglang.srt.model_executor.forward_batch_deepseek_mha_mixin import (
     ForwardBatchDeepSeekMHAMixin,
 )
+from sglang.srt.managers.moe_routing_config import MoeRoutingConfig
 from sglang.srt.server_args import get_global_server_args
 from sglang.srt.utils import get_compiler_backend, is_hip, is_npu, support_triton
 from sglang.srt.utils.common import ceil_align
@@ -316,6 +317,7 @@ class ForwardBatch(ForwardBatchDeepSeekMHAMixin):
 
     # Sampling info
     sampling_info: SamplingBatchInfo = None
+    request_custom_params: Optional[List[Optional[Dict[str, Any]]]] = None
 
     # Attention backend
     req_to_token_pool: ReqToTokenPool = None
@@ -376,6 +378,9 @@ class ForwardBatch(ForwardBatchDeepSeekMHAMixin):
     # For dumper: request IDs for cross-step sequence tracking
     rids: Optional[List[str]] = None
 
+    # Normalized per-request MoE routing config list (aligned with batch order)
+    moe_routing_configs: Optional[List[Optional[MoeRoutingConfig]]] = None
+
     @classmethod
     def init_new(
         cls,
@@ -409,6 +414,7 @@ class ForwardBatch(ForwardBatchDeepSeekMHAMixin):
             is_prefill_only=batch.is_prefill_only,
             lora_ids=batch.lora_ids,
             sampling_info=batch.sampling_info,
+            request_custom_params=batch.request_custom_params,
             req_to_token_pool=model_runner.req_to_token_pool,
             token_to_kv_pool=model_runner.token_to_kv_pool,
             attn_backend=model_runner.attn_backend,
@@ -421,6 +427,7 @@ class ForwardBatch(ForwardBatchDeepSeekMHAMixin):
             dimensions=batch.dimensions,
             return_hidden_states_before_norm=batch.return_hidden_states_before_norm,
             rids=[req.rid for req in batch.reqs],
+            moe_routing_configs=batch.moe_routing_configs,
         )
         device = model_runner.device
 

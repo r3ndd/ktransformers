@@ -7,6 +7,7 @@ data/traces/live_capture.parquet.
 """
 
 import argparse
+import hashlib
 import json
 import os
 import signal
@@ -341,69 +342,95 @@ def _aggregate_traces(summary_results: list[dict]) -> None:
     )
 
 
-def run_prompt(
-    prompt_entry: dict,
-    idx: int,
-    total: int,
-    weight_path: Path,
-    kt_method: str,
-    fail_fast: bool,
-) -> dict:
-    prompt_id = prompt_entry["id"]
-    category = prompt_entry["category"]
-    prompt_text = prompt_entry["prompt"]
-    context_id = f"ctx_{prompt_id}"
+def _build_default_experiments() -> list[dict]:
+    decode_cfgs: list[dict | None] = [
+        None,
+        {"scheme": "sliding_window_score_averaging", "params": {"window_size": 1}},
+        {"scheme": "sliding_window_score_averaging", "params": {"window_size": 4}},
+        {"scheme": "sliding_window_score_averaging", "params": {"window_size": 16}},
+        {"scheme": "sliding_window_score_averaging", "params": {"window_size": 64}},
+        {"scheme": "ema_score_averaging", "params": {"ema_beta": 0.9}},
+        {"scheme": "ema_score_averaging", "params": {"ema_beta": 0.7}},
+        {"scheme": "ema_score_averaging", "params": {"ema_beta": 0.5}},
+        {"scheme": "ema_score_averaging", "params": {"ema_beta": 0.3}},
+        {"scheme": "ema_score_averaging", "params": {"ema_beta": 0.1}},
+        {"scheme": "ema_score_averaging", "params": {"ema_beta": 0.05}},
+        {"scheme": "two_timescale_ema", "params": {"mix_lambda": 0.1}},
+        {"scheme": "two_timescale_ema", "params": {"mix_lambda": 0.2}},
+        {"scheme": "two_timescale_ema", "params": {"mix_lambda": 0.3}},
+        {"scheme": "two_timescale_ema", "params": {"mix_lambda": 0.4}},
+        {"scheme": "two_timescale_softmax", "params": {"mix_lambda": 0.2, "rho": 0.25}},
+        {"scheme": "two_timescale_softmax", "params": {"mix_lambda": 0.2, "rho": 1.0}},
+        {"scheme": "two_timescale_softmax", "params": {"mix_lambda": 0.2, "rho": 4.0}},
+        {"scheme": "two_timescale_softmax", "params": {"mix_lambda": 0.2, "rho": 16.0}},
+        {"scheme": "two_timescale_softmax", "params": {"mix_lambda": 0.2, "rho": 64.0}},
+        {"scheme": "two_timescale_softmax", "params": {"mix_lambda": 0.2, "rho": 256.0}},
+        {"scheme": "two_timescale_softmax", "params": {"mix_lambda": 0.2, "rho": 1024.0}},
+    ]
+    prefill_cfgs = [
+        {"scheme": "prefill_block_mean", "params": {"window_size": 32}},
+        {"scheme": "prefill_block_mean", "params": {"window_size": 64}},
+        {"scheme": "prefill_block_mean", "params": {"window_size": 128}},
+        {"scheme": "prefill_full_mean", "params": {}},
+    ]
 
-    trace_file = OUTPUT_DIR / f"{prompt_id}_session.parquet"
-    output_file = OUTPUT_DIR / f"output_{prompt_id}.json"
-    log_file = OUTPUT_DIR / f"collection_server_{prompt_id}.log"
-
-    for old in (trace_file, output_file):
-        if old.exists():
-            old.unlink()
-
-    port = _pick_available_port(DEFAULT_PORT)
-    if port != DEFAULT_PORT:
-        print(
-            f"[run_collection] Port {DEFAULT_PORT} busy; using {port} for {prompt_id}.",
-            flush=True,
+    exps = [{"name": "baseline", "moe_routing": None}]
+    for d in decode_cfgs:
+        if d is None:
+            continue
+        exps.append(
+            {
+                "name": f"decode_{d['scheme']}_{hashlib.md5(json.dumps(d, sort_keys=True).encode()).hexdigest()[:8]}",
+                "moe_routing": {
+                    "prefill": {"scheme": "prefill_block_mean", "params": {"window_size": 64}},
+                    "decode": d,
+                    "scope": "request",
+                },
+            }
         )
+    for p in prefill_cfgs:
+        exps.append(
+            {
+                "name": f"prefill_{p['scheme']}_{hashlib.md5(json.dumps(p, sort_keys=True).encode()).hexdigest()[:8]}",
+                "moe_routing": {
+                    "prefill": p,
+                    "decode": {"scheme": "sliding_window_score_averaging", "params": {"window_size": 1}},
+                    "scope": "request",
+                },
+            }
+        )
+    return exps
 
-    print(f"[{idx}/{total}] Processing prompt: {prompt_id} (category: {category})", flush=True)
 
+def _build_experiments(max_experiments: int | None = None) -> list[dict]:
+    custom_json = os.environ.get("COLLECTION_MOE_EXPERIMENTS_JSON", "").strip()
+    if custom_json:
+        experiments = json.loads(custom_json)
+        if not isinstance(experiments, list):
+            raise ValueError("COLLECTION_MOE_EXPERIMENTS_JSON must be a JSON list")
+    else:
+        experiments = _build_default_experiments()
+    if max_experiments is not None:
+        experiments = experiments[:max_experiments]
+    return experiments
+
+
+def _start_server(weight_path: Path, kt_method: str, port: int, log_file: Path) -> subprocess.Popen:
     env = os.environ.copy()
-    env["KT_MOE_ROUTING_RECORD"] = "true"
-    env["KT_MOE_ROUTING_RECORD_ALL_EXPERT_SCORES"] = os.environ.get(
-        "COLLECTION_RECORD_ALL_EXPERT_SCORES",
-        "true",
-    )
-    env["KT_MOE_ROUTING_TRACE_DIR"] = str(OUTPUT_DIR)
-    env["KT_MOE_ROUTING_TRACE_FILE"] = str(trace_file)
-    env["KT_MOE_ROUTING_PROMPT_ID"] = prompt_id
-    env["KT_MOE_ROUTING_CONTEXT_ID"] = context_id
-    env["KT_MOE_ROUTING_TOKEN_CATEGORY"] = category
+    env["KT_MOE_ROUTING_RECORD"] = "false"
     existing_pythonpath = env.get("PYTHONPATH", "")
     vendored_path = str(VENDORED_SGLANG_PYTHON)
     if existing_pythonpath:
-        path_parts = existing_pythonpath.split(":")
-        if vendored_path not in path_parts:
+        if vendored_path not in existing_pythonpath.split(":"):
             env["PYTHONPATH"] = f"{vendored_path}:{existing_pythonpath}"
     else:
         env["PYTHONPATH"] = vendored_path
     env.setdefault("PYTHONNOUSERSITE", "1")
-    env.setdefault(
-        "SGLANG_DEBUG_PROMPT_FILE",
-        str(OUTPUT_DIR / "debug_prompts.jsonl"),
-    )
-    env.setdefault("CUDA_HOME", "/usr/local/lib/python3.12/dist-packages/nvidia/cuda_runtime")
     env.setdefault("SGLANG_DISABLE_CUDNN_CHECK", "1")
     env.setdefault("KT_FORCE_CPU_SYNC", "1")
 
-    _run_trace_hook_preflight(env=env, prompt_id=prompt_id, context_id=context_id)
-    print("  [preflight] trace hook initialized", flush=True)
-
     with open(log_file, "w", encoding="utf-8") as lf:
-        server = subprocess.Popen(
+        proc = subprocess.Popen(
             [
                 PYTHON_BIN,
                 str(VENDORED_SGLANG_LAUNCH),
@@ -431,6 +458,12 @@ def run_prompt(
                 "4096",
                 "--kt-max-deferred-experts-per-token",
                 "0",
+                "--kt-expert-cache-mode",
+                os.environ.get("COLLECTION_KT_EXPERT_CACHE_MODE", "layerwise"),
+                "--kt-expert-gpu-cache-capacity",
+                os.environ.get("COLLECTION_KT_EXPERT_GPU_CACHE_CAPACITY", "25"),
+                "--kt-expert-cpu-cache-capacity",
+                os.environ.get("COLLECTION_KT_EXPERT_CPU_CACHE_CAPACITY", "128"),
                 "--attention-backend",
                 "triton",
                 "--sampling-backend",
@@ -460,130 +493,118 @@ def run_prompt(
             stderr=subprocess.STDOUT,
             preexec_fn=os.setsid,
         )
+    return proc
 
-    result_payload: dict | None = None
 
-    try:
-        _wait_healthy(port, server, log_file)
+def _run_single_request(
+    port: int,
+    prompt_entry: dict,
+    experiment: dict,
+    idx: int,
+    total: int,
+) -> dict:
+    prompt_id = prompt_entry["id"]
+    category = prompt_entry["category"]
+    prompt_text = prompt_entry["prompt"]
+    exp_name = experiment["name"]
+    context_id = f"ctx_{prompt_id}_{exp_name}_{uuid.uuid4().hex[:8]}"
+    trace_file = OUTPUT_DIR / f"{prompt_id}_{exp_name}_session.parquet"
+    output_file = OUTPUT_DIR / f"output_{prompt_id}_{exp_name}.json"
 
-        sigquit_failed, marker = _log_has_sigquit_failure(log_file)
-        if sigquit_failed:
-            raise RuntimeError(
-                f"Detected SIGQUIT child failure before request ({marker}). "
-                f"Log tail:\n{_read_log_tail(log_file)}"
-            )
+    print(f"[{idx}/{total}] {prompt_id} [{exp_name}]", flush=True)
+    t0 = time.perf_counter()
 
-        req = urllib.request.Request(
-            f"http://127.0.0.1:{port}/v1/chat/completions",
-            data=json.dumps(
-                {
-                    "model": SERVED_MODEL_NAME,
-                    "rid": f"collect_{prompt_id}_{uuid.uuid4().hex[:12]}",
-                    "messages": [
-                        {
-                            "role": "system",
-                            "content": "You are a helpful assistant.",
-                        },
-                        {"role": "user", "content": prompt_text},
-                    ],
-                    "chat_template_kwargs": {"enable_thinking": False},
-                    "separate_reasoning": False,
-                    "stream_reasoning": False,
-                    "seed": SEED,
-                    "max_tokens": MAX_TOKENS,
-                    "min_tokens": MIN_TOKENS,
-                    "temperature": TEMPERATURE,
-                    "top_p": TOP_P,
-                    "top_k": TOP_K,
-                    "min_p": MIN_P,
-                    "presence_penalty": PRESENCE_PENALTY,
-                    "repetition_penalty": REPETITION_PENALTY,
-                }
-            ).encode("utf-8"),
-            headers={"Content-Type": "application/json"},
-        )
-
-        with urllib.request.urlopen(req, timeout=300) as response:
-            payload = json.loads(response.read().decode("utf-8"))
-        choices = payload.get("choices", [])
-        if not choices:
-            raise RuntimeError(f"No choices returned by server. Payload keys: {list(payload.keys())}")
-
-        first_choice = choices[0]
-        message = first_choice.get("message") or {}
-        generated_text = message.get("content")
-        finish_reason = first_choice.get("finish_reason")
-
-        print(
-            "  [resp] "
-            f"finish_reason={finish_reason!r} ",
-            flush=True,
-        )
-
-        output_file.write_text(
-            json.dumps(
-                {
-                    "prompt_id": prompt_id,
-                    "category": category,
-                    "context_id": context_id,
-                    "prompt_text": prompt_text,
-                    "generated_text": generated_text,
-                    "timestamp": time.time(),
-                    "trace_file": str(trace_file),
-                    "server_log": str(log_file),
-                    "raw_response": payload,
-                },
-                indent=2,
-                ensure_ascii=False,
-            ),
-            encoding="utf-8",
-        )
-
-        print(f"  [ok] output: {output_file}", flush=True)
-        result_payload = {
+    custom_params = {
+        "moe_trace": {
+            "output_dir": str(OUTPUT_DIR),
             "prompt_id": prompt_id,
-            "output_file": str(output_file),
+            "context_id": context_id,
+            "token_category": category,
             "trace_file": str(trace_file),
-            "server_log": str(log_file),
-            "success": True,
         }
+    }
+    if experiment.get("moe_routing") is not None:
+        custom_params["moe_routing"] = experiment["moe_routing"]
 
-    except Exception as e:
-        sigquit_failed, marker = _log_has_sigquit_failure(log_file)
-        error_msg = str(e)
-        if sigquit_failed:
-            error_msg = (
-                f"SIGQUIT child-process failure detected ({marker}). "
-                f"Error: {e}"
-            )
+    payload_req = {
+        "model": SERVED_MODEL_NAME,
+        "rid": f"collect_{prompt_id}_{exp_name}_{uuid.uuid4().hex[:8]}",
+        "messages": [
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": prompt_text},
+        ],
+        "chat_template_kwargs": {"enable_thinking": False},
+        "separate_reasoning": False,
+        "stream_reasoning": False,
+        "seed": SEED,
+        "max_tokens": MAX_TOKENS,
+        "min_tokens": MIN_TOKENS,
+        "temperature": TEMPERATURE,
+        "top_p": TOP_P,
+        "top_k": TOP_K,
+        "min_p": MIN_P,
+        "presence_penalty": PRESENCE_PENALTY,
+        "repetition_penalty": REPETITION_PENALTY,
+        "custom_params": custom_params,
+    }
 
-        print(f"  [err] {prompt_id}: {error_msg}", flush=True)
-        print(f"  [err] log tail for {prompt_id}:\n{_read_log_tail(log_file)}", flush=True)
+    req = urllib.request.Request(
+        f"http://127.0.0.1:{port}/v1/chat/completions",
+        data=json.dumps(payload_req).encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+    )
+    with urllib.request.urlopen(req, timeout=600) as response:
+        payload = json.loads(response.read().decode("utf-8"))
 
-        result = {
-            "prompt_id": prompt_id,
-            "trace_file": str(trace_file),
-            "server_log": str(log_file),
-            "error": error_msg,
-            "success": False,
-        }
+    dt = time.perf_counter() - t0
+    choices = payload.get("choices", [])
+    if not choices:
+        raise RuntimeError(f"No choices returned by server. Payload keys: {list(payload.keys())}")
+    first_choice = choices[0]
+    message = first_choice.get("message") or {}
+    generated_text = message.get("content")
+    finish_reason = first_choice.get("finish_reason")
+    usage = payload.get("usage") or {}
+    completion_tokens = int(usage.get("completion_tokens") or 0)
+    prompt_tokens = int(usage.get("prompt_tokens") or 0)
 
-        if fail_fast:
-            raise RuntimeError(f"Collection failed for {prompt_id}: {error_msg}") from e
-        return result
+    output_file.write_text(
+        json.dumps(
+            {
+                "prompt_id": prompt_id,
+                "category": category,
+                "experiment": exp_name,
+                "context_id": context_id,
+                "prompt_text": prompt_text,
+                "generated_text": generated_text,
+                "finish_reason": finish_reason,
+                "elapsed_seconds": dt,
+                "prompt_tokens": prompt_tokens,
+                "completion_tokens": completion_tokens,
+                "tokens_per_second": (completion_tokens / dt) if dt > 0 and completion_tokens > 0 else 0.0,
+                "timestamp": time.time(),
+                "trace_file": str(trace_file),
+                "raw_response": payload,
+            },
+            indent=2,
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
 
-    finally:
-        _terminate_server(server)
-        time.sleep(1)
+    for _ in range(20):
+        if trace_file.exists():
+            break
+        time.sleep(0.2)
 
-    if result_payload is not None:
-        for _ in range(12):
-            if trace_file.exists():
-                break
-            time.sleep(0.5)
-        if not trace_file.exists():
-            raise RuntimeError(f"Trace file missing after server shutdown: {trace_file}")
-        return result_payload
+    return {
+        "prompt_id": prompt_id,
+        "experiment": exp_name,
+        "output_file": str(output_file),
+        "trace_file": str(trace_file),
+        "elapsed_seconds": dt,
+        "success": trace_file.exists(),
+    }
 
 
 def parse_args() -> argparse.Namespace:
@@ -604,6 +625,12 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Continue on prompt failures instead of exiting immediately",
     )
+    parser.add_argument(
+        "--max-experiments",
+        type=int,
+        default=None,
+        help="Run only the first N routing experiments",
+    )
     return parser.parse_args()
 
 
@@ -614,6 +641,7 @@ def main() -> int:
     weight_path, kt_method = _resolve_weight_path_and_method()
     _validate_inputs(weight_path)
     prompts = _load_prompts(prompt_id=args.prompt_id, max_prompts=args.max_prompts)
+    experiments = _build_experiments(max_experiments=args.max_experiments)
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     if AGGREGATED_TRACE_FILE.exists():
@@ -631,6 +659,7 @@ def main() -> int:
     print(f"Output dir: {OUTPUT_DIR}", flush=True)
     print(f"Aggregated trace: {AGGREGATED_TRACE_FILE}", flush=True)
     print(f"Total prompts to process: {len(prompts)}", flush=True)
+    print(f"Total experiments: {len(experiments)}", flush=True)
 
     startup_env = os.environ.copy()
     startup_env["PYTHONPATH"] = (
@@ -643,31 +672,49 @@ def main() -> int:
     if str(VENDORED_SGLANG_PYTHON) not in sglang_module_path:
         print(f"[warning] sglang import resolved outside vendored tree: {sglang_module_path}", flush=True)
 
+    port = _pick_available_port(DEFAULT_PORT)
+    if port != DEFAULT_PORT:
+        print(f"[run_collection] Port {DEFAULT_PORT} busy; using {port}.", flush=True)
+    log_file = OUTPUT_DIR / "collection_server.log"
+
+    server = _start_server(weight_path=weight_path, kt_method=kt_method, port=port, log_file=log_file)
     results: list[dict] = []
-    for index, prompt in enumerate(prompts, start=1):
-        try:
-            result = run_prompt(
-                prompt_entry=prompt,
-                idx=index,
-                total=len(prompts),
-                weight_path=weight_path,
-                kt_method=kt_method,
-                fail_fast=fail_fast,
-            )
-            results.append(result)
-        except Exception as e:
-            results.append(
-                {
-                    "prompt_id": prompt.get("id", f"prompt_{index}"),
-                    "success": False,
-                    "error": str(e),
-                }
-            )
-            if fail_fast:
-                break
+    try:
+        _wait_healthy(port, server, log_file)
+
+        warmup_prompt = prompts[0]
+        warmup_exp = experiments[0]
+        _ = _run_single_request(port, warmup_prompt, warmup_exp, 1, max(1, len(prompts) * len(experiments)))
+        print("[run_collection] Warmup complete", flush=True)
+
+        total_runs = len(prompts) * len(experiments)
+        run_idx = 0
+        for prompt in prompts:
+            for exp in experiments:
+                run_idx += 1
+                try:
+                    result = _run_single_request(port, prompt, exp, run_idx, total_runs)
+                    results.append(result)
+                except Exception as e:
+                    err = {
+                        "prompt_id": prompt.get("id", "<unknown>"),
+                        "experiment": exp.get("name", "<unknown>"),
+                        "success": False,
+                        "error": str(e),
+                    }
+                    results.append(err)
+                    if fail_fast:
+                        raise RuntimeError(
+                            f"Collection failed for {prompt.get('id')} [{exp.get('name')}]: {e}"
+                        ) from e
+    finally:
+        _terminate_server(server)
+        time.sleep(1)
 
     summary = {
-        "total": len(prompts),
+        "total": len(prompts) * len(experiments),
+        "prompts": len(prompts),
+        "experiments": len(experiments),
         "successful": sum(1 for r in results if r.get("success")),
         "failed": sum(1 for r in results if not r.get("success")),
         "results": results,

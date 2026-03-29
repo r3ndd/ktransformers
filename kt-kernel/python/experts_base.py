@@ -18,6 +18,7 @@ import atexit
 import signal
 from pathlib import Path
 import logging
+import weakref
 
 from kt_kernel import kt_kernel_ext
 
@@ -159,6 +160,7 @@ class BaseMoEWrapper(ABC):
     _env_trace_collector = None
     _env_trace_signal_handlers_installed: bool = False
     _env_trace_first_record_logged: bool = False
+    _req_collectors: "weakref.WeakKeyDictionary[object, object]" = weakref.WeakKeyDictionary()
 
     @staticmethod
     def _force_cpu_sync_mode() -> bool:
@@ -352,6 +354,35 @@ class BaseMoEWrapper(ABC):
             except Exception:
                 # Never break inference for telemetry
                 pass
+
+        req_collectors = BaseMoEWrapper._req_collectors
+        if req_collectors and not is_capturing:
+            req = None
+            try:
+                req = self._extract_request_from_scores(all_expert_scores)
+            except Exception:
+                req = None
+            if req is not None:
+                collector = req_collectors.get(req)
+                if collector is not None:
+                    try:
+                        topk_ids_cpu = topk_ids.detach().cpu()
+                        topk_weights_cpu = topk_weights.detach().cpu()
+                        scores_cpu = (
+                            all_expert_scores.detach().to(device="cpu", dtype=torch.float16)
+                            if all_expert_scores is not None
+                            else None
+                        )
+                        for pos in range(topk_ids_cpu.shape[0]):
+                            collector.record(
+                                layer_id=self.layer_idx,
+                                token_position=pos,
+                                expert_ids=topk_ids_cpu[pos].tolist(),
+                                expert_weights=topk_weights_cpu[pos].tolist(),
+                                expert_scores_all=(scores_cpu[pos].tolist() if scores_cpu is not None else None),
+                            )
+                    except Exception:
+                        pass
         flat_hidden_states = hidden_states.view(-1, hidden_states.shape[-1])
         batch_size = flat_hidden_states.shape[0]
 
@@ -527,6 +558,26 @@ class BaseMoEWrapper(ABC):
     @staticmethod
     def get_trace_hook() -> Callable[..., None] | None:
         return BaseMoEWrapper._trace_hook
+
+    @staticmethod
+    def bind_request_collector(req: object, collector: object) -> None:
+        BaseMoEWrapper._req_collectors[req] = collector
+
+    @staticmethod
+    def unbind_request_collector(req: object) -> None:
+        BaseMoEWrapper._req_collectors.pop(req, None)
+
+    @staticmethod
+    def _extract_request_from_scores(all_expert_scores: Optional[torch.Tensor]) -> object | None:
+        if all_expert_scores is None:
+            return None
+        try:
+            custom_params = getattr(all_expert_scores, "_kt_custom_params", None)
+            if isinstance(custom_params, dict):
+                return custom_params.get("__req__")
+        except Exception:
+            return None
+        return None
 
     @staticmethod
     def _ensure_env_trace_hook() -> None:

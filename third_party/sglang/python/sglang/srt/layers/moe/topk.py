@@ -47,6 +47,10 @@ from sglang.srt.eplb.expert_location_dispatch import (
 )
 from sglang.srt.layers.dp_attention import is_allocation_symmetric
 from sglang.srt.layers.moe import get_moe_runner_backend
+from sglang.srt.layers.moe.moe_routing_runtime import (
+    get_current_forward_batch,
+    get_global_moe_routing_runtime,
+)
 from sglang.srt.layers.moe.routed_experts_capturer import get_global_experts_capturer
 from sglang.srt.layers.utils import MultiPlatformOp
 from sglang.srt.utils import (
@@ -928,6 +932,49 @@ def select_experts(
     num_token_non_padded: Optional[torch.Tensor] = None,
     expert_location_dispatch_info: Optional[ExpertLocationDispatchInfo] = None,
 ) -> StandardTopKOutput:
+
+    fwd_batch = get_current_forward_batch()
+    request_custom_params = None
+    if fwd_batch is not None:
+        request_custom_params = getattr(fwd_batch, "request_custom_params", None)
+
+    if fwd_batch is not None and layer_id is not None:
+        router_logits = get_global_moe_routing_runtime().apply(
+            fwd_batch,
+            layer_id=layer_id,
+            router_logits=router_logits,
+        )
+
+    if request_custom_params is not None and len(request_custom_params) == router_logits.shape[0]:
+        capture_len = router_logits.shape[0]
+        if fwd_batch is not None and fwd_batch.forward_mode.is_prefill() and fwd_batch.extend_seq_lens is not None:
+            try:
+                capture_len = int(torch.sum(fwd_batch.extend_seq_lens).item())
+            except Exception:
+                capture_len = router_logits.shape[0]
+        for i, cp in enumerate(request_custom_params):
+            if not isinstance(cp, dict):
+                continue
+            req_obj = cp.get("__req__")
+            if req_obj is None:
+                continue
+            try:
+                if getattr(req_obj, "sampling_params", None) is not None and isinstance(
+                    req_obj.sampling_params.custom_params, dict
+                ):
+                    if i >= min(capture_len, router_logits.shape[0]):
+                        continue
+                    req_obj.sampling_params.custom_params["__moe_last_router_logits__"] = (
+                        router_logits[i].detach().to(device="cpu", dtype=torch.float16)
+                    )
+            except Exception:
+                continue
+
+    try:
+        if request_custom_params is not None:
+            setattr(router_logits, "_kt_custom_params", request_custom_params)
+    except Exception:
+        pass
 
     top_k = topk_config.top_k
     use_grouped_topk = topk_config.use_grouped_topk

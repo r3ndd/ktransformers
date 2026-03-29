@@ -1,10 +1,14 @@
 # MoE Routing Schemes
 
-This document defines a simplified routing-simulation design:
+This document defines the current routing-simulation design:
 
 - Routing schemes operate on **full per-layer expert score vectors** (`expert_scores_all`), not expert pools.
 - Each scheme transforms scores, then routing is always **top-k** from transformed scores.
 - Baseline routing does not need a separate scheme: it is already in trace `expert_ids` and corresponds to `W=1` for score averaging.
+
+Terminology:
+- This document describes **simulation-time score transforms** and does not yet implement separate prefill/decode runtime paths.
+- `cache accounting` here means simulation accounting for expert locality, not the live serving cache implementation.
 
 ## Core idea
 
@@ -74,6 +78,17 @@ Current sweep:
 - fixed `mix_lambda = 0.2`
 - `rho` in `[0.25, 1.0, 4.0, 16.0, 64.0, 256.0, 1024.0]`
 
+## Planned prefill/decode split (real inference)
+
+To align with the real-inference plan, runtime routing will support separate policies per request phase:
+- Prefill (extend) policy examples:
+  - `prefill_block_mean` with fixed `window_size` (for example, 64)
+  - `prefill_full_mean` across the full prefill span per layer
+- Decode policy examples:
+  - Existing decode-oriented schemes in this document (`sliding_window_score_averaging`, `ema_score_averaging`, `two_timescale_ema`, `two_timescale_softmax`)
+
+The prefill policies above are planned for real serving; they are not yet part of the current simulation CLI.
+
 ## Metrics (current simulation)
 
 For simulated chosen experts vs baseline trace experts:
@@ -87,7 +102,7 @@ For simulated chosen experts vs baseline trace experts:
 
 `baseline_ssd_fetches_per_token` is computed from baseline trace routing under the same cache accounting rule.
 
-Cache accounting currently uses per-layer LRU with fixed `capacity_per_layer=25` (about 1000 expert slots total for 40 layers).
+Expert cache accounting currently uses per-layer LRU with fixed `capacity_per_layer=25` (about 1000 expert slots total for 40 layers).
 
 ## Practical sweep recommendation
 

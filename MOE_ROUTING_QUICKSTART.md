@@ -4,6 +4,12 @@ This directory contains an end-to-end pipeline for collecting, analyzing, and si
 
 This document reflects the **current implementation**. A short roadmap section near the end lists items that are still planned.
 
+Terminology used here is aligned with the real-inference plan:
+- `prefill` means extend/prompt processing.
+- `decode` means autoregressive token generation.
+- `expert-tier cache` means expert-weight residency across GPU/CPU/SSD tiers.
+- `cache accounting` in this document refers to the **simulation model** (not live serving cache internals).
+
 ## System Overview
 
 ```
@@ -88,7 +94,7 @@ python -m kt_kernel.moe_routing.simulate \
   --output-dir data/simulation
 ```
 
-Current simulation scope:
+Current simulation scope (decode-style scoring transforms):
 - Schemes:
   - `sliding_window_score_averaging`
   - `ema_score_averaging`
@@ -111,7 +117,7 @@ Current simulation metrics:
 - `baseline_ssd_fetches_per_token`
 
 Simulation notes:
-- Cache accounting uses per-layer LRU with `capacity_per_layer=25` (~1000 total expert slots for 40 layers).
+- Expert cache accounting uses per-layer LRU with `capacity_per_layer=25` (~1000 total expert slots for 40 layers).
 - `quality_degradation` uses softmax-probability mass ratio (chosen vs baseline) over token-layer steps.
 - `speedup_ratio` uses a timing model:
   - `speedup_ratio = (0.1 + baseline_extra_seconds_per_token) / (0.1 + extra_seconds_per_token)`
@@ -177,6 +183,10 @@ The following items are **not yet wired into the current CLI pipeline**:
    - richer multi-scheme frontier plots and per-scheme dashboards
 3. Auto-tuning / adaptive sweep selection:
    - narrowing parameter ranges from previous runs
+4. Prefill/decode split routing in real serving:
+   - separate prefill and decode scheme configuration in request payload
+5. Expert-tier cache controls in real serving:
+   - explicit GPU/CPU/SSD expert residency controls with global/layerwise cache modes
 
 ## Troubleshooting
 

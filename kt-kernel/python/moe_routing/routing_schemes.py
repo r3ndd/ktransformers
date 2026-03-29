@@ -18,6 +18,71 @@ class BaseRoutingScheme:
         raise NotImplementedError
 
 
+class PrefillBlockMeanRouting(BaseRoutingScheme):
+    """Prefill block mean routing with per-layer sliding history."""
+
+    def __init__(self, window_size: int):
+        if window_size <= 0:
+            raise ValueError(f"window_size must be > 0; got {window_size}")
+        self.window_size = int(window_size)
+        self._history: dict[int, deque[list[float]]] = defaultdict(lambda: deque(maxlen=max(self.window_size - 1, 1)))
+
+    def smooth_scores(self, layer_id: int, current_scores: list[float]) -> list[float]:
+        prev = self._history[layer_id]
+        if not prev:
+            return list(current_scores)
+        n = len(current_scores)
+        out = [0.0] * n
+        denom = float(len(prev) + 1)
+        for i in range(n):
+            s = float(current_scores[i])
+            for vec in prev:
+                s += float(vec[i])
+            out[i] = s / denom
+        return out
+
+    def observe(self, layer_id: int, current_scores: list[float]) -> None:
+        self._history[layer_id].append(list(current_scores))
+
+    def end_token(self) -> None:
+        return
+
+    def reset(self) -> None:
+        self._history.clear()
+
+
+class PrefillFullMeanRouting(BaseRoutingScheme):
+    """Prefill full-span running mean routing per layer."""
+
+    def __init__(self):
+        self._sum: dict[int, list[float]] = {}
+        self._count: dict[int, int] = {}
+
+    def smooth_scores(self, layer_id: int, current_scores: list[float]) -> list[float]:
+        if layer_id not in self._sum:
+            return list(current_scores)
+        s = self._sum[layer_id]
+        c = max(self._count.get(layer_id, 1), 1)
+        return [float(v) / float(c) for v in s]
+
+    def observe(self, layer_id: int, current_scores: list[float]) -> None:
+        if layer_id not in self._sum:
+            self._sum[layer_id] = [float(v) for v in current_scores]
+            self._count[layer_id] = 1
+            return
+        cur = self._sum[layer_id]
+        for i, v in enumerate(current_scores):
+            cur[i] += float(v)
+        self._count[layer_id] = self._count.get(layer_id, 0) + 1
+
+    def end_token(self) -> None:
+        return
+
+    def reset(self) -> None:
+        self._sum.clear()
+        self._count.clear()
+
+
 class SlidingWindowScoreAveragingRouting(BaseRoutingScheme):
     """Per-layer sliding-window score smoothing.
 

@@ -2,6 +2,8 @@ from .metrics import temporal_reuse_curve, expert_entropy_by_layer
 from .simulator import simulate_routing_scheme
 from .routing_schemes import (
     EMAScoreAveragingRouting,
+    PrefillBlockMeanRouting,
+    PrefillFullMeanRouting,
     SlidingWindowScoreAveragingRouting,
     TwoTimescaleSoftmaxRouting,
     TwoTimescalePlusCurrentSoftmaxRouting,
@@ -23,6 +25,8 @@ __all__ = [
     "expert_entropy_by_layer",
     "simulate_routing_scheme",
     "SlidingWindowScoreAveragingRouting",
+    "PrefillBlockMeanRouting",
+    "PrefillFullMeanRouting",
     "EMAScoreAveragingRouting",
     "TwoTimescaleEMARouting",
     "TwoTimescaleSoftmaxRouting",

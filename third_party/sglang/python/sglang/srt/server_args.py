@@ -561,6 +561,11 @@ class ServerArgs:
     record_kt_gpu_expert_distribution: bool = False
     kt_enable_dynamic_expert_update: bool = False
     kt_expert_placement_strategy: str = "uniform"
+    kt_expert_cache_mode: str = "layerwise"
+    kt_expert_gpu_cache_capacity: int = 0
+    kt_expert_cpu_cache_capacity: int = 0
+    kt_expert_core_reservation_bytes: int = 0
+    kt_expert_kv_reservation_bytes: int = 0
 
     # Diffusion LLM
     dllm_algorithm: Optional[str] = None
@@ -741,6 +746,14 @@ class ServerArgs:
 
         # Get GPU memory capacity, which is a common dependency for several configuration steps.
         gpu_mem = get_device_memory_capacity(self.device)
+
+        if (
+            self.kt_expert_core_reservation_bytes + self.kt_expert_kv_reservation_bytes
+            > int(gpu_mem * (1024**3))
+        ):
+            raise ValueError(
+                "Invalid KT expert-tier budget: core reservation + KV reservation exceed GPU memory capacity"
+            )
 
         # Handle memory-related, chunked prefill, and CUDA graph batch size configurations.
         self._handle_gpu_memory_settings(gpu_mem)
@@ -4500,6 +4513,37 @@ class ServerArgs:
                  "uniform: Equal experts per layer. "
                  "random: Random placement with fixed seed.",
         )
+        parser.add_argument(
+            "--kt-expert-cache-mode",
+            type=str,
+            default=ServerArgs.kt_expert_cache_mode,
+            choices=["global", "layerwise"],
+            help="[ktransformers parameter] Expert tier cache scope: global shared cache or per-layer cache.",
+        )
+        parser.add_argument(
+            "--kt-expert-gpu-cache-capacity",
+            type=int,
+            default=ServerArgs.kt_expert_gpu_cache_capacity,
+            help="[ktransformers parameter] GPU expert cache capacity (expert count; interpreted per-layer in layerwise mode).",
+        )
+        parser.add_argument(
+            "--kt-expert-cpu-cache-capacity",
+            type=int,
+            default=ServerArgs.kt_expert_cpu_cache_capacity,
+            help="[ktransformers parameter] CPU expert cache capacity (expert count; interpreted per-layer in layerwise mode).",
+        )
+        parser.add_argument(
+            "--kt-expert-core-reservation-bytes",
+            type=int,
+            default=ServerArgs.kt_expert_core_reservation_bytes,
+            help="[ktransformers parameter] Reserved GPU bytes for core model weights before expert tier budgeting.",
+        )
+        parser.add_argument(
+            "--kt-expert-kv-reservation-bytes",
+            type=int,
+            default=ServerArgs.kt_expert_kv_reservation_bytes,
+            help="[ktransformers parameter] Reserved GPU bytes for KV headroom before expert tier budgeting.",
+        )
 
         # Diffusion LLM
         parser.add_argument(
@@ -5401,6 +5445,17 @@ class ServerArgs:
             raise ValueError(
                 "When enabling two batch overlap, moe_a2a_backend cannot be 'none'."
             )
+
+        if self.kt_expert_cache_mode not in {"global", "layerwise"}:
+            raise ValueError("--kt-expert-cache-mode must be 'global' or 'layerwise'")
+        if self.kt_expert_gpu_cache_capacity < 0:
+            raise ValueError("--kt-expert-gpu-cache-capacity must be >= 0")
+        if self.kt_expert_cpu_cache_capacity < 0:
+            raise ValueError("--kt-expert-cpu-cache-capacity must be >= 0")
+        if self.kt_expert_core_reservation_bytes < 0:
+            raise ValueError("--kt-expert-core-reservation-bytes must be >= 0")
+        if self.kt_expert_kv_reservation_bytes < 0:
+            raise ValueError("--kt-expert-kv-reservation-bytes must be >= 0")
 
     def check_torch_2_9_1_cudnn_compatibility(self):
         if get_bool_env_var("SGLANG_DISABLE_CUDNN_CHECK"):

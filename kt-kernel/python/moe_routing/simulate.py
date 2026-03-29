@@ -9,6 +9,8 @@ import pandas as pd
 
 from .routing_schemes import (
     EMAScoreAveragingRouting,
+    PrefillBlockMeanRouting,
+    PrefillFullMeanRouting,
     SlidingWindowScoreAveragingRouting,
     TwoTimescaleSoftmaxRouting,
     TwoTimescaleEMARouting,
@@ -39,6 +41,25 @@ def _run_grid(traces: pd.DataFrame) -> list[dict]:
             **m,
         }
         runs.append(run)
+
+    for window_size in [32, 64, 128]:
+        scheme = PrefillBlockMeanRouting(window_size=window_size)
+        m = simulate_routing_scheme(traces, scheme=scheme)
+        run = {
+            "scheme": "prefill_block_mean",
+            "window_size": window_size,
+            **m,
+        }
+        runs.append(run)
+
+    scheme = PrefillFullMeanRouting()
+    m = simulate_routing_scheme(traces, scheme=scheme)
+    runs.append(
+        {
+            "scheme": "prefill_full_mean",
+            **m,
+        }
+    )
 
     for ema_beta in [0.9, 0.7, 0.5, 0.3, 0.1, 0.05]:
         scheme = EMAScoreAveragingRouting(ema_beta=ema_beta)
@@ -83,6 +104,10 @@ def _average_runs(per_context_runs: list[list[dict]]) -> list[dict]:
             scheme = str(run["scheme"])
             if scheme == "sliding_window_score_averaging":
                 key = (scheme, float(int(run["window_size"])), -1.0)
+            elif scheme == "prefill_block_mean":
+                key = (scheme, float(int(run["window_size"])), -1.0)
+            elif scheme == "prefill_full_mean":
+                key = (scheme, -1.0, -1.0)
             elif scheme == "ema_score_averaging":
                 key = (scheme, float(run["ema_beta"]), -1.0)
             elif scheme == "two_timescale_ema":
@@ -98,12 +123,16 @@ def _average_runs(per_context_runs: list[list[dict]]) -> list[dict]:
     def _sort_key(k: tuple[str, float, float]) -> tuple[int, float, float]:
         if k[0] == "sliding_window_score_averaging":
             scheme_order = 0
-        elif k[0] == "ema_score_averaging":
+        elif k[0] == "prefill_block_mean":
             scheme_order = 1
-        elif k[0] == "two_timescale_ema":
+        elif k[0] == "prefill_full_mean":
             scheme_order = 2
-        elif k[0] == "two_timescale_softmax":
+        elif k[0] == "ema_score_averaging":
             scheme_order = 3
+        elif k[0] == "two_timescale_ema":
+            scheme_order = 4
+        elif k[0] == "two_timescale_softmax":
+            scheme_order = 5
         else:
             scheme_order = 99
         return (scheme_order, k[1], k[2])
@@ -114,6 +143,17 @@ def _average_runs(per_context_runs: list[list[dict]]) -> list[dict]:
             base = {
                 "scheme": key[0],
                 "window_size": int(key[1]),
+                "contexts_included": float(len(rows)),
+            }
+        elif key[0] == "prefill_block_mean":
+            base = {
+                "scheme": key[0],
+                "window_size": int(key[1]),
+                "contexts_included": float(len(rows)),
+            }
+        elif key[0] == "prefill_full_mean":
+            base = {
+                "scheme": key[0],
                 "contexts_included": float(len(rows)),
             }
         elif key[0] == "ema_score_averaging":
@@ -189,6 +229,8 @@ def run_simulation(trace_file: Path, output_dir: Path) -> None:
             "context_token_count": context_token_counts[str(context_id)],
             "scheme_candidates": {
                 "sliding_window_score_averaging": {"window_size": [1, 4, 16, 64]},
+                "prefill_block_mean": {"window_size": [32, 64, 128]},
+                "prefill_full_mean": {},
                 "ema_score_averaging": {"ema_beta": [0.9, 0.7, 0.5, 0.3, 0.1, 0.05]},
                 "two_timescale_ema": {"mix_lambda": [0.1, 0.2, 0.3, 0.4]},
                 "two_timescale_softmax": {
@@ -212,6 +254,8 @@ def run_simulation(trace_file: Path, output_dir: Path) -> None:
         "per_context_dir": str(context_results_dir),
         "scheme_candidates": {
             "sliding_window_score_averaging": {"window_size": [1, 4, 16, 64]},
+            "prefill_block_mean": {"window_size": [32, 64, 128]},
+            "prefill_full_mean": {},
             "ema_score_averaging": {"ema_beta": [0.9, 0.7, 0.5, 0.3, 0.1, 0.05]},
             "two_timescale_ema": {"mix_lambda": [0.1, 0.2, 0.3, 0.4]},
             "two_timescale_softmax": {

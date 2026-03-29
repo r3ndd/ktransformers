@@ -69,6 +69,11 @@ from sglang.srt.mem_cache.common import (
 from sglang.srt.mem_cache.memory_pool import ReqToTokenPool
 from sglang.srt.mem_cache.radix_cache import RadixKey
 from sglang.srt.mem_cache.swa_memory_pool import SWATokenToKVPoolAllocator
+from sglang.srt.managers.moe_routing_config import (
+    MoeRoutingConfig,
+    build_moe_routing_signature,
+    parse_moe_routing_config,
+)
 from sglang.srt.model_executor.forward_batch_info import (
     CaptureHiddenMode,
     ForwardBatch,
@@ -573,6 +578,45 @@ class Req(ReqDllmMixin):
         self.sampling_params = sampling_params
         self.custom_logit_processor = custom_logit_processor
         self.return_hidden_states = return_hidden_states
+        self.moe_routing_config: Optional[MoeRoutingConfig] = None
+        self._moe_trace_collector = None
+        self._moe_trace_collector_closed = False
+
+        parsed_routing, routing_warning = parse_moe_routing_config(
+            getattr(self.sampling_params, "custom_params", None)
+        )
+        if routing_warning is not None:
+            logger.warning("Req %s: %s", rid, routing_warning)
+        self.moe_routing_config = parsed_routing
+
+        trace_cfg = None
+        if isinstance(self.sampling_params.custom_params, dict):
+            trace_cfg = self.sampling_params.custom_params.get("moe_trace")
+        if isinstance(trace_cfg, dict):
+            try:
+                from pathlib import Path
+
+                from kt_kernel.experts_base import BaseMoEWrapper
+                from kt_kernel.moe_routing.trace_collector import RoutingTraceCollector
+
+                output_dir = Path(str(trace_cfg.get("output_dir", "/tmp/moe_trace")))
+                output_dir.mkdir(parents=True, exist_ok=True)
+                prompt_id = str(trace_cfg.get("prompt_id", rid))
+                context_id = str(trace_cfg.get("context_id", rid))
+                token_category = str(trace_cfg.get("token_category", "assistant"))
+                trace_file = trace_cfg.get("trace_file")
+                trace_path = Path(str(trace_file)) if trace_file else None
+
+                collector = RoutingTraceCollector(
+                    output_dir=output_dir,
+                    prompt_id=prompt_id,
+                    token_category=token_category,
+                )
+                collector.start(context_id=context_id, output_path=trace_path)
+                self._moe_trace_collector = collector
+                BaseMoEWrapper.bind_request_collector(self, collector)
+            except Exception as e:
+                logger.warning("Req %s: failed to init moe trace collector: %s", rid, e)
 
         # extra key for classifying the request (e.g. cache_salt)
         if lora_id is not None:
@@ -583,6 +627,12 @@ class Req(ReqDllmMixin):
         self.extra_key = extra_key
         self.lora_id = lora_id
         self.routing_key = routing_key
+        routing_sig = build_moe_routing_signature(self.moe_routing_config)
+        if routing_sig is not None:
+            if self.routing_key:
+                self.routing_key = f"{self.routing_key}|{routing_sig}"
+            else:
+                self.routing_key = routing_sig
 
         # Memory pool info
         self.req_pool_idx: Optional[int] = None
@@ -855,6 +905,22 @@ class Req(ReqDllmMixin):
         # Whether request reached finished condition
         return self.finished_reason is not None
 
+    def _cleanup_moe_trace_collector(self) -> None:
+        if self._moe_trace_collector_closed:
+            return
+        self._moe_trace_collector_closed = True
+        try:
+            from kt_kernel.experts_base import BaseMoEWrapper
+
+            BaseMoEWrapper.unbind_request_collector(self)
+        except Exception:
+            pass
+        try:
+            if self._moe_trace_collector is not None:
+                self._moe_trace_collector.stop()
+        except Exception:
+            pass
+
     def init_next_round_input(self, tree_cache: Optional[BasePrefixCache] = None):
         if self.is_dllm():
             self._init_fill_ids_for_dllm()
@@ -996,6 +1062,7 @@ class Req(ReqDllmMixin):
                 self.finished_reason = FINISH_MATCHED_TOKEN(matched=token_id)
                 matched_pos = len(self.output_ids) - len(new_accepted_tokens) + i
                 self.finished_len = matched_pos + 1
+                self._cleanup_moe_trace_collector()
                 return True
 
         return False
@@ -1012,6 +1079,7 @@ class Req(ReqDllmMixin):
                 for stop_str in self.sampling_params.stop_strs:
                     if stop_str in tail_str or stop_str in self.decoded_text:
                         self.finished_reason = FINISH_MATCHED_STR(matched=stop_str)
+                        self._cleanup_moe_trace_collector()
                         return True
 
             # Check stop regex
@@ -1021,6 +1089,7 @@ class Req(ReqDllmMixin):
                         self.finished_reason = FINISHED_MATCHED_REGEX(
                             matched=stop_regex_str
                         )
+                        self._cleanup_moe_trace_collector()
                         return True
 
         return False
@@ -1037,6 +1106,7 @@ class Req(ReqDllmMixin):
                     self.output_ids[offset] = next(iter(self.eos_token_ids))
                 self.finished_reason = FINISH_MATCHED_STR(matched="NaN happened")
                 self.finished_len = offset + 1
+                self._cleanup_moe_trace_collector()
                 return True
 
         return False
@@ -1048,6 +1118,7 @@ class Req(ReqDllmMixin):
         if self.to_finish:
             self.finished_reason = self.to_finish
             self.to_finish = None
+            self._cleanup_moe_trace_collector()
             return
 
         if len(self.output_ids) >= self.sampling_params.max_new_tokens:
@@ -1055,11 +1126,13 @@ class Req(ReqDllmMixin):
                 length=self.sampling_params.max_new_tokens
             )
             self.finished_len = self.sampling_params.max_new_tokens
+            self._cleanup_moe_trace_collector()
             return
 
         if self.grammar is not None:
             if self.grammar.is_terminated():
                 self.finished_reason = FINISH_MATCHED_TOKEN(matched=self.output_ids[-1])
+                self._cleanup_moe_trace_collector()
                 return
 
         new_accepted_tokens = self.output_ids[-new_accepted_len:]
@@ -1152,6 +1225,7 @@ class Req(ReqDllmMixin):
     def set_finish_with_abort(self, error_msg: str):
         if get_tensor_model_parallel_rank() == 0:
             logger.error(f"{error_msg}, {self.rid=}")
+        self._cleanup_moe_trace_collector()
         self.multimodal_inputs = None
         self.grammar = None
         self.origin_input_ids = [0]  # set it to one token to skip the long prefill
@@ -2183,6 +2257,7 @@ class ScheduleBatch(ScheduleBatchDisaggregationDecodeMixin):
             encoder_out_cache_loc=self.encoder_out_cache_loc,
             lora_ids=[req.lora_id for req in self.reqs],
             sampling_info=self.sampling_info,
+            request_custom_params=[req.sampling_params.custom_params for req in self.reqs],
             input_embeds=self.input_embeds,
             token_type_ids=self.token_type_ids,
             spec_algorithm=self.spec_algorithm,
@@ -2205,6 +2280,7 @@ class ScheduleBatch(ScheduleBatchDisaggregationDecodeMixin):
             dllm_block_offsets=[req.dllm_block_offset for req in self.reqs],
             dllm_config=self.dllm_config,
             reqs=self.reqs,
+            moe_routing_configs=[req.moe_routing_config for req in self.reqs],
             has_grammar=self.has_grammar,
             mamba_track_indices=self.mamba_track_indices,
             mamba_track_mask=self.mamba_track_mask,
@@ -2355,6 +2431,7 @@ class ModelWorkerBatch:
 
     # Sampling info
     sampling_info: SamplingBatchInfo
+    request_custom_params: Optional[List[Optional[Dict[str, Any]]]] = None
 
     # The original sequence lengths, Qwen-1M related
     orig_seq_lens: Optional[torch.Tensor] = None
@@ -2388,6 +2465,9 @@ class ModelWorkerBatch:
     # FIXME(lsyin): remove this after fully overlap grammar
     reqs: Optional[List[Req]] = None
     has_grammar: bool = False
+
+    # Normalized MoE routing config per request in this batch (aligned with reqs)
+    moe_routing_configs: Optional[List[Optional[MoeRoutingConfig]]] = None
 
     # For hidden states before normal
     return_hidden_states_before_norm: bool = False
