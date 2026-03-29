@@ -40,6 +40,7 @@ cd /root/ktransformers
 2. Trace collection
 3. Analysis
 4. Simulation
+5. Optional real-inference routing benchmark (`RUN_REAL_BENCHMARK=1`)
 
 Notes:
 - It uses Hugging Face CLI command `hf download`.
@@ -55,7 +56,7 @@ python3 scripts/run_collection.py
 
 Current behavior:
 - Loads prompts from `data/prompt_suite.json` (currently 17 prompts).
-- Runs one server session per prompt.
+- Runs one long-lived server and processes prompts sequentially.
 - Writes per-prompt outputs/logs plus per-prompt session parquet traces.
 - Records full per-layer expert score vectors in `expert_scores_all` when enabled (float16 list).
 - Aggregates successful traces into:
@@ -128,6 +129,27 @@ Outputs:
 - `data/simulation/contexts/*.json`
 - `data/simulation/tradeoff_curves.png` (best-effort plotting)
 
+### Phase 4: Real-Inference Routing Benchmark
+
+```bash
+python3 scripts/run_real_routing_benchmark.py
+```
+
+What it does:
+- Runs baseline plus routing-scheme parameter sweeps from one long-lived server.
+- Executes requests sequentially (no batching) with fixed seed for comparability.
+- Collects real runtime metrics per run (`elapsed_seconds`, `tokens_per_second`).
+- Collects quality proxies against baseline per prompt (`quality_similarity`, `quality_jaccard`, `quality_degradation`).
+- Computes simulation-style summary metrics (`speedup_ratio`, `quality_speed_score`).
+- Saves generated text for every prompt/experiment pair.
+
+Key outputs:
+- `data/real_benchmark/runs.jsonl`
+- `data/real_benchmark/generated_texts.jsonl`
+- `data/real_benchmark/results.json`
+- `data/real_benchmark/summary.json`
+- `data/real_benchmark/output_<prompt>_<experiment>.json`
+
 ## Key Artifacts to Inspect
 
 1. `data/analysis/metrics.json`
@@ -177,16 +199,12 @@ Use `expert_entropy_by_layer` values from:
 
 The following items are **not yet wired into the current CLI pipeline**:
 
-1. Runtime benchmarking:
-   - Direct tokens/sec evaluation on hardware for selected scheme/parameter settings.
-2. Additional analysis visualizations:
+1. Additional analysis visualizations:
    - richer multi-scheme frontier plots and per-scheme dashboards
-3. Auto-tuning / adaptive sweep selection:
+2. Auto-tuning / adaptive sweep selection:
    - narrowing parameter ranges from previous runs
-4. Prefill/decode split routing in real serving:
-   - separate prefill and decode scheme configuration in request payload
-5. Expert-tier cache controls in real serving:
-   - explicit GPU/CPU/SSD expert residency controls with global/layerwise cache modes
+3. Automatic frontier selection in real benchmark output:
+   - selecting recommended operating points directly from quality/speed metrics
 
 ## Troubleshooting
 
@@ -213,9 +231,9 @@ Initial runs may compile CUDA kernels and warm dependencies; later runs are usua
 
 ## Next Steps
 
-1. Benchmark runtime impact on consumer hardware.
-2. Add richer comparative plots across all four schemes.
-3. Add auto-tuned sweep presets from prior run results.
+1. Add richer comparative plots across real benchmark outputs.
+2. Add auto-tuned sweep presets from prior run results.
+3. Add automated frontier recommendation from quality-speed score.
 
 ## File Structure
 
@@ -223,6 +241,7 @@ Initial runs may compile CUDA kernels and warm dependencies; later runs are usua
 .
 ├── scripts/
 │   ├── run_collection.py
+│   ├── run_real_routing_benchmark.py
 │   ├── run_full_pipeline.sh
 │   └── sanity_check.py
 ├── data/

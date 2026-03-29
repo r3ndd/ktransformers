@@ -1,6 +1,6 @@
 #!/bin/bash
 # End-to-end MoE Routing Analysis Pipeline
-# Runs: Setup → Collection → Analysis → Simulation
+# Runs: Setup → Collection → Analysis → Simulation → (optional) Real benchmark
 
 set -euo pipefail
 
@@ -75,6 +75,15 @@ python -m kt_kernel.moe_routing.simulate \
     --trace-file data/traces/live_capture.parquet \
     --output-dir data/simulation
 
+# Phase 4: Real-Inference Benchmark (optional)
+echo ""
+if [ "${RUN_REAL_BENCHMARK:-0}" = "1" ]; then
+    echo "🚀 Phase 4: Running real-inference routing benchmark..."
+    python3 scripts/run_real_routing_benchmark.py
+else
+    echo "⏭️  Phase 4 skipped (set RUN_REAL_BENCHMARK=1 to enable real benchmark)"
+fi
+
 echo ""
 echo "==============================================="
 echo "  Pipeline Complete!"
@@ -86,6 +95,9 @@ echo "  Analysis:   data/analysis/metrics.json"
 echo "  Plots:      data/analysis/plots/"
 echo "  Simulation: data/simulation/results.json"
 echo "  Tradeoffs:  data/simulation/tradeoff_curves.png"
+if [ "${RUN_REAL_BENCHMARK:-0}" = "1" ]; then
+    echo "  Real bench: data/real_benchmark/results.json"
+fi
 echo ""
 echo "Key metrics to check:"
 echo "  - Temporal reuse curve (data/analysis/plots/temporal_reuse_curve.png)"

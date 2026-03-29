@@ -6,6 +6,10 @@ This document defines the current routing-simulation design:
 - Each scheme transforms scores, then routing is always **top-k** from transformed scores.
 - Baseline routing does not need a separate scheme: it is already in trace `expert_ids` and corresponds to `W=1` for score averaging.
 
+Real-inference benchmarking now uses the same scheme family and sweep set via
+`scripts/run_real_routing_benchmark.py`, with per-request config passed in
+`custom_params.moe_routing`.
+
 Terminology:
 - This document describes **simulation-time score transforms** and does not yet implement separate prefill/decode runtime paths.
 - `cache accounting` here means simulation accounting for expert locality, not the live serving cache implementation.
@@ -103,6 +107,24 @@ For simulated chosen experts vs baseline trace experts:
 `baseline_ssd_fetches_per_token` is computed from baseline trace routing under the same cache accounting rule.
 
 Expert cache accounting currently uses per-layer LRU with fixed `capacity_per_layer=25` (about 1000 expert slots total for 40 layers).
+
+## Metrics (real-inference benchmark)
+
+The real benchmark reports per-run and aggregated metrics per scheme/parameter set:
+
+- Runtime:
+  - `elapsed_seconds`
+  - `tokens_per_second`
+  - `speedup_ratio` (relative to baseline tokens/sec on the same prompt)
+- Quality proxy (text-level against baseline output on same prompt and seed):
+  - `quality_similarity` (difflib sequence ratio)
+  - `quality_jaccard` (token-set Jaccard)
+  - `quality_degradation = 1 - quality_similarity`
+- Combined score:
+  - `quality_speed_score = quality_similarity * speedup_ratio`
+
+In addition, generated text is persisted for every run so quality can be
+inspected qualitatively and via downstream metrics.
 
 ## Practical sweep recommendation
 

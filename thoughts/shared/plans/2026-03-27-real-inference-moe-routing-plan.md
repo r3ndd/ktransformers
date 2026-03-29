@@ -164,6 +164,17 @@ Deliverables:
 - Comparable result tables/plots across schemes and parameters.
 - Regression checks vs simulation expectations.
 
+Status update (current implementation):
+- Added `scripts/run_real_routing_benchmark.py` to run baseline + routing sweeps on one long-lived server.
+- Requests are executed sequentially (no batching) with fixed seed.
+- Per-run outputs include generated text and runtime metrics.
+- Aggregated results include simulation-style tradeoff fields (`quality_degradation`, `speedup_ratio`, `quality_speed_score`) using real inference measurements.
+- Output artifacts:
+  - `data/real_benchmark/runs.jsonl`
+  - `data/real_benchmark/generated_texts.jsonl`
+  - `data/real_benchmark/results.json`
+  - `data/real_benchmark/summary.json`
+
 ## Phase 7: Hardening
 - Add robust fallback on runtime exceptions in routing path.
 - Add metric tags: scheme, parameter hash, prompt_id, category.
