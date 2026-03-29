@@ -359,7 +359,11 @@ class BaseMoEWrapper(ABC):
         if req_collectors and not is_capturing:
             req = None
             try:
-                req = self._extract_request_from_scores(all_expert_scores)
+                req = self._extract_request_from_tensors(
+                    all_expert_scores,
+                    topk_ids,
+                    topk_weights,
+                )
             except Exception:
                 req = None
             if req is not None:
@@ -568,15 +572,24 @@ class BaseMoEWrapper(ABC):
         BaseMoEWrapper._req_collectors.pop(req, None)
 
     @staticmethod
-    def _extract_request_from_scores(all_expert_scores: Optional[torch.Tensor]) -> object | None:
-        if all_expert_scores is None:
-            return None
-        try:
-            custom_params = getattr(all_expert_scores, "_kt_custom_params", None)
-            if isinstance(custom_params, dict):
-                return custom_params.get("__req__")
-        except Exception:
-            return None
+    def _extract_request_from_tensors(*tensors: Optional[torch.Tensor]) -> object | None:
+        for tensor in tensors:
+            if tensor is None:
+                continue
+            try:
+                custom_params = getattr(tensor, "_kt_custom_params", None)
+                if isinstance(custom_params, dict):
+                    req = custom_params.get("__req__")
+                    if req is not None:
+                        return req
+                if isinstance(custom_params, list):
+                    for cp in custom_params:
+                        if isinstance(cp, dict):
+                            req = cp.get("__req__")
+                            if req is not None:
+                                return req
+            except Exception:
+                continue
         return None
 
     @staticmethod

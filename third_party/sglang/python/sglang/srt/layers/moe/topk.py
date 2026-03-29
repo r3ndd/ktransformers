@@ -945,14 +945,21 @@ def select_experts(
             router_logits=router_logits,
         )
 
-    if request_custom_params is not None and len(request_custom_params) == router_logits.shape[0]:
+    token_custom_params = request_custom_params
+    if request_custom_params is not None and len(request_custom_params) != router_logits.shape[0]:
+        if len(request_custom_params) == 1:
+            token_custom_params = request_custom_params * router_logits.shape[0]
+        else:
+            token_custom_params = None
+
+    if token_custom_params is not None and len(token_custom_params) == router_logits.shape[0]:
         capture_len = router_logits.shape[0]
         if fwd_batch is not None and fwd_batch.forward_mode.is_prefill() and fwd_batch.extend_seq_lens is not None:
             try:
                 capture_len = int(torch.sum(fwd_batch.extend_seq_lens).item())
             except Exception:
                 capture_len = router_logits.shape[0]
-        for i, cp in enumerate(request_custom_params):
+        for i, cp in enumerate(token_custom_params):
             if not isinstance(cp, dict):
                 continue
             req_obj = cp.get("__req__")
@@ -971,7 +978,9 @@ def select_experts(
                 continue
 
     try:
-        if request_custom_params is not None:
+        if token_custom_params is not None:
+            setattr(router_logits, "_kt_custom_params", token_custom_params)
+        elif request_custom_params is not None:
             setattr(router_logits, "_kt_custom_params", request_custom_params)
     except Exception:
         pass
@@ -999,6 +1008,13 @@ def select_experts(
             info=expert_location_dispatch_info,
         )
     )
+    try:
+        if token_custom_params is not None:
+            setattr(router_logits, "_kt_custom_params", token_custom_params)
+        elif request_custom_params is not None:
+            setattr(router_logits, "_kt_custom_params", request_custom_params)
+    except Exception:
+        pass
 
     # DeepSeek V2/V3/R1 series models use grouped_top_k
     # remove num_fused_shared_experts from grouped_topk/biased_grouped_topk

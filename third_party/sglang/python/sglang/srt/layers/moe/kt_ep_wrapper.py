@@ -2116,7 +2116,7 @@ class KTEPWrapperMethod(FusedMoEMethodBase):
             gpu_cap = int(getattr(sargs, "kt_expert_gpu_cache_capacity", 0) or 0)
             cpu_cap = int(getattr(sargs, "kt_expert_cpu_cache_capacity", 0) or 0)
             self._tier_manager = ExpertTierResidencyManager(
-                num_layers=kt_config.num_layers or (kt_config.layer_idx + 1),
+                num_layers=self.kt_config.num_layers or (self.kt_config.layer_idx + 1),
                 num_experts=num_experts,
                 cache_mode=mode,
                 gpu_capacity=gpu_cap,
