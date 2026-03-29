@@ -15,7 +15,6 @@ Outputs include:
 from __future__ import annotations
 
 import argparse
-import difflib
 import hashlib
 import json
 import os
@@ -208,6 +207,7 @@ def _build_default_experiments() -> list[dict]:
         {"scheme": "two_timescale_softmax", "params": {"mix_lambda": 0.2, "rho": 1024.0}},
     ]
     prefill_cfgs: list[dict] = [
+        {"scheme": "prefill_block_mean", "params": {"window_size": 1}},
         {"scheme": "prefill_block_mean", "params": {"window_size": 32}},
         {"scheme": "prefill_block_mean", "params": {"window_size": 64}},
         {"scheme": "prefill_block_mean", "params": {"window_size": 128}},
@@ -218,7 +218,7 @@ def _build_default_experiments() -> list[dict]:
 
     for d in decode_cfgs:
         cfg = {
-            "prefill": {"scheme": "prefill_block_mean", "params": {"window_size": 64}},
+            "prefill": {"scheme": "prefill_block_mean", "params": {"window_size": 1}},
             "decode": d,
             "scope": "request",
         }
@@ -247,6 +247,12 @@ def _build_experiments(max_experiments: int | None = None) -> list[dict]:
     if max_experiments is not None:
         experiments = experiments[:max_experiments]
     return experiments
+
+
+def _ordered_experiments(experiments: list[dict]) -> list[dict]:
+    baseline = [e for e in experiments if str(e.get("name")) == "baseline"]
+    others = [e for e in experiments if str(e.get("name")) != "baseline"]
+    return baseline + others
 
 
 def _wait_healthy(port: int, server_proc: subprocess.Popen, log_file: Path, timeout_s: int = 180) -> None:
@@ -386,10 +392,6 @@ def _tokenize_simple(text: str | None) -> set[str]:
     return set(t for t in text.lower().split() if t)
 
 
-def _text_similarity(a: str | None, b: str | None) -> float:
-    return float(difflib.SequenceMatcher(a=(a or ""), b=(b or "")).ratio())
-
-
 def _jaccard_similarity(a: str | None, b: str | None) -> float:
     sa = _tokenize_simple(a)
     sb = _tokenize_simple(b)
@@ -481,7 +483,11 @@ def _run_single_request(
     prompt_tokens = int(usage.get("prompt_tokens") or 0)
     completion_tokens = int(usage.get("completion_tokens") or 0)
     total_tokens = int(usage.get("total_tokens") or (prompt_tokens + completion_tokens))
-    toks_per_sec = float(completion_tokens / elapsed_s) if elapsed_s > 0 and completion_tokens > 0 else 0.0
+    decode_toks_per_sec = (
+        float(completion_tokens / elapsed_s) if elapsed_s > 0 and completion_tokens > 0 else 0.0
+    )
+    prefill_toks_per_sec = float(prompt_tokens / elapsed_s) if elapsed_s > 0 and prompt_tokens > 0 else 0.0
+    e2e_toks_per_sec = float(total_tokens / elapsed_s) if elapsed_s > 0 and total_tokens > 0 else 0.0
 
     rec = {
         "prompt_id": prompt_id,
@@ -491,7 +497,9 @@ def _run_single_request(
         "context_id": context_id,
         "seed": SEED,
         "elapsed_seconds": elapsed_s,
-        "tokens_per_second": toks_per_sec,
+        "decode_tokens_per_second": decode_toks_per_sec,
+        "prefill_tokens_per_second": prefill_toks_per_sec,
+        "e2e_tokens_per_second": e2e_toks_per_sec,
         "prompt_tokens": prompt_tokens,
         "completion_tokens": completion_tokens,
         "total_tokens": total_tokens,
@@ -519,49 +527,44 @@ def _run_single_request(
     return rec
 
 
+def _apply_baseline_relative_metrics(rec: dict, baseline: dict | None) -> dict:
+    rr = dict(rec)
+    if not rr.get("success"):
+        return rr
+
+    if baseline is None:
+        rr["quality_jaccard"] = None
+        rr["quality_degradation"] = None
+        rr["speedup_ratio"] = None
+        rr["decode_speedup_ratio"] = None
+        rr["latency_ratio"] = None
+        rr["quality_speed_score"] = None
+        rr["exact_text_match"] = None
+        return rr
+
+    jac = _jaccard_similarity(rr.get("generated_text"), baseline.get("generated_text"))
+    rr["quality_jaccard"] = jac
+    rr["quality_degradation"] = 1.0 - jac
+
+    base_tps = float(baseline.get("decode_tokens_per_second") or 0.0)
+    cur_tps = float(rr.get("decode_tokens_per_second") or 0.0)
+    rr["decode_speedup_ratio"] = (cur_tps / base_tps) if base_tps > 0 and cur_tps > 0 else None
+
+    base_e2e_tps = float(baseline.get("e2e_tokens_per_second") or 0.0)
+    cur_e2e_tps = float(rr.get("e2e_tokens_per_second") or 0.0)
+    rr["speedup_ratio"] = (cur_e2e_tps / base_e2e_tps) if base_e2e_tps > 0 and cur_e2e_tps > 0 else None
+
+    base_e2e = float(baseline.get("elapsed_seconds") or 0.0)
+    cur_e2e = float(rr.get("elapsed_seconds") or 0.0)
+    rr["latency_ratio"] = (cur_e2e / base_e2e) if base_e2e > 0 and cur_e2e > 0 else None
+
+    rr["quality_speed_score"] = jac * rr["speedup_ratio"] if rr["speedup_ratio"] is not None else None
+    rr["exact_text_match"] = bool((rr.get("generated_text") or "") == (baseline.get("generated_text") or ""))
+    return rr
+
+
 def _aggregate_results(results: list[dict], experiments: list[dict]) -> dict:
-    baseline_by_prompt: dict[str, dict] = {}
-    for r in results:
-        if r.get("success") and r.get("experiment") == "baseline":
-            baseline_by_prompt[str(r["prompt_id"])] = r
-
-    enriched: list[dict] = []
-    for r in results:
-        rr = dict(r)
-        if not rr.get("success"):
-            enriched.append(rr)
-            continue
-
-        prompt_id = str(rr["prompt_id"])
-        base = baseline_by_prompt.get(prompt_id)
-        if base is None:
-            rr["quality_similarity"] = None
-            rr["quality_jaccard"] = None
-            rr["quality_degradation"] = None
-            rr["speedup_ratio"] = None
-        else:
-            sim = _text_similarity(rr.get("generated_text"), base.get("generated_text"))
-            jac = _jaccard_similarity(rr.get("generated_text"), base.get("generated_text"))
-            rr["quality_similarity"] = sim
-            rr["quality_jaccard"] = jac
-            rr["quality_degradation"] = 1.0 - sim
-
-            base_tps = float(base.get("tokens_per_second") or 0.0)
-            cur_tps = float(rr.get("tokens_per_second") or 0.0)
-            rr["speedup_ratio"] = (cur_tps / base_tps) if base_tps > 0 and cur_tps > 0 else None
-
-            base_e2e = float(base.get("elapsed_seconds") or 0.0)
-            cur_e2e = float(rr.get("elapsed_seconds") or 0.0)
-            rr["latency_ratio"] = (cur_e2e / base_e2e) if base_e2e > 0 and cur_e2e > 0 else None
-
-            if rr["speedup_ratio"] is not None:
-                rr["quality_speed_score"] = sim * rr["speedup_ratio"]
-            else:
-                rr["quality_speed_score"] = None
-
-            rr["exact_text_match"] = bool((rr.get("generated_text") or "") == (base.get("generated_text") or ""))
-
-        enriched.append(rr)
+    enriched: list[dict] = [dict(r) for r in results]
 
     exp_runs: dict[str, list[dict]] = {}
     for r in enriched:
@@ -593,11 +596,13 @@ def _aggregate_results(results: list[dict], experiments: list[dict]) -> dict:
             "avg_prompt_tokens": _avg(ok_rows, "prompt_tokens"),
             "avg_completion_tokens": _avg(ok_rows, "completion_tokens"),
             "avg_elapsed_seconds": _avg(ok_rows, "elapsed_seconds"),
-            "avg_tokens_per_second": _avg(ok_rows, "tokens_per_second"),
-            "quality_similarity": _avg(ok_rows, "quality_similarity"),
+            "avg_decode_tokens_per_second": _avg(ok_rows, "decode_tokens_per_second"),
+            "avg_prefill_tokens_per_second": _avg(ok_rows, "prefill_tokens_per_second"),
+            "avg_e2e_tokens_per_second": _avg(ok_rows, "e2e_tokens_per_second"),
             "quality_jaccard": _avg(ok_rows, "quality_jaccard"),
             "quality_degradation": _avg(ok_rows, "quality_degradation"),
             "speedup_ratio": _avg(ok_rows, "speedup_ratio"),
+            "decode_speedup_ratio": _avg(ok_rows, "decode_speedup_ratio"),
             "latency_ratio": _avg(ok_rows, "latency_ratio"),
             "quality_speed_score": _avg(ok_rows, "quality_speed_score"),
             "exact_text_match_rate": _rate(ok_rows, "exact_text_match"),
@@ -609,13 +614,23 @@ def _aggregate_results(results: list[dict], experiments: list[dict]) -> dict:
         "runs": runs_summary,
         "details": enriched,
         "metric_note": {
-            "quality_similarity": "difflib ratio against baseline text for same prompt_id and seed",
-            "quality_degradation": "1.0 - quality_similarity",
-            "speedup_ratio": "tokens_per_second / baseline_tokens_per_second for same prompt_id",
-            "quality_speed_score": "quality_similarity * speedup_ratio",
+            "quality_jaccard": "token-set Jaccard similarity against baseline text for same prompt_id and seed",
+            "quality_degradation": "1.0 - quality_jaccard",
+            "decode_tokens_per_second": "completion_tokens / elapsed_seconds",
+            "prefill_tokens_per_second": "prompt_tokens / elapsed_seconds",
+            "e2e_tokens_per_second": "total_tokens / elapsed_seconds (prefill + decode)",
+            "speedup_ratio": "e2e_tokens_per_second / baseline_e2e_tokens_per_second for same prompt_id",
+            "decode_speedup_ratio": "decode_tokens_per_second / baseline_decode_tokens_per_second for same prompt_id",
+            "quality_speed_score": "quality_jaccard * speedup_ratio",
             "latency_ratio": "elapsed_seconds / baseline_elapsed_seconds for same prompt_id",
         },
     }
+
+
+def _runs_jsonl_row(row: dict) -> dict:
+    out = dict(row)
+    out.pop("generated_text", None)
+    return out
 
 
 def parse_args() -> argparse.Namespace:
@@ -635,7 +650,7 @@ def main() -> int:
     weight_path, kt_method = _resolve_weight_path_and_method()
     _validate_inputs(weight_path)
     prompts = _load_prompts(prompt_id=args.prompt_id, max_prompts=args.max_prompts)
-    experiments = _build_experiments(max_experiments=args.max_experiments)
+    experiments = _ordered_experiments(_build_experiments(max_experiments=args.max_experiments))
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     TRACE_DIR.mkdir(parents=True, exist_ok=True)
@@ -662,20 +677,9 @@ def main() -> int:
     server = _start_server(weight_path=weight_path, kt_method=kt_method, port=port, log_file=server_log_file)
 
     results: list[dict] = []
+    baseline_by_prompt: dict[str, dict] = {}
     try:
         _wait_healthy(port, server, server_log_file)
-
-        warmup_prompt = prompts[0]
-        warmup_exp = experiments[0]
-        _ = _run_single_request(
-            port=port,
-            prompt_entry=warmup_prompt,
-            experiment=warmup_exp,
-            run_index=1,
-            run_total=max(1, len(prompts) * len(experiments)),
-            collect_trace=False,
-        )
-        print("[real_benchmark] Warmup complete", flush=True)
 
         total_runs = len(prompts) * len(experiments)
         run_index = 0
@@ -683,7 +687,7 @@ def main() -> int:
             for exp in experiments:
                 run_index += 1
                 try:
-                    rec = _run_single_request(
+                    raw_rec = _run_single_request(
                         port=port,
                         prompt_entry=prompt,
                         experiment=exp,
@@ -691,9 +695,14 @@ def main() -> int:
                         run_total=total_runs,
                         collect_trace=args.collect_traces,
                     )
+                    prompt_id = str(raw_rec["prompt_id"])
+                    if str(raw_rec.get("experiment")) == "baseline":
+                        baseline_by_prompt[prompt_id] = raw_rec
+                    baseline = baseline_by_prompt.get(prompt_id)
+                    rec = _apply_baseline_relative_metrics(raw_rec, baseline)
                     results.append(rec)
                     with RUNS_JSONL.open("a", encoding="utf-8") as f:
-                        f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+                        f.write(json.dumps(_runs_jsonl_row(rec), ensure_ascii=False) + "\n")
                     with GENERATED_TEXT_JSONL.open("a", encoding="utf-8") as f:
                         f.write(
                             json.dumps(
