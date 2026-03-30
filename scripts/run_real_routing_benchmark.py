@@ -88,6 +88,15 @@ MIN_P = float(os.environ.get("COLLECTION_MIN_P", "0.0"))
 PRESENCE_PENALTY = float(os.environ.get("COLLECTION_PRESENCE_PENALTY", "1.5"))
 REPETITION_PENALTY = float(os.environ.get("COLLECTION_REPETITION_PENALTY", "1.0"))
 SERVED_MODEL_NAME = os.environ.get("COLLECTION_MODEL_NAME", "Qwen3.5-35B-A3B")
+DETERMINISTIC_DEFAULT = os.environ.get("REAL_BENCHMARK_DETERMINISTIC", "0").strip().lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+}
+DETERMINISTIC_TOKENS = int(os.environ.get("REAL_BENCHMARK_DETERMINISTIC_TOKENS", "256"))
+KT_HOT_EXPERT_RATIO = float(os.environ.get("REAL_BENCHMARK_KT_HOT_EXPERT_RATIO", "0.10"))
+KT_GPU_SHARE_OF_HOT = float(os.environ.get("REAL_BENCHMARK_KT_GPU_SHARE_OF_HOT", "0.35"))
 CHAT_TEMPLATE_PATH = Path(
     os.environ.get(
         "COLLECTION_CHAT_TEMPLATE",
@@ -176,6 +185,33 @@ def _load_prompts(prompt_id: str | None = None, max_prompts: int | None = None) 
             raise ValueError(f"--max-prompts must be >= 1, got: {max_prompts}")
         prompts = prompts[:max_prompts]
     return prompts
+
+
+def _read_model_num_experts() -> int:
+    cfg_path = MODEL_PATH / "config.json"
+    try:
+        cfg = json.loads(_read_text(cfg_path))
+    except Exception as e:
+        raise RuntimeError(f"Failed to parse model config at {cfg_path}: {e}") from e
+
+    text_cfg = cfg.get("text_config") if isinstance(cfg, dict) else None
+    if isinstance(text_cfg, dict) and text_cfg.get("num_experts") is not None:
+        return int(text_cfg["num_experts"])
+    if isinstance(cfg, dict) and cfg.get("num_experts") is not None:
+        return int(cfg["num_experts"])
+    raise ValueError(f"Could not find num_experts in model config: {cfg_path}")
+
+
+def _compute_tier_caps(num_experts: int) -> tuple[int, int, int]:
+    hot_total = int(round(float(num_experts) * KT_HOT_EXPERT_RATIO))
+    hot_total = max(1, min(num_experts, hot_total))
+
+    gpu_cap = int(round(float(hot_total) * KT_GPU_SHARE_OF_HOT))
+    gpu_cap = max(1, min(hot_total, gpu_cap))
+
+    cpu_cap = hot_total - gpu_cap
+    cpu_cap = max(0, min(num_experts - gpu_cap, cpu_cap))
+    return hot_total, gpu_cap, cpu_cap
 
 
 def _routing_name(prefix: str, cfg: dict) -> str:
@@ -318,7 +354,16 @@ def _build_server_env() -> dict[str, str]:
     return env
 
 
-def _start_server(weight_path: Path, kt_method: str, port: int, log_file: Path) -> subprocess.Popen:
+def _start_server(
+    weight_path: Path,
+    kt_method: str,
+    port: int,
+    log_file: Path,
+    *,
+    gpu_experts_per_layer: int,
+    gpu_cache_capacity: int,
+    cpu_cache_capacity: int,
+) -> subprocess.Popen:
     env = _build_server_env()
     with open(log_file, "w", encoding="utf-8") as lf:
         proc = subprocess.Popen(
@@ -342,7 +387,7 @@ def _start_server(weight_path: Path, kt_method: str, port: int, log_file: Path) 
                 "--kt-threadpool-count",
                 "1",
                 "--kt-num-gpu-experts",
-                "1",
+                str(gpu_experts_per_layer),
                 "--kt-method",
                 kt_method,
                 "--kt-gpu-prefill-token-threshold",
@@ -352,9 +397,9 @@ def _start_server(weight_path: Path, kt_method: str, port: int, log_file: Path) 
                 "--kt-expert-cache-mode",
                 os.environ.get("COLLECTION_KT_EXPERT_CACHE_MODE", "layerwise"),
                 "--kt-expert-gpu-cache-capacity",
-                os.environ.get("COLLECTION_KT_EXPERT_GPU_CACHE_CAPACITY", "25"),
+                os.environ.get("COLLECTION_KT_EXPERT_GPU_CACHE_CAPACITY", str(gpu_cache_capacity)),
                 "--kt-expert-cpu-cache-capacity",
-                os.environ.get("COLLECTION_KT_EXPERT_CPU_CACHE_CAPACITY", "128"),
+                os.environ.get("COLLECTION_KT_EXPERT_CPU_CACHE_CAPACITY", str(cpu_cache_capacity)),
                 "--attention-backend",
                 "triton",
                 "--sampling-backend",
@@ -422,6 +467,7 @@ def _run_single_request(
     run_index: int,
     run_total: int,
     collect_trace: bool,
+    deterministic: bool,
 ) -> dict:
     prompt_id = str(prompt_entry["id"])
     category = str(prompt_entry["category"])
@@ -451,6 +497,20 @@ def _run_single_request(
             "trace_file": str(trace_file),
         }
 
+    max_tokens = MAX_TOKENS
+    min_tokens = MIN_TOKENS
+    temperature = TEMPERATURE
+    top_p = TOP_P
+    top_k = TOP_K
+    min_p = MIN_P
+    if deterministic:
+        max_tokens = DETERMINISTIC_TOKENS
+        min_tokens = DETERMINISTIC_TOKENS
+        temperature = 0.0
+        top_p = 1.0
+        top_k = 1
+        min_p = 0.0
+
     request_payload = {
         "model": SERVED_MODEL_NAME,
         "rid": f"bench_{prompt_id}_{exp_name}_{uuid.uuid4().hex[:10]}",
@@ -462,12 +522,12 @@ def _run_single_request(
         "separate_reasoning": False,
         "stream_reasoning": False,
         "seed": SEED,
-        "max_tokens": MAX_TOKENS,
-        "min_tokens": MIN_TOKENS,
-        "temperature": TEMPERATURE,
-        "top_p": TOP_P,
-        "top_k": TOP_K,
-        "min_p": MIN_P,
+        "max_tokens": max_tokens,
+        "min_tokens": min_tokens,
+        "temperature": temperature,
+        "top_p": top_p,
+        "top_k": top_k,
+        "min_p": min_p,
         "presence_penalty": PRESENCE_PENALTY,
         "repetition_penalty": REPETITION_PENALTY,
         "stream": True,
@@ -741,6 +801,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-experiments", type=int, default=None, help="Limit experiment count")
     parser.add_argument("--collect-traces", action="store_true", help="Also emit per-run parquet traces")
     parser.add_argument("--no-fail-fast", action="store_true", help="Continue on failures")
+    parser.add_argument(
+        "--deterministic",
+        action="store_true",
+        default=DETERMINISTIC_DEFAULT,
+        help=(
+            "Force deterministic decoding: temperature=0, top_p=1, top_k=1, min_p=0, "
+            "and min_tokens=max_tokens=256"
+        ),
+    )
     return parser.parse_args()
 
 
@@ -752,6 +821,8 @@ def main() -> int:
     _validate_inputs(weight_path)
     prompts = _load_prompts(prompt_id=args.prompt_id, max_prompts=args.max_prompts)
     experiments = _ordered_experiments(_build_experiments(max_experiments=args.max_experiments))
+    model_num_experts = _read_model_num_experts()
+    hot_total, gpu_cap, cpu_cap = _compute_tier_caps(model_num_experts)
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     TRACE_DIR.mkdir(parents=True, exist_ok=True)
@@ -769,13 +840,27 @@ def main() -> int:
     print(f"Prompts: {len(prompts)}", flush=True)
     print(f"Experiments: {len(experiments)}", flush=True)
     print(f"Collect traces: {args.collect_traces}", flush=True)
+    print(f"Deterministic mode: {args.deterministic}", flush=True)
+    print(
+        f"KT tier caps (per-layer): hot_total={hot_total} ({KT_HOT_EXPERT_RATIO:.1%}), "
+        f"gpu={gpu_cap} ({KT_GPU_SHARE_OF_HOT:.1%} of hot), cpu={cpu_cap}, ssd={max(model_num_experts - hot_total, 0)}",
+        flush=True,
+    )
 
     port = _pick_available_port(DEFAULT_PORT)
     if port != DEFAULT_PORT:
         print(f"[real_benchmark] Port {DEFAULT_PORT} busy; using {port}.", flush=True)
 
     server_log_file = OUTPUT_DIR / "benchmark_server.log"
-    server = _start_server(weight_path=weight_path, kt_method=kt_method, port=port, log_file=server_log_file)
+    server = _start_server(
+        weight_path=weight_path,
+        kt_method=kt_method,
+        port=port,
+        log_file=server_log_file,
+        gpu_experts_per_layer=gpu_cap,
+        gpu_cache_capacity=gpu_cap,
+        cpu_cache_capacity=cpu_cap,
+    )
 
     results: list[dict] = []
     baseline_by_prompt: dict[str, dict] = {}
@@ -795,6 +880,7 @@ def main() -> int:
                         run_index=run_index,
                         run_total=total_runs,
                         collect_trace=args.collect_traces,
+                        deterministic=args.deterministic,
                     )
                     prompt_id = str(raw_rec["prompt_id"])
                     if str(raw_rec.get("experiment")) == "baseline":
