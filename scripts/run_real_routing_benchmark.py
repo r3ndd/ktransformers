@@ -26,6 +26,7 @@ import subprocess
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 import uuid
 from pathlib import Path
@@ -72,7 +73,7 @@ OUTPUT_DIR = Path(
 TRACE_DIR = OUTPUT_DIR / "traces"
 RESULTS_JSON = OUTPUT_DIR / "results.json"
 SUMMARY_JSON = OUTPUT_DIR / "summary.json"
-GENERATED_TEXT_MD = OUTPUT_DIR / "generated_texts.md"
+GENERATED_TEXT_DIR = OUTPUT_DIR / "generated_texts"
 LEGACY_RUNS_JSONL = OUTPUT_DIR / "runs.jsonl"
 
 PYTHON_BIN = os.environ.get("PYTHON_BIN", "python3")
@@ -116,7 +117,7 @@ TIER_STAT_KEYS = [
     "demotions_from_cpu",
 ]
 _TIER_STATS_RE = re.compile(
-    r"KT_TIER_STATS cumulative "
+    r"KT_TIER_STATS layer=(?P<layer_id>\d+) cumulative "
     r"gpu_hits=(?P<gpu_hits>\d+) "
     r"cpu_hits=(?P<cpu_hits>\d+) "
     r"ssd_loads=(?P<ssd_loads>\d+) "
@@ -234,23 +235,81 @@ def _compute_tier_caps(num_experts: int) -> tuple[int, int, int]:
     return hot_total, gpu_cap, cpu_cap
 
 
-def _read_tier_stats_snapshot(log_file: Path) -> dict | None:
+def _reset_tier_stats(port: int, context_id: str) -> None:
+    payload = json.dumps({"context_id": context_id}).encode("utf-8")
+    req = urllib.request.Request(
+        f"http://127.0.0.1:{port}/kt/tier_stats/reset",
+        data=payload,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=10):
+        pass
+
+
+def _get_tier_stats(port: int, context_id: str) -> dict | None:
+    try:
+        with urllib.request.urlopen(
+            f"http://127.0.0.1:{port}/kt/tier_stats?context_id={urllib.parse.quote(context_id)}",
+            timeout=10,
+        ) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+        if not isinstance(data, dict):
+            return None
+        out: dict[str, int] = {}
+        for k in TIER_STAT_KEYS:
+            out[k] = max(0, int(data.get(k, 0)))
+        out["layers_seen"] = max(0, int(data.get("layers_seen", 0)))
+        return out
+    except Exception:
+        return None
+
+
+def _read_tier_stats_from_output_file(output_file: Path) -> dict | None:
+    if not output_file.exists():
+        return None
+    try:
+        data = json.loads(_read_text(output_file))
+    except Exception:
+        return None
+    if not isinstance(data, dict):
+        return None
+    raw = data.get("tier_stats_delta")
+    if not isinstance(raw, dict):
+        return None
+    out: dict[str, int] = {}
+    for k in TIER_STAT_KEYS:
+        out[k] = max(0, int(raw.get(k, 0)))
+    out["layers_seen"] = max(0, int(raw.get("layers_seen", 0)))
+    return out
+
+
+def _read_tier_stats_snapshot_from_log(log_file: Path) -> dict | None:
     if not log_file.exists():
         return None
     text = _read_text(log_file)
     matches = list(_TIER_STATS_RE.finditer(text))
     if not matches:
         return None
-    m = matches[-1]
-    return {k: int(m.group(k)) for k in TIER_STAT_KEYS}
+    latest_by_layer: dict[int, dict[str, int]] = {}
+    for m in matches:
+        layer_id = int(m.group("layer_id"))
+        latest_by_layer[layer_id] = {k: int(m.group(k)) for k in TIER_STAT_KEYS}
+    out = {k: 0 for k in TIER_STAT_KEYS}
+    for stats in latest_by_layer.values():
+        for k in TIER_STAT_KEYS:
+            out[k] += int(stats.get(k, 0))
+    out["layers_seen"] = len(latest_by_layer)
+    return out
 
 
-def _tier_stats_delta(start: dict | None, end: dict | None) -> dict | None:
-    if not start or not end:
+def _tier_stats_delta_from_snapshots(start: dict | None, end: dict | None) -> dict | None:
+    if not isinstance(start, dict) or not isinstance(end, dict):
         return None
     out: dict[str, int] = {}
     for k in TIER_STAT_KEYS:
-        out[k] = int(end.get(k, 0)) - int(start.get(k, 0))
+        out[k] = max(0, int(end.get(k, 0)) - int(start.get(k, 0)))
+    out["layers_seen"] = max(int(start.get("layers_seen", 0)), int(end.get("layers_seen", 0)))
     return out
 
 
@@ -269,15 +328,17 @@ def _strip_output_detail_metrics(row: dict) -> dict:
         "e2e_tokens_per_second",
     ]:
         out.pop(k, None)
-    out.pop("tier_stats_start", None)
-    out.pop("tier_stats_end", None)
     out.pop("tier_stats_delta", None)
     for k in TIER_STAT_KEYS:
         out.pop(f"tier_delta_{k}", None)
     return out
 
 
-def _append_generated_text_markdown(path: Path, rec: dict, prompt_text: str) -> None:
+def _generated_text_file(prompt_id: str, experiment: str) -> Path:
+    return GENERATED_TEXT_DIR / f"output_{prompt_id}_{experiment}.md"
+
+
+def _write_generated_text_markdown(path: Path, rec: dict, prompt_text: str) -> None:
     prompt_id = str(rec.get("prompt_id", "<unknown>"))
     experiment = str(rec.get("experiment", "<unknown>"))
     seed = rec.get("seed")
@@ -288,25 +349,107 @@ def _append_generated_text_markdown(path: Path, rec: dict, prompt_text: str) -> 
     text = generated_text.strip() if isinstance(generated_text, str) else ""
     if not text:
         text = "<empty>"
+    moe_routing = rec.get("moe_routing") if isinstance(rec.get("moe_routing"), dict) else None
+    if moe_routing is None:
+        routing_lines = ["prefill: baseline (none)", "decode: baseline (none)"]
+    else:
+        prefill = moe_routing.get("prefill") if isinstance(moe_routing.get("prefill"), dict) else {}
+        decode = moe_routing.get("decode") if isinstance(moe_routing.get("decode"), dict) else {}
+        prefill_scheme = prefill.get("scheme", "<unknown>")
+        decode_scheme = decode.get("scheme", "<unknown>")
+        prefill_params = prefill.get("params", {})
+        decode_params = decode.get("params", {})
+        routing_lines = [
+            f"prefill: {prefill_scheme}",
+            f"prefill_params: {json.dumps(prefill_params, sort_keys=True)}",
+            f"decode: {decode_scheme}",
+            f"decode_params: {json.dumps(decode_params, sort_keys=True)}",
+        ]
 
-    with path.open("a", encoding="utf-8") as f:
-        f.write(f"## prompt_id: {prompt_id} | experiment: {experiment} | seed: {seed}\n\n")
-        f.write("### Prompt\n\n")
-        f.write(prompt)
-        f.write("\n\n")
-        f.write("### Generated Text\n\n")
-        f.write(text)
-        f.write("\n\n---\n\n")
+    path.write_text(
+        "\n".join(
+            [
+                f"## prompt_id: {prompt_id} | experiment: {experiment} | seed: {seed}",
+                "",
+                "### MoE Routing",
+                "",
+                *routing_lines,
+                "",
+                "### Prompt",
+                "",
+                prompt,
+                "",
+                "### Generated Text",
+                "",
+                text,
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
 
 
 def _strip_results_detail_row(row: dict) -> dict:
     out = dict(row)
     out.pop("seed", None)
     out.pop("generated_text", None)
-    out.pop("tier_stats_start", None)
-    out.pop("tier_stats_end", None)
     for k in TIER_STAT_KEYS:
         out.pop(f"tier_delta_{k}", None)
+    out.pop("tier_layers_seen", None)
+    return out
+
+
+def _normalize_tier_delta_in_row(row: dict) -> dict:
+    out = dict(row)
+    delta = out.get("tier_stats_delta")
+    if not isinstance(delta, dict):
+        return out
+    nd = dict(delta)
+    for k in TIER_STAT_KEYS:
+        if k in nd and nd[k] is not None:
+            try:
+                nd[k] = int(nd[k])
+            except Exception:
+                pass
+    out["tier_stats_delta"] = nd
+    return out
+
+
+def _prompt_results_file(prompt_id: str) -> Path:
+    return OUTPUT_DIR / f"results_{prompt_id}.json"
+
+
+def _write_prompt_results_files(results: list[dict], metric_note: dict) -> None:
+    by_prompt: dict[str, list[dict]] = {}
+    for row in results:
+        pid = row.get("prompt_id")
+        if pid is None:
+            continue
+        key = str(pid)
+        by_prompt.setdefault(key, []).append(_strip_results_detail_row(row))
+
+    for prompt_id, rows in by_prompt.items():
+        rows.sort(key=lambda r: (str(r.get("experiment")) != "baseline", str(r.get("experiment"))))
+        payload = {
+            "prompt_id": prompt_id,
+            "runs": rows,
+            "metric_note": metric_note,
+        }
+        _prompt_results_file(prompt_id).write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
+def _sanitize_run_for_details(rec: dict) -> dict:
+    out = dict(rec)
+    out.pop("seed", None)
+    out.pop("generated_text", None)
+    out.pop("tier_delta_gpu_hits", None)
+    out.pop("tier_delta_cpu_hits", None)
+    out.pop("tier_delta_ssd_loads", None)
+    out.pop("tier_delta_promotions_to_gpu", None)
+    out.pop("tier_delta_promotions_to_cpu", None)
+    out.pop("tier_delta_demotions_from_gpu", None)
+    out.pop("tier_delta_demotions_from_cpu", None)
+    out.pop("tier_layers_seen", None)
     return out
 
 
@@ -583,6 +726,7 @@ def _run_single_request(
     print(f"[{run_index}/{run_total}] {prompt_id} [{exp_name}]", flush=True)
 
     custom_params: dict = {}
+    custom_params["kt_tier_context_id"] = context_id
     if experiment.get("moe_routing") is not None:
         custom_params["moe_routing"] = experiment["moe_routing"]
     if collect_trace:
@@ -649,8 +793,9 @@ def _run_single_request(
         headers={"Content-Type": "application/json"},
     )
 
+    _reset_tier_stats(port, context_id)
+    tier_stats_start_log = _read_tier_stats_snapshot_from_log(server_log_file)
     t0 = time.perf_counter()
-    tier_stats_start = _read_tier_stats_snapshot(server_log_file)
     t_first_token: float | None = None
     t_end: float | None = None
     generated_parts: list[str] = []
@@ -696,8 +841,19 @@ def _run_single_request(
 
     if t_end is None:
         t_end = time.perf_counter()
-    tier_stats_end = _read_tier_stats_snapshot(server_log_file)
-    tier_stats_delta = _tier_stats_delta(tier_stats_start, tier_stats_end)
+    tier_stats_delta = _get_tier_stats(port, context_id)
+    if (
+        isinstance(tier_stats_delta, dict)
+        and int(tier_stats_delta.get("layers_seen", 0)) == 0
+    ):
+        tier_stats_end_log = _read_tier_stats_snapshot_from_log(server_log_file)
+        log_delta = _tier_stats_delta_from_snapshots(tier_stats_start_log, tier_stats_end_log)
+        if isinstance(log_delta, dict) and int(log_delta.get("layers_seen", 0)) > 0:
+            tier_stats_delta = log_delta
+        elif output_file.exists() or collect_trace:
+            file_stats = _read_tier_stats_from_output_file(output_file)
+            if isinstance(file_stats, dict):
+                tier_stats_delta = file_stats
     elapsed_s = float(max(0.0, t_end - t0))
     generated_text = "".join(generated_parts)
 
@@ -756,8 +912,6 @@ def _run_single_request(
         "generated_text": generated_text,
         "trace_file": str(trace_file) if collect_trace else None,
         "timestamp": time.time(),
-        "tier_stats_start": tier_stats_start,
-        "tier_stats_end": tier_stats_end,
         "tier_stats_delta": tier_stats_delta,
     }
 
@@ -765,6 +919,9 @@ def _run_single_request(
         rec[f"tier_delta_{k}"] = (
             int(tier_stats_delta.get(k, 0)) if isinstance(tier_stats_delta, dict) else None
         )
+    rec["tier_layers_seen"] = (
+        int(tier_stats_delta.get("layers_seen", 0)) if isinstance(tier_stats_delta, dict) else None
+    )
 
     output_file.write_text(
         json.dumps(
@@ -827,7 +984,8 @@ def _apply_baseline_relative_metrics(rec: dict, baseline: dict | None) -> dict:
 
 
 def _aggregate_results(results: list[dict], experiments: list[dict]) -> dict:
-    enriched: list[dict] = [_strip_results_detail_row(r) for r in results]
+    normalized_results: list[dict] = [_normalize_tier_delta_in_row(r) for r in results]
+    enriched: list[dict] = [_strip_results_detail_row(r) for r in normalized_results]
 
     exp_runs: dict[str, list[dict]] = {}
     for r in enriched:
@@ -876,6 +1034,7 @@ def _aggregate_results(results: list[dict], experiments: list[dict]) -> dict:
             "avg_tier_delta_promotions_to_cpu": _avg(ok_rows, "tier_delta_promotions_to_cpu"),
             "avg_tier_delta_demotions_from_gpu": _avg(ok_rows, "tier_delta_demotions_from_gpu"),
             "avg_tier_delta_demotions_from_cpu": _avg(ok_rows, "tier_delta_demotions_from_cpu"),
+            "avg_tier_layers_seen": _avg(ok_rows, "tier_layers_seen"),
             "quality_jaccard": _avg(ok_rows, "quality_jaccard"),
             "quality_degradation": _avg(ok_rows, "quality_degradation"),
             "speedup_ratio": _avg(ok_rows, "speedup_ratio"),
@@ -887,9 +1046,8 @@ def _aggregate_results(results: list[dict], experiments: list[dict]) -> dict:
         runs_summary.append(run)
 
     runs_summary.sort(key=lambda r: (r["experiment"] != "baseline", str(r["experiment"])))
-    return {
+    agg = {
         "runs": runs_summary,
-        "details": enriched,
         "metric_note": {
             "quality_jaccard": "token-set Jaccard similarity against baseline text for same prompt_id and seed",
             "quality_degradation": "1.0 - quality_jaccard",
@@ -910,12 +1068,16 @@ def _aggregate_results(results: list[dict], experiments: list[dict]) -> dict:
             "tier_delta_promotions_to_cpu": "change in cumulative KT tier promotions_to_cpu during this request",
             "tier_delta_demotions_from_gpu": "change in cumulative KT tier demotions_from_gpu during this request",
             "tier_delta_demotions_from_cpu": "change in cumulative KT tier demotions_from_cpu during this request",
+            "tier_layers_seen": "number of MoE layers contributing request-scoped tier stats",
             "speedup_ratio": "e2e_tokens_per_second / baseline_e2e_tokens_per_second for same prompt_id",
             "decode_speedup_ratio": "decode_tokens_per_second / baseline_decode_tokens_per_second for same prompt_id",
             "quality_speed_score": "quality_jaccard * speedup_ratio",
             "latency_ratio": "elapsed_seconds / baseline_elapsed_seconds for same prompt_id",
         },
     }
+    if os.environ.get("REAL_BENCHMARK_INCLUDE_DETAILS", "0").strip().lower() in {"1", "true", "yes", "on"}:
+        agg["details"] = [_sanitize_run_for_details(r) for r in normalized_results]
+    return agg
 
 
 def parse_args() -> argparse.Namespace:
@@ -950,9 +1112,14 @@ def main() -> int:
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     TRACE_DIR.mkdir(parents=True, exist_ok=True)
-    for p in [RESULTS_JSON, SUMMARY_JSON, GENERATED_TEXT_MD, LEGACY_RUNS_JSONL]:
+    GENERATED_TEXT_DIR.mkdir(parents=True, exist_ok=True)
+    for p in [RESULTS_JSON, SUMMARY_JSON, LEGACY_RUNS_JSONL]:
         if p.exists():
             p.unlink()
+    for p in OUTPUT_DIR.glob("results_*.json"):
+        p.unlink()
+    for p in GENERATED_TEXT_DIR.glob("*.md"):
+        p.unlink()
 
     print("=== Real-Inference MoE Routing Benchmark ===", flush=True)
     print(f"Model: {MODEL_PATH}", flush=True)
@@ -1013,9 +1180,14 @@ def main() -> int:
                     baseline = baseline_by_prompt.get(prompt_id)
                     rec = _apply_baseline_relative_metrics(raw_rec, baseline)
                     results.append(rec)
-                    _append_generated_text_markdown(GENERATED_TEXT_MD, rec, str(prompt.get("prompt", "")))
+                    generated_text_file = _generated_text_file(
+                        str(rec.get("prompt_id", "<unknown>")),
+                        str(rec.get("experiment", "<unknown>")),
+                    )
+                    _write_generated_text_markdown(generated_text_file, rec, str(prompt.get("prompt", "")))
                     agg_live = _aggregate_results(results, experiments)
                     RESULTS_JSON.write_text(json.dumps(agg_live, indent=2, ensure_ascii=False), encoding="utf-8")
+                    _write_prompt_results_files(results, agg_live.get("metric_note", {}))
                 except Exception as e:
                     err = {
                         "prompt_id": str(prompt.get("id", "<unknown>")),
@@ -1029,6 +1201,7 @@ def main() -> int:
                     results.append(err)
                     agg_live = _aggregate_results(results, experiments)
                     RESULTS_JSON.write_text(json.dumps(agg_live, indent=2, ensure_ascii=False), encoding="utf-8")
+                    _write_prompt_results_files(results, agg_live.get("metric_note", {}))
                     print(f"[err] {err['prompt_id']} [{err['experiment']}]: {err['error']}", flush=True)
                     if fail_fast:
                         raise RuntimeError(
@@ -1041,6 +1214,7 @@ def main() -> int:
     agg = _aggregate_results(results, experiments)
 
     RESULTS_JSON.write_text(json.dumps(agg, indent=2, ensure_ascii=False), encoding="utf-8")
+    _write_prompt_results_files(results, agg.get("metric_note", {}))
     summary = {
         "total": len(results),
         "successful": sum(1 for r in results if r.get("success")),
@@ -1049,8 +1223,9 @@ def main() -> int:
         "experiments": len(experiments),
         "seed": SEED,
         "output_files": {
-            "generated_texts_md": str(GENERATED_TEXT_MD),
+            "generated_texts_dir": str(GENERATED_TEXT_DIR),
             "results_json": str(RESULTS_JSON),
+            "prompt_results_pattern": str(OUTPUT_DIR / "results_<prompt_id>.json"),
             "server_log": str(server_log_file),
         },
     }
@@ -1059,7 +1234,7 @@ def main() -> int:
     print("\n=== Summary ===", flush=True)
     print(f"Successful: {summary['successful']} / {summary['total']}", flush=True)
     print(f"Results: {RESULTS_JSON}", flush=True)
-    print(f"Generated texts: {GENERATED_TEXT_MD}", flush=True)
+    print(f"Generated texts: {GENERATED_TEXT_DIR}", flush=True)
 
     return 0 if summary["failed"] == 0 else 1
 

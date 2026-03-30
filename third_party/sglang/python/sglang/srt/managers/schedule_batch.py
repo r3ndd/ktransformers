@@ -591,6 +591,9 @@ class Req(ReqDllmMixin):
 
         trace_cfg = None
         if isinstance(self.sampling_params.custom_params, dict):
+            if "kt_tier_context_id" not in self.sampling_params.custom_params:
+                self.sampling_params.custom_params["kt_tier_context_id"] = str(rid)
+        if isinstance(self.sampling_params.custom_params, dict):
             trace_cfg = self.sampling_params.custom_params.get("moe_trace")
         if isinstance(trace_cfg, dict):
             try:
@@ -767,6 +770,11 @@ class Req(ReqDllmMixin):
         )
         # Customized info
         self.customized_info: Optional[Dict[str, List[Any]]] = None
+        self.kt_tier_context_id: Optional[str] = None
+        if isinstance(self.sampling_params.custom_params, dict):
+            raw_ctx = self.sampling_params.custom_params.get("kt_tier_context_id")
+            if raw_ctx is not None:
+                self.kt_tier_context_id = str(raw_ctx)
 
         # Embedding (return values)
         self.embedding = None

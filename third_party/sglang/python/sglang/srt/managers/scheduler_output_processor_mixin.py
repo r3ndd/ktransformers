@@ -1103,6 +1103,10 @@ class SchedulerOutputProcessorMixin:
                             customized_info[k] = []
                         customized_info[k].append(v[send_token_offset:])
 
+                if "kt_tier_context_id" not in customized_info:
+                    customized_info["kt_tier_context_id"] = []
+                customized_info["kt_tier_context_id"].append(req.kt_tier_context_id)
+
             if (
                 req.finished()
                 and self.attn_tp_rank == 0

@@ -1095,6 +1095,13 @@ def select_experts(
         expert_location_dispatch_info=expert_location_dispatch_info,
     )
 
+    try:
+        token_params = getattr(router_logits, "_kt_custom_params", None)
+        if token_params is not None:
+            setattr(topk_ids, "_kt_custom_params", token_params)
+    except Exception:
+        pass
+
     get_global_expert_distribution_recorder().on_select_experts(topk_ids=topk_ids)
 
     return StandardTopKOutput(topk_weights, topk_ids, router_logits)

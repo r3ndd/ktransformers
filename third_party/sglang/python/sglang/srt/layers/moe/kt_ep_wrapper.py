@@ -25,6 +25,7 @@ from sglang.srt.distributed import (
     get_tensor_model_parallel_world_size,
     get_tp_group,
 )
+from sglang.srt.layers.moe.moe_routing_runtime import get_current_forward_batch
 from sglang.srt.layers.moe.expert_tier_cache import ExpertTierResidencyManager
 from sglang.srt.layers.quantization.base_config import FusedMoEMethodBase
 from sglang.srt.layers.quantization.marlin_utils import marlin_permute_scales
@@ -56,7 +57,12 @@ _KT_TIER_STATS_LOG_INTERVAL_SEC = float(os.getenv("KT_TIER_STATS_LOG_INTERVAL_SE
 _KT_TIER_STATS_LAST_LOG_TS = 0.0
 
 
-def _maybe_log_tier_stats(manager: Optional[ExpertTierResidencyManager], *, force: bool = False) -> None:
+def _maybe_log_tier_stats(
+    manager: Optional[ExpertTierResidencyManager],
+    *,
+    layer_id: int,
+    force: bool = False,
+) -> None:
     global _KT_TIER_STATS_LAST_LOG_TS
     if manager is None:
         return
@@ -70,9 +76,10 @@ def _maybe_log_tier_stats(manager: Optional[ExpertTierResidencyManager], *, forc
     _KT_TIER_STATS_LAST_LOG_TS = now
     s = manager.stats
     logger.info(
-        "KT_TIER_STATS cumulative "
+        "KT_TIER_STATS layer=%d cumulative "
         "gpu_hits=%d cpu_hits=%d ssd_loads=%d promotions_to_gpu=%d promotions_to_cpu=%d "
         "demotions_from_gpu=%d demotions_from_cpu=%d",
+        int(layer_id),
         int(s.gpu_hits),
         int(s.cpu_hits),
         int(s.ssd_loads),
@@ -82,8 +89,80 @@ def _maybe_log_tier_stats(manager: Optional[ExpertTierResidencyManager], *, forc
         int(s.demotions_from_cpu),
     )
 
+
+def _maybe_log_tier_context_stats(
+    manager: Optional[ExpertTierResidencyManager],
+    *,
+    context_id: Optional[str],
+    layer_id: int,
+    force: bool = False,
+) -> None:
+    global _KT_TIER_STATS_LAST_LOG_TS
+    if manager is None or context_id is None:
+        return
+    now = time.time()
+    if (
+        not force
+        and _KT_TIER_STATS_LOG_INTERVAL_SEC > 0
+        and (now - _KT_TIER_STATS_LAST_LOG_TS) < _KT_TIER_STATS_LOG_INTERVAL_SEC
+    ):
+        return
+    _KT_TIER_STATS_LAST_LOG_TS = now
+    s = ExpertTierResidencyManager.get_context_stats(str(context_id))
+    logger.info(
+        "KT_TIER_CONTEXT context_id=%s layer=%d "
+        "gpu_hits=%d cpu_hits=%d ssd_loads=%d promotions_to_gpu=%d promotions_to_cpu=%d "
+        "demotions_from_gpu=%d demotions_from_cpu=%d layers_seen=%d",
+        str(context_id),
+        int(layer_id),
+        int(s.get("gpu_hits", 0)),
+        int(s.get("cpu_hits", 0)),
+        int(s.get("ssd_loads", 0)),
+        int(s.get("promotions_to_gpu", 0)),
+        int(s.get("promotions_to_cpu", 0)),
+        int(s.get("demotions_from_gpu", 0)),
+        int(s.get("demotions_from_cpu", 0)),
+        int(s.get("layers_seen", 0)),
+    )
+
 # Global cache for GPU experts masks (initialized once per session)
 _KT_GPU_EXPERTS_MASKS: Optional[torch.Tensor] = None
+
+
+def _extract_context_id_from_params_tensor(params_tensor: Optional[torch.Tensor]) -> Optional[str]:
+    if params_tensor is None:
+        return None
+    custom_params = getattr(params_tensor, "_kt_custom_params", None)
+    if not isinstance(custom_params, list) or not custom_params:
+        return None
+    for cp in custom_params:
+        if not isinstance(cp, dict):
+            continue
+        raw_ctx = cp.get("kt_tier_context_id")
+        if raw_ctx is not None:
+            return str(raw_ctx)
+        trace_cfg = cp.get("moe_trace")
+        if not isinstance(trace_cfg, dict):
+            continue
+        ctx = trace_cfg.get("context_id")
+        if ctx is not None:
+            return str(ctx)
+    fwd_batch = get_current_forward_batch()
+    if fwd_batch is None:
+        return None
+    request_custom_params = getattr(fwd_batch, "request_custom_params", None)
+    if not isinstance(request_custom_params, list):
+        return None
+    for cp in request_custom_params:
+        if not isinstance(cp, dict):
+            continue
+        raw_ctx = cp.get("kt_tier_context_id")
+        if raw_ctx is not None:
+            return str(raw_ctx)
+        trace_cfg = cp.get("moe_trace")
+        if isinstance(trace_cfg, dict) and trace_cfg.get("context_id") is not None:
+            return str(trace_cfg.get("context_id"))
+    return None
 
 
 @dataclass
@@ -2163,7 +2242,7 @@ class KTEPWrapperMethod(FusedMoEMethodBase):
                 if self.tp_rank == 0:
                     logger.warning("KT expert-tier budget validation failed; continuing with current settings")
         if self.tp_rank == 0:
-            _maybe_log_tier_stats(self._tier_manager, force=True)
+            _maybe_log_tier_stats(self._tier_manager, layer_id=self.kt_config.layer_idx, force=True)
 
     def process_weights_after_loading(self, layer: torch.nn.Module) -> None:
         """Process weights after loading from checkpoint.
@@ -2253,12 +2332,20 @@ class KTEPWrapperMethod(FusedMoEMethodBase):
         topk_weights, topk_ids, _ = topk_output
 
         if self._tier_manager is not None:
+            router_logits = getattr(topk_output, "router_logits", None)
+            context_id = _extract_context_id_from_params_tensor(router_logits)
             self._tier_manager.observe_experts(
                 layer_id=self.kt_config.layer_idx,
                 expert_ids=topk_ids.reshape(-1).tolist(),
+                context_id=context_id,
             )
             if self.tp_rank == 0:
-                _maybe_log_tier_stats(self._tier_manager)
+                _maybe_log_tier_stats(self._tier_manager, layer_id=self.kt_config.layer_idx)
+                _maybe_log_tier_context_stats(
+                    self._tier_manager,
+                    context_id=context_id,
+                    layer_id=self.kt_config.layer_idx,
+                )
         router_logits = getattr(topk_output, "router_logits", None)
 
         # Submit forward task to CPU (non-blocking)
@@ -2313,12 +2400,20 @@ class KTEPWrapperMethod(FusedMoEMethodBase):
         topk_weights, topk_ids, _ = topk_output
 
         if self._tier_manager is not None:
+            router_logits = getattr(topk_output, "router_logits", None)
+            context_id = _extract_context_id_from_params_tensor(router_logits)
             self._tier_manager.observe_experts(
                 layer_id=self.kt_config.layer_idx,
                 expert_ids=topk_ids.reshape(-1).tolist(),
+                context_id=context_id,
             )
             if self.tp_rank == 0:
-                _maybe_log_tier_stats(self._tier_manager)
+                _maybe_log_tier_stats(self._tier_manager, layer_id=self.kt_config.layer_idx)
+                _maybe_log_tier_context_stats(
+                    self._tier_manager,
+                    context_id=context_id,
+                    layer_id=self.kt_config.layer_idx,
+                )
         router_logits = getattr(topk_output, "router_logits", None)
 
         # Submit forward task using staged buffer

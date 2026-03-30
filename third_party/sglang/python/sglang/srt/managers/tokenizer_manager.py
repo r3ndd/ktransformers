@@ -1519,6 +1519,13 @@ class TokenizerManager(TokenizerCommunicatorMixin, TokenizerManagerMultiItemMixi
             if getattr(recv_obj, "customized_info", None):
                 for k, v in recv_obj.customized_info.items():
                     meta_info[k] = v[i]
+                    if k == "kt_tier_context_id":
+                        try:
+                            from sglang.srt.layers.moe.expert_tier_cache import ExpertTierResidencyManager
+
+                            ExpertTierResidencyManager.set_current_context_id(str(v[i]))
+                        except Exception:
+                            pass
             if getattr(recv_obj, "dp_ranks", None):
                 meta_info["dp_rank"] = recv_obj.dp_ranks[i]
 

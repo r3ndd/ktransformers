@@ -108,6 +108,7 @@ from sglang.srt.entrypoints.openai.serving_transcription import (
 from sglang.srt.entrypoints.warmup import execute_warmups
 from sglang.srt.environ import envs
 from sglang.srt.function_call.function_call_parser import FunctionCallParser
+from sglang.srt.layers.moe.expert_tier_cache import ExpertTierResidencyManager
 from sglang.srt.managers.io_struct import (
     AbortReq,
     AttachHiCacheStorageReqInput,
@@ -587,6 +588,26 @@ async def model_info():
         # "hf_config": model_config.hf_config.to_dict(),
     }
     return result
+
+
+@app.get("/kt/tier_stats")
+async def get_kt_tier_stats(context_id: str):
+    """Get request-scoped aggregated KT expert tier stats for a context id."""
+    return ORJSONResponse(
+        content=ExpertTierResidencyManager.get_context_stats(context_id),
+        status_code=200,
+    )
+
+
+@app.post("/kt/tier_stats/reset")
+async def reset_kt_tier_stats(payload: Dict[str, Any]):
+    """Reset request-scoped aggregated KT expert tier stats for a context id."""
+    context_id = str(payload.get("context_id", "")).strip()
+    if not context_id:
+        return ORJSONResponse(content={"error": "context_id is required"}, status_code=400)
+    ExpertTierResidencyManager.reset_context_stats(context_id)
+    ExpertTierResidencyManager.set_current_context_id(context_id)
+    return ORJSONResponse(content={"ok": True, "context_id": context_id}, status_code=200)
 
 
 @app.get("/get_weight_version")
