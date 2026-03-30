@@ -957,6 +957,7 @@ def _apply_baseline_relative_metrics(rec: dict, baseline: dict | None) -> dict:
         rr["quality_degradation"] = None
         rr["speedup_ratio"] = None
         rr["decode_speedup_ratio"] = None
+        rr["ssd_load_ratio"] = None
         rr["latency_ratio"] = None
         rr["quality_speed_score"] = None
         rr["exact_text_match"] = None
@@ -973,6 +974,14 @@ def _apply_baseline_relative_metrics(rec: dict, baseline: dict | None) -> dict:
     base_e2e_tps = float(baseline.get("e2e_tokens_per_second") or 0.0)
     cur_e2e_tps = float(rr.get("e2e_tokens_per_second") or 0.0)
     rr["speedup_ratio"] = (cur_e2e_tps / base_e2e_tps) if base_e2e_tps > 0 and cur_e2e_tps > 0 else None
+
+    cur_tier = rr.get("tier_stats_delta") if isinstance(rr.get("tier_stats_delta"), dict) else {}
+    base_tier = (
+        baseline.get("tier_stats_delta") if isinstance(baseline.get("tier_stats_delta"), dict) else {}
+    )
+    cur_ssd = float(cur_tier.get("ssd_loads") or 0.0)
+    base_ssd = float(base_tier.get("ssd_loads") or 0.0)
+    rr["ssd_load_ratio"] = (cur_ssd / base_ssd) if base_ssd > 0 else None
 
     base_e2e = float(baseline.get("elapsed_seconds") or 0.0)
     cur_e2e = float(rr.get("elapsed_seconds") or 0.0)
@@ -1039,6 +1048,7 @@ def _aggregate_results(results: list[dict], experiments: list[dict]) -> dict:
             "quality_degradation": _avg(ok_rows, "quality_degradation"),
             "speedup_ratio": _avg(ok_rows, "speedup_ratio"),
             "decode_speedup_ratio": _avg(ok_rows, "decode_speedup_ratio"),
+            "avg_ssd_load_ratio": _avg(ok_rows, "ssd_load_ratio"),
             "latency_ratio": _avg(ok_rows, "latency_ratio"),
             "quality_speed_score": _avg(ok_rows, "quality_speed_score"),
             "exact_text_match_rate": _rate(ok_rows, "exact_text_match"),
@@ -1069,6 +1079,7 @@ def _aggregate_results(results: list[dict], experiments: list[dict]) -> dict:
             "tier_delta_demotions_from_gpu": "change in cumulative KT tier demotions_from_gpu during this request",
             "tier_delta_demotions_from_cpu": "change in cumulative KT tier demotions_from_cpu during this request",
             "tier_layers_seen": "number of MoE layers contributing request-scoped tier stats",
+            "ssd_load_ratio": "tier_stats_delta.ssd_loads / baseline tier_stats_delta.ssd_loads for same prompt_id",
             "speedup_ratio": "e2e_tokens_per_second / baseline_e2e_tokens_per_second for same prompt_id",
             "decode_speedup_ratio": "decode_tokens_per_second / baseline_decode_tokens_per_second for same prompt_id",
             "quality_speed_score": "quality_jaccard * speedup_ratio",
