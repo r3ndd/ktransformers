@@ -52,6 +52,36 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
+_KT_TIER_STATS_LOG_INTERVAL_SEC = float(os.getenv("KT_TIER_STATS_LOG_INTERVAL_SEC", "1.0"))
+_KT_TIER_STATS_LAST_LOG_TS = 0.0
+
+
+def _maybe_log_tier_stats(manager: Optional[ExpertTierResidencyManager], *, force: bool = False) -> None:
+    global _KT_TIER_STATS_LAST_LOG_TS
+    if manager is None:
+        return
+    now = time.time()
+    if (
+        not force
+        and _KT_TIER_STATS_LOG_INTERVAL_SEC > 0
+        and (now - _KT_TIER_STATS_LAST_LOG_TS) < _KT_TIER_STATS_LOG_INTERVAL_SEC
+    ):
+        return
+    _KT_TIER_STATS_LAST_LOG_TS = now
+    s = manager.stats
+    logger.info(
+        "KT_TIER_STATS cumulative "
+        "gpu_hits=%d cpu_hits=%d ssd_loads=%d promotions_to_gpu=%d promotions_to_cpu=%d "
+        "demotions_from_gpu=%d demotions_from_cpu=%d",
+        int(s.gpu_hits),
+        int(s.cpu_hits),
+        int(s.ssd_loads),
+        int(s.promotions_to_gpu),
+        int(s.promotions_to_cpu),
+        int(s.demotions_from_gpu),
+        int(s.demotions_from_cpu),
+    )
+
 # Global cache for GPU experts masks (initialized once per session)
 _KT_GPU_EXPERTS_MASKS: Optional[torch.Tensor] = None
 
@@ -2132,6 +2162,8 @@ class KTEPWrapperMethod(FusedMoEMethodBase):
             except Exception:
                 if self.tp_rank == 0:
                     logger.warning("KT expert-tier budget validation failed; continuing with current settings")
+        if self.tp_rank == 0:
+            _maybe_log_tier_stats(self._tier_manager, force=True)
 
     def process_weights_after_loading(self, layer: torch.nn.Module) -> None:
         """Process weights after loading from checkpoint.
@@ -2225,6 +2257,8 @@ class KTEPWrapperMethod(FusedMoEMethodBase):
                 layer_id=self.kt_config.layer_idx,
                 expert_ids=topk_ids.reshape(-1).tolist(),
             )
+            if self.tp_rank == 0:
+                _maybe_log_tier_stats(self._tier_manager)
         router_logits = getattr(topk_output, "router_logits", None)
 
         # Submit forward task to CPU (non-blocking)
@@ -2283,6 +2317,8 @@ class KTEPWrapperMethod(FusedMoEMethodBase):
                 layer_id=self.kt_config.layer_idx,
                 expert_ids=topk_ids.reshape(-1).tolist(),
             )
+            if self.tp_rank == 0:
+                _maybe_log_tier_stats(self._tier_manager)
         router_logits = getattr(topk_output, "router_logits", None)
 
         # Submit forward task using staged buffer

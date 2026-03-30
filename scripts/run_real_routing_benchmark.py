@@ -19,6 +19,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import signal
 import socket
 import subprocess
@@ -105,6 +106,25 @@ CHAT_TEMPLATE_PATH = Path(
 ).resolve()
 VENDORED_SGLANG_PYTHON = (ROOT / "third_party/sglang/python").resolve()
 VENDORED_SGLANG_LAUNCH = (VENDORED_SGLANG_PYTHON / "sglang/launch_server.py").resolve()
+TIER_STAT_KEYS = [
+    "gpu_hits",
+    "cpu_hits",
+    "ssd_loads",
+    "promotions_to_gpu",
+    "promotions_to_cpu",
+    "demotions_from_gpu",
+    "demotions_from_cpu",
+]
+_TIER_STATS_RE = re.compile(
+    r"KT_TIER_STATS cumulative "
+    r"gpu_hits=(?P<gpu_hits>\d+) "
+    r"cpu_hits=(?P<cpu_hits>\d+) "
+    r"ssd_loads=(?P<ssd_loads>\d+) "
+    r"promotions_to_gpu=(?P<promotions_to_gpu>\d+) "
+    r"promotions_to_cpu=(?P<promotions_to_cpu>\d+) "
+    r"demotions_from_gpu=(?P<demotions_from_gpu>\d+) "
+    r"demotions_from_cpu=(?P<demotions_from_cpu>\d+)"
+)
 
 
 def _read_text(path: Path) -> str:
@@ -212,6 +232,26 @@ def _compute_tier_caps(num_experts: int) -> tuple[int, int, int]:
     cpu_cap = hot_total - gpu_cap
     cpu_cap = max(0, min(num_experts - gpu_cap, cpu_cap))
     return hot_total, gpu_cap, cpu_cap
+
+
+def _read_tier_stats_snapshot(log_file: Path) -> dict | None:
+    if not log_file.exists():
+        return None
+    text = _read_text(log_file)
+    matches = list(_TIER_STATS_RE.finditer(text))
+    if not matches:
+        return None
+    m = matches[-1]
+    return {k: int(m.group(k)) for k in TIER_STAT_KEYS}
+
+
+def _tier_stats_delta(start: dict | None, end: dict | None) -> dict | None:
+    if not start or not end:
+        return None
+    out: dict[str, int] = {}
+    for k in TIER_STAT_KEYS:
+        out[k] = int(end.get(k, 0)) - int(start.get(k, 0))
+    return out
 
 
 def _routing_name(prefix: str, cfg: dict) -> str:
@@ -468,6 +508,7 @@ def _run_single_request(
     run_total: int,
     collect_trace: bool,
     deterministic: bool,
+    server_log_file: Path,
 ) -> dict:
     prompt_id = str(prompt_entry["id"])
     category = str(prompt_entry["category"])
@@ -542,6 +583,7 @@ def _run_single_request(
     )
 
     t0 = time.perf_counter()
+    tier_stats_start = _read_tier_stats_snapshot(server_log_file)
     t_first_token: float | None = None
     t_end: float | None = None
     generated_parts: list[str] = []
@@ -587,6 +629,8 @@ def _run_single_request(
 
     if t_end is None:
         t_end = time.perf_counter()
+    tier_stats_end = _read_tier_stats_snapshot(server_log_file)
+    tier_stats_delta = _tier_stats_delta(tier_stats_start, tier_stats_end)
     elapsed_s = float(max(0.0, t_end - t0))
     generated_text = "".join(generated_parts)
 
@@ -647,7 +691,15 @@ def _run_single_request(
         "generated_text": generated_text,
         "trace_file": str(trace_file) if collect_trace else None,
         "timestamp": time.time(),
+        "tier_stats_start": tier_stats_start,
+        "tier_stats_end": tier_stats_end,
+        "tier_stats_delta": tier_stats_delta,
     }
+
+    for k in TIER_STAT_KEYS:
+        rec[f"tier_delta_{k}"] = (
+            int(tier_stats_delta.get(k, 0)) if isinstance(tier_stats_delta, dict) else None
+        )
 
     output_file.write_text(
         json.dumps(
@@ -752,6 +804,13 @@ def _aggregate_results(results: list[dict], experiments: list[dict]) -> dict:
             "avg_decode_tokens_per_second": _avg(ok_rows, "decode_tokens_per_second"),
             "avg_prefill_tokens_per_second": _avg(ok_rows, "prefill_tokens_per_second"),
             "avg_e2e_tokens_per_second": _avg(ok_rows, "e2e_tokens_per_second"),
+            "avg_tier_delta_gpu_hits": _avg(ok_rows, "tier_delta_gpu_hits"),
+            "avg_tier_delta_cpu_hits": _avg(ok_rows, "tier_delta_cpu_hits"),
+            "avg_tier_delta_ssd_loads": _avg(ok_rows, "tier_delta_ssd_loads"),
+            "avg_tier_delta_promotions_to_gpu": _avg(ok_rows, "tier_delta_promotions_to_gpu"),
+            "avg_tier_delta_promotions_to_cpu": _avg(ok_rows, "tier_delta_promotions_to_cpu"),
+            "avg_tier_delta_demotions_from_gpu": _avg(ok_rows, "tier_delta_demotions_from_gpu"),
+            "avg_tier_delta_demotions_from_cpu": _avg(ok_rows, "tier_delta_demotions_from_cpu"),
             "quality_jaccard": _avg(ok_rows, "quality_jaccard"),
             "quality_degradation": _avg(ok_rows, "quality_degradation"),
             "speedup_ratio": _avg(ok_rows, "speedup_ratio"),
@@ -780,6 +839,13 @@ def _aggregate_results(results: list[dict], experiments: list[dict]) -> dict:
             "decode_tokens_per_second": "completion_tokens / decode_latency_seconds",
             "prefill_tokens_per_second": "prompt_tokens / prefill_latency_seconds",
             "e2e_tokens_per_second": "total_tokens / e2e_latency_seconds",
+            "tier_delta_gpu_hits": "change in cumulative KT tier gpu_hits during this request",
+            "tier_delta_cpu_hits": "change in cumulative KT tier cpu_hits during this request",
+            "tier_delta_ssd_loads": "change in cumulative KT tier ssd_loads during this request",
+            "tier_delta_promotions_to_gpu": "change in cumulative KT tier promotions_to_gpu during this request",
+            "tier_delta_promotions_to_cpu": "change in cumulative KT tier promotions_to_cpu during this request",
+            "tier_delta_demotions_from_gpu": "change in cumulative KT tier demotions_from_gpu during this request",
+            "tier_delta_demotions_from_cpu": "change in cumulative KT tier demotions_from_cpu during this request",
             "speedup_ratio": "e2e_tokens_per_second / baseline_e2e_tokens_per_second for same prompt_id",
             "decode_speedup_ratio": "decode_tokens_per_second / baseline_decode_tokens_per_second for same prompt_id",
             "quality_speed_score": "quality_jaccard * speedup_ratio",
@@ -881,6 +947,7 @@ def main() -> int:
                         run_total=total_runs,
                         collect_trace=args.collect_traces,
                         deterministic=args.deterministic,
+                        server_log_file=server_log_file,
                     )
                     prompt_id = str(raw_rec["prompt_id"])
                     if str(raw_rec.get("experiment")) == "baseline":
