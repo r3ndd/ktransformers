@@ -28,7 +28,7 @@ class _DecodeLayerState:
 
 @dataclass
 class _PrefillLayerState:
-    window: Optional[deque] = None
+    history: Optional[torch.Tensor] = None
     full_sum: Optional[torch.Tensor] = None
     full_count: int = 0
 
@@ -149,20 +149,47 @@ class MoeRoutingRuntime:
             window_size = int(prefill.params.get("window_size", 64))
             if window_size <= 1:
                 return logits_segment
-            if ls.window is None or ls.window.maxlen != max(window_size - 1, 1):
-                ls.window = deque(maxlen=max(window_size - 1, 1))
-            out_rows: List[torch.Tensor] = []
-            for row in logits_segment:
-                if not ls.window:
-                    out_rows.append(row)
-                else:
-                    acc = row.clone()
-                    for prev in ls.window:
-                        acc.add_(prev)
-                    acc.mul_(1.0 / float(len(ls.window) + 1))
-                    out_rows.append(acc)
-                ls.window.append(row.detach().clone())
-            return torch.stack(out_rows, dim=0)
+            keep = max(window_size - 1, 0)
+
+            hist = ls.history
+            if hist is not None:
+                if hist.numel() == 0:
+                    hist = None
+                elif hist.device != logits_segment.device or hist.dtype != logits_segment.dtype:
+                    hist = hist.to(device=logits_segment.device, dtype=logits_segment.dtype)
+
+            if hist is None:
+                concat = logits_segment
+                hist_len = 0
+            else:
+                concat = torch.cat([hist, logits_segment], dim=0)
+                hist_len = int(hist.shape[0])
+
+            prefix = torch.cumsum(concat, dim=0)
+            prefix = torch.cat(
+                [
+                    torch.zeros((1, concat.shape[1]), device=concat.device, dtype=concat.dtype),
+                    prefix,
+                ],
+                dim=0,
+            )
+
+            idx = torch.arange(
+                hist_len,
+                hist_len + logits_segment.shape[0],
+                device=concat.device,
+                dtype=torch.long,
+            )
+            start = torch.clamp(idx - keep, min=0)
+            summed = prefix[idx + 1] - prefix[start]
+            counts = (idx - start + 1).to(dtype=concat.dtype).unsqueeze(1)
+            out = summed / counts
+
+            if keep > 0:
+                ls.history = concat[-min(keep, concat.shape[0]) :].detach().clone()
+            else:
+                ls.history = None
+            return out
 
         return logits_segment
 
