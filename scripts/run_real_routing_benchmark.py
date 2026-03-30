@@ -70,10 +70,10 @@ OUTPUT_DIR = Path(
 ).resolve()
 
 TRACE_DIR = OUTPUT_DIR / "traces"
-RUNS_JSONL = OUTPUT_DIR / "runs.jsonl"
 RESULTS_JSON = OUTPUT_DIR / "results.json"
 SUMMARY_JSON = OUTPUT_DIR / "summary.json"
-GENERATED_TEXT_JSONL = OUTPUT_DIR / "generated_texts.jsonl"
+GENERATED_TEXT_MD = OUTPUT_DIR / "generated_texts.md"
+LEGACY_RUNS_JSONL = OUTPUT_DIR / "runs.jsonl"
 
 PYTHON_BIN = os.environ.get("PYTHON_BIN", "python3")
 
@@ -251,6 +251,62 @@ def _tier_stats_delta(start: dict | None, end: dict | None) -> dict | None:
     out: dict[str, int] = {}
     for k in TIER_STAT_KEYS:
         out[k] = int(end.get(k, 0)) - int(start.get(k, 0))
+    return out
+
+
+def _strip_output_detail_metrics(row: dict) -> dict:
+    out = dict(row)
+    for k in [
+        "ttft_seconds",
+        "prefill_latency_seconds",
+        "decode_latency_seconds",
+        "e2e_latency_seconds",
+        "itl_mean_ms",
+        "itl_p50_ms",
+        "itl_p95_ms",
+        "decode_tokens_per_second",
+        "prefill_tokens_per_second",
+        "e2e_tokens_per_second",
+    ]:
+        out.pop(k, None)
+    out.pop("tier_stats_start", None)
+    out.pop("tier_stats_end", None)
+    out.pop("tier_stats_delta", None)
+    for k in TIER_STAT_KEYS:
+        out.pop(f"tier_delta_{k}", None)
+    return out
+
+
+def _append_generated_text_markdown(path: Path, rec: dict, prompt_text: str) -> None:
+    prompt_id = str(rec.get("prompt_id", "<unknown>"))
+    experiment = str(rec.get("experiment", "<unknown>"))
+    seed = rec.get("seed")
+    generated_text = rec.get("generated_text") or ""
+    prompt = prompt_text.strip() if isinstance(prompt_text, str) else ""
+    if not prompt:
+        prompt = "<empty>"
+    text = generated_text.strip() if isinstance(generated_text, str) else ""
+    if not text:
+        text = "<empty>"
+
+    with path.open("a", encoding="utf-8") as f:
+        f.write(f"## prompt_id: {prompt_id} | experiment: {experiment} | seed: {seed}\n\n")
+        f.write("### Prompt\n\n")
+        f.write(prompt)
+        f.write("\n\n")
+        f.write("### Generated Text\n\n")
+        f.write(text)
+        f.write("\n\n---\n\n")
+
+
+def _strip_results_detail_row(row: dict) -> dict:
+    out = dict(row)
+    out.pop("seed", None)
+    out.pop("generated_text", None)
+    out.pop("tier_stats_start", None)
+    out.pop("tier_stats_end", None)
+    for k in TIER_STAT_KEYS:
+        out.pop(f"tier_delta_{k}", None)
     return out
 
 
@@ -575,6 +631,17 @@ def _run_single_request(
         "stream_options": {"include_usage": True},
         "custom_params": custom_params or None,
     }
+    sampling_params = {
+        "seed": SEED,
+        "max_tokens": max_tokens,
+        "min_tokens": min_tokens,
+        "temperature": temperature,
+        "top_p": top_p,
+        "top_k": top_k,
+        "min_p": min_p,
+        "presence_penalty": PRESENCE_PENALTY,
+        "repetition_penalty": REPETITION_PENALTY,
+    }
 
     req = urllib.request.Request(
         f"http://127.0.0.1:{port}/v1/chat/completions",
@@ -673,14 +740,12 @@ def _run_single_request(
         "seed": SEED,
         "elapsed_seconds": e2e_latency_s,
         "ttft_seconds": prefill_latency_s,
-        "ttft_ms": (float(prefill_latency_s * 1000.0) if prefill_latency_s is not None else None),
         "prefill_latency_seconds": prefill_latency_s,
         "decode_latency_seconds": decode_latency_s,
         "e2e_latency_seconds": e2e_latency_s,
         "itl_mean_ms": itl_mean_ms,
         "itl_p50_ms": itl_p50_ms,
         "itl_p95_ms": itl_p95_ms,
-        "itl_count": len(itl_ms),
         "decode_tokens_per_second": decode_toks_per_sec,
         "prefill_tokens_per_second": prefill_toks_per_sec,
         "e2e_tokens_per_second": e2e_toks_per_sec,
@@ -704,8 +769,9 @@ def _run_single_request(
     output_file.write_text(
         json.dumps(
             {
-                **rec,
+                **_strip_output_detail_metrics(rec),
                 "prompt_text": prompt_text,
+                "sampling_params": sampling_params,
                 "stream_meta": {
                     "chunks": chunk_count,
                     "done_seen": done_seen,
@@ -761,7 +827,7 @@ def _apply_baseline_relative_metrics(rec: dict, baseline: dict | None) -> dict:
 
 
 def _aggregate_results(results: list[dict], experiments: list[dict]) -> dict:
-    enriched: list[dict] = [dict(r) for r in results]
+    enriched: list[dict] = [_strip_results_detail_row(r) for r in results]
 
     exp_runs: dict[str, list[dict]] = {}
     for r in enriched:
@@ -794,7 +860,6 @@ def _aggregate_results(results: list[dict], experiments: list[dict]) -> dict:
             "avg_completion_tokens": _avg(ok_rows, "completion_tokens"),
             "avg_elapsed_seconds": _avg(ok_rows, "elapsed_seconds"),
             "avg_ttft_seconds": _avg(ok_rows, "ttft_seconds"),
-            "avg_ttft_ms": _avg(ok_rows, "ttft_ms"),
             "avg_prefill_latency_seconds": _avg(ok_rows, "prefill_latency_seconds"),
             "avg_decode_latency_seconds": _avg(ok_rows, "decode_latency_seconds"),
             "avg_e2e_latency_seconds": _avg(ok_rows, "e2e_latency_seconds"),
@@ -829,7 +894,6 @@ def _aggregate_results(results: list[dict], experiments: list[dict]) -> dict:
             "quality_jaccard": "token-set Jaccard similarity against baseline text for same prompt_id and seed",
             "quality_degradation": "1.0 - quality_jaccard",
             "ttft_seconds": "time from request send to first streamed content token",
-            "ttft_ms": "ttft_seconds converted to milliseconds",
             "prefill_latency_seconds": "time from request send to first streamed content token",
             "decode_latency_seconds": "time from first streamed content token to end of stream",
             "e2e_latency_seconds": "time from request send to end of stream",
@@ -852,12 +916,6 @@ def _aggregate_results(results: list[dict], experiments: list[dict]) -> dict:
             "latency_ratio": "elapsed_seconds / baseline_elapsed_seconds for same prompt_id",
         },
     }
-
-
-def _runs_jsonl_row(row: dict) -> dict:
-    out = dict(row)
-    out.pop("generated_text", None)
-    return out
 
 
 def parse_args() -> argparse.Namespace:
@@ -892,7 +950,7 @@ def main() -> int:
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     TRACE_DIR.mkdir(parents=True, exist_ok=True)
-    for p in [RUNS_JSONL, RESULTS_JSON, SUMMARY_JSON, GENERATED_TEXT_JSONL]:
+    for p in [RESULTS_JSON, SUMMARY_JSON, GENERATED_TEXT_MD, LEGACY_RUNS_JSONL]:
         if p.exists():
             p.unlink()
 
@@ -955,21 +1013,9 @@ def main() -> int:
                     baseline = baseline_by_prompt.get(prompt_id)
                     rec = _apply_baseline_relative_metrics(raw_rec, baseline)
                     results.append(rec)
-                    with RUNS_JSONL.open("a", encoding="utf-8") as f:
-                        f.write(json.dumps(_runs_jsonl_row(rec), ensure_ascii=False) + "\n")
-                    with GENERATED_TEXT_JSONL.open("a", encoding="utf-8") as f:
-                        f.write(
-                            json.dumps(
-                                {
-                                    "prompt_id": rec["prompt_id"],
-                                    "experiment": rec["experiment"],
-                                    "seed": rec["seed"],
-                                    "generated_text": rec.get("generated_text"),
-                                },
-                                ensure_ascii=False,
-                            )
-                            + "\n"
-                        )
+                    _append_generated_text_markdown(GENERATED_TEXT_MD, rec, str(prompt.get("prompt", "")))
+                    agg_live = _aggregate_results(results, experiments)
+                    RESULTS_JSON.write_text(json.dumps(agg_live, indent=2, ensure_ascii=False), encoding="utf-8")
                 except Exception as e:
                     err = {
                         "prompt_id": str(prompt.get("id", "<unknown>")),
@@ -981,8 +1027,8 @@ def main() -> int:
                         "server_log": str(server_log_file),
                     }
                     results.append(err)
-                    with RUNS_JSONL.open("a", encoding="utf-8") as f:
-                        f.write(json.dumps(err, ensure_ascii=False) + "\n")
+                    agg_live = _aggregate_results(results, experiments)
+                    RESULTS_JSON.write_text(json.dumps(agg_live, indent=2, ensure_ascii=False), encoding="utf-8")
                     print(f"[err] {err['prompt_id']} [{err['experiment']}]: {err['error']}", flush=True)
                     if fail_fast:
                         raise RuntimeError(
@@ -1003,8 +1049,7 @@ def main() -> int:
         "experiments": len(experiments),
         "seed": SEED,
         "output_files": {
-            "runs_jsonl": str(RUNS_JSONL),
-            "generated_texts_jsonl": str(GENERATED_TEXT_JSONL),
+            "generated_texts_md": str(GENERATED_TEXT_MD),
             "results_json": str(RESULTS_JSON),
             "server_log": str(server_log_file),
         },
@@ -1014,8 +1059,7 @@ def main() -> int:
     print("\n=== Summary ===", flush=True)
     print(f"Successful: {summary['successful']} / {summary['total']}", flush=True)
     print(f"Results: {RESULTS_JSON}", flush=True)
-    print(f"Generated texts: {GENERATED_TEXT_JSONL}", flush=True)
-    print(f"Run records: {RUNS_JSONL}", flush=True)
+    print(f"Generated texts: {GENERATED_TEXT_MD}", flush=True)
 
     return 0 if summary["failed"] == 0 else 1
 
