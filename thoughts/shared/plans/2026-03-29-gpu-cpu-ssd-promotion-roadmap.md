@@ -17,6 +17,9 @@ Remaining work is to make tiering behavior enforce real placement and measurable
 - Preserve correctness and avoid deadlocks/regressions in TP rank 0 CPU/GPU parallel path.
 - Produce benchmark evidence that separates compute changes from storage/cache effects.
 
+## Step 0: GGUF vs FP weights
+- Discuss with the user whether this can be weight-agnostic, or if certain weight types (e.g. GGUF) may inherently be harder to offload to the SSD.
+
 ## Step 1 Plan: Runtime Residency Enforcement
 
 ### Design

@@ -116,16 +116,6 @@ TIER_STAT_KEYS = [
     "demotions_from_gpu",
     "demotions_from_cpu",
 ]
-_TIER_STATS_RE = re.compile(
-    r"KT_TIER_STATS layer=(?P<layer_id>\d+) cumulative "
-    r"gpu_hits=(?P<gpu_hits>\d+) "
-    r"cpu_hits=(?P<cpu_hits>\d+) "
-    r"ssd_loads=(?P<ssd_loads>\d+) "
-    r"promotions_to_gpu=(?P<promotions_to_gpu>\d+) "
-    r"promotions_to_cpu=(?P<promotions_to_cpu>\d+) "
-    r"demotions_from_gpu=(?P<demotions_from_gpu>\d+) "
-    r"demotions_from_cpu=(?P<demotions_from_cpu>\d+)"
-)
 
 
 def _read_text(path: Path) -> str:
@@ -256,11 +246,7 @@ def _get_tier_stats(port: int, context_id: str) -> dict | None:
             data = json.loads(resp.read().decode("utf-8"))
         if not isinstance(data, dict):
             return None
-        out: dict[str, int] = {}
-        for k in TIER_STAT_KEYS:
-            out[k] = max(0, int(data.get(k, 0)))
-        out["layers_seen"] = max(0, int(data.get("layers_seen", 0)))
-        return out
+        return _normalize_tier_stats_dict(data)
     except Exception:
         return None
 
@@ -277,40 +263,7 @@ def _read_tier_stats_from_output_file(output_file: Path) -> dict | None:
     raw = data.get("tier_stats_delta")
     if not isinstance(raw, dict):
         return None
-    out: dict[str, int] = {}
-    for k in TIER_STAT_KEYS:
-        out[k] = max(0, int(raw.get(k, 0)))
-    out["layers_seen"] = max(0, int(raw.get("layers_seen", 0)))
-    return out
-
-
-def _read_tier_stats_snapshot_from_log(log_file: Path) -> dict | None:
-    if not log_file.exists():
-        return None
-    text = _read_text(log_file)
-    matches = list(_TIER_STATS_RE.finditer(text))
-    if not matches:
-        return None
-    latest_by_layer: dict[int, dict[str, int]] = {}
-    for m in matches:
-        layer_id = int(m.group("layer_id"))
-        latest_by_layer[layer_id] = {k: int(m.group(k)) for k in TIER_STAT_KEYS}
-    out = {k: 0 for k in TIER_STAT_KEYS}
-    for stats in latest_by_layer.values():
-        for k in TIER_STAT_KEYS:
-            out[k] += int(stats.get(k, 0))
-    out["layers_seen"] = len(latest_by_layer)
-    return out
-
-
-def _tier_stats_delta_from_snapshots(start: dict | None, end: dict | None) -> dict | None:
-    if not isinstance(start, dict) or not isinstance(end, dict):
-        return None
-    out: dict[str, int] = {}
-    for k in TIER_STAT_KEYS:
-        out[k] = max(0, int(end.get(k, 0)) - int(start.get(k, 0)))
-    out["layers_seen"] = max(int(start.get("layers_seen", 0)), int(end.get("layers_seen", 0)))
-    return out
+    return _normalize_tier_stats_dict(raw)
 
 
 def _strip_output_detail_metrics(row: dict) -> dict:
@@ -331,6 +284,7 @@ def _strip_output_detail_metrics(row: dict) -> dict:
     out.pop("tier_stats_delta", None)
     for k in TIER_STAT_KEYS:
         out.pop(f"tier_delta_{k}", None)
+    out.pop("tier_delta_ssd_load_rate", None)
     return out
 
 
@@ -411,8 +365,57 @@ def _normalize_tier_delta_in_row(row: dict) -> dict:
                 nd[k] = int(nd[k])
             except Exception:
                 pass
+    total_uses = float(nd.get("gpu_hits", 0) + nd.get("cpu_hits", 0) + nd.get("ssd_loads", 0))
+    nd["ssd_load_rate"] = (float(nd.get("ssd_loads", 0)) / total_uses) if total_uses > 0 else 0.0
     out["tier_stats_delta"] = nd
     return out
+
+
+def _normalize_tier_stats_dict(raw: dict | None) -> dict | None:
+    if not isinstance(raw, dict):
+        return None
+    out: dict[str, int | float] = {}
+    for k in TIER_STAT_KEYS:
+        try:
+            out[k] = max(0, int(raw.get(k, 0)))
+        except Exception:
+            out[k] = 0
+    try:
+        out["layers_seen"] = max(0, int(raw.get("layers_seen", 0)))
+    except Exception:
+        out["layers_seen"] = 0
+    total_uses = float(out.get("gpu_hits", 0) + out.get("cpu_hits", 0) + out.get("ssd_loads", 0))
+    out["ssd_load_rate"] = (float(out.get("ssd_loads", 0)) / total_uses) if total_uses > 0 else 0.0
+    return out
+
+
+def _extract_tier_stats_from_stream_obj(obj: dict) -> dict | None:
+    if not isinstance(obj, dict):
+        return None
+    candidates: list[dict] = []
+
+    root_meta = obj.get("meta_info")
+    if isinstance(root_meta, dict):
+        candidates.append(root_meta)
+
+    for choice in obj.get("choices") or []:
+        if isinstance(choice, dict):
+            choice_meta = choice.get("meta_info")
+            if isinstance(choice_meta, dict):
+                candidates.append(choice_meta)
+
+    for meta in candidates:
+        ts = _normalize_tier_stats_dict(meta.get("tier_stats"))
+        if ts is not None:
+            return ts
+
+    sglext = obj.get("sglext")
+    if isinstance(sglext, dict):
+        ts = _normalize_tier_stats_dict(sglext.get("tier_stats"))
+        if ts is not None:
+            return ts
+
+    return None
 
 
 def _prompt_results_file(prompt_id: str) -> Path:
@@ -449,6 +452,7 @@ def _sanitize_run_for_details(rec: dict) -> dict:
     out.pop("tier_delta_promotions_to_cpu", None)
     out.pop("tier_delta_demotions_from_gpu", None)
     out.pop("tier_delta_demotions_from_cpu", None)
+    out.pop("tier_delta_ssd_load_rate", None)
     out.pop("tier_layers_seen", None)
     return out
 
@@ -727,6 +731,7 @@ def _run_single_request(
 
     custom_params: dict = {}
     custom_params["kt_tier_context_id"] = context_id
+    custom_params["return_tier_stats"] = True
     if experiment.get("moe_routing") is not None:
         custom_params["moe_routing"] = experiment["moe_routing"]
     if collect_trace:
@@ -794,7 +799,6 @@ def _run_single_request(
     )
 
     _reset_tier_stats(port, context_id)
-    tier_stats_start_log = _read_tier_stats_snapshot_from_log(server_log_file)
     t0 = time.perf_counter()
     t_first_token: float | None = None
     t_end: float | None = None
@@ -802,6 +806,7 @@ def _run_single_request(
     token_chunk_timestamps: list[float] = []
     finish_reason = None
     usage: dict = {}
+    tier_stats_from_stream: dict | None = None
     chunk_count = 0
     done_seen = False
 
@@ -820,6 +825,10 @@ def _run_single_request(
 
             chunk_count += 1
             obj = json.loads(data)
+
+            stream_tier_stats = _extract_tier_stats_from_stream_obj(obj)
+            if stream_tier_stats is not None:
+                tier_stats_from_stream = stream_tier_stats
 
             chunk_usage = obj.get("usage")
             if isinstance(chunk_usage, dict):
@@ -841,19 +850,11 @@ def _run_single_request(
 
     if t_end is None:
         t_end = time.perf_counter()
-    tier_stats_delta = _get_tier_stats(port, context_id)
-    if (
-        isinstance(tier_stats_delta, dict)
-        and int(tier_stats_delta.get("layers_seen", 0)) == 0
-    ):
-        tier_stats_end_log = _read_tier_stats_snapshot_from_log(server_log_file)
-        log_delta = _tier_stats_delta_from_snapshots(tier_stats_start_log, tier_stats_end_log)
-        if isinstance(log_delta, dict) and int(log_delta.get("layers_seen", 0)) > 0:
-            tier_stats_delta = log_delta
-        elif output_file.exists() or collect_trace:
-            file_stats = _read_tier_stats_from_output_file(output_file)
-            if isinstance(file_stats, dict):
-                tier_stats_delta = file_stats
+    tier_stats_delta = tier_stats_from_stream
+    if tier_stats_delta is None:
+        tier_stats_delta = _get_tier_stats(port, context_id)
+    if tier_stats_delta is None and (output_file.exists() or collect_trace):
+        tier_stats_delta = _read_tier_stats_from_output_file(output_file)
     elapsed_s = float(max(0.0, t_end - t0))
     generated_text = "".join(generated_parts)
 
@@ -919,6 +920,9 @@ def _run_single_request(
         rec[f"tier_delta_{k}"] = (
             int(tier_stats_delta.get(k, 0)) if isinstance(tier_stats_delta, dict) else None
         )
+    rec["tier_delta_ssd_load_rate"] = (
+        float(tier_stats_delta.get("ssd_load_rate", 0.0)) if isinstance(tier_stats_delta, dict) else None
+    )
     rec["tier_layers_seen"] = (
         int(tier_stats_delta.get("layers_seen", 0)) if isinstance(tier_stats_delta, dict) else None
     )
@@ -979,9 +983,9 @@ def _apply_baseline_relative_metrics(rec: dict, baseline: dict | None) -> dict:
     base_tier = (
         baseline.get("tier_stats_delta") if isinstance(baseline.get("tier_stats_delta"), dict) else {}
     )
-    cur_ssd = float(cur_tier.get("ssd_loads") or 0.0)
-    base_ssd = float(base_tier.get("ssd_loads") or 0.0)
-    rr["ssd_load_ratio"] = (cur_ssd / base_ssd) if base_ssd > 0 else None
+    cur_ssd_rate = float(cur_tier.get("ssd_load_rate") or 0.0)
+    base_ssd_rate = float(base_tier.get("ssd_load_rate") or 0.0)
+    rr["ssd_load_ratio"] = (cur_ssd_rate / base_ssd_rate) if base_ssd_rate > 0 else None
 
     base_e2e = float(baseline.get("elapsed_seconds") or 0.0)
     cur_e2e = float(rr.get("elapsed_seconds") or 0.0)
@@ -1043,6 +1047,7 @@ def _aggregate_results(results: list[dict], experiments: list[dict]) -> dict:
             "avg_tier_delta_promotions_to_cpu": _avg(ok_rows, "tier_delta_promotions_to_cpu"),
             "avg_tier_delta_demotions_from_gpu": _avg(ok_rows, "tier_delta_demotions_from_gpu"),
             "avg_tier_delta_demotions_from_cpu": _avg(ok_rows, "tier_delta_demotions_from_cpu"),
+            "avg_tier_delta_ssd_load_rate": _avg(ok_rows, "tier_delta_ssd_load_rate"),
             "avg_tier_layers_seen": _avg(ok_rows, "tier_layers_seen"),
             "quality_jaccard": _avg(ok_rows, "quality_jaccard"),
             "quality_degradation": _avg(ok_rows, "quality_degradation"),
@@ -1078,8 +1083,9 @@ def _aggregate_results(results: list[dict], experiments: list[dict]) -> dict:
             "tier_delta_promotions_to_cpu": "change in cumulative KT tier promotions_to_cpu during this request",
             "tier_delta_demotions_from_gpu": "change in cumulative KT tier demotions_from_gpu during this request",
             "tier_delta_demotions_from_cpu": "change in cumulative KT tier demotions_from_cpu during this request",
+            "tier_delta_ssd_load_rate": "tier_stats_delta.ssd_loads / (gpu_hits + cpu_hits + ssd_loads) for this request",
             "tier_layers_seen": "number of MoE layers contributing request-scoped tier stats",
-            "ssd_load_ratio": "tier_stats_delta.ssd_loads / baseline tier_stats_delta.ssd_loads for same prompt_id",
+            "ssd_load_ratio": "tier_stats_delta.ssd_load_rate / baseline tier_stats_delta.ssd_load_rate for same prompt_id",
             "speedup_ratio": "e2e_tokens_per_second / baseline_e2e_tokens_per_second for same prompt_id",
             "decode_speedup_ratio": "decode_tokens_per_second / baseline_decode_tokens_per_second for same prompt_id",
             "quality_speed_score": "quality_jaccard * speedup_ratio",

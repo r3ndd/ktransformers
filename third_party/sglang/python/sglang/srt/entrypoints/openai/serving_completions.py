@@ -201,6 +201,7 @@ class OpenAIServingCompletion(OpenAIServingBase):
         cached_tokens = {}
         hidden_states = {}
         routed_experts = {}
+        tier_stats = {}
 
         try:
             async for content in self.tokenizer_manager.generate_request(
@@ -214,6 +215,7 @@ class OpenAIServingCompletion(OpenAIServingBase):
                 cached_tokens[index] = content["meta_info"].get("cached_tokens", 0)
                 hidden_states[index] = content["meta_info"].get("hidden_states", None)
                 routed_experts[index] = content["meta_info"].get("routed_experts", None)
+                tier_stats[index] = content["meta_info"].get("tier_stats", None)
 
                 stream_buffer = stream_buffers.get(index, "")
                 # Handle echo for first chunk
@@ -341,6 +343,19 @@ class OpenAIServingCompletion(OpenAIServingBase):
                     )
                     yield f"data: {routed_experts_chunk.model_dump_json()}\n\n"
 
+            if tier_stats:
+                first_tier_stats = next((v for v in tier_stats.values() if isinstance(v, dict)), None)
+                if first_tier_stats is not None:
+                    tier_stats_chunk = CompletionStreamResponse(
+                        id=content["meta_info"]["id"],
+                        created=created,
+                        object="text_completion",
+                        choices=[],
+                        model=request.model,
+                        sglext=SglExt(tier_stats=first_tier_stats),
+                    )
+                    yield f"data: {tier_stats_chunk.model_dump_json()}\n\n"
+
             # Handle final usage chunk
             if request.stream_options and request.stream_options.include_usage:
                 usage = UsageProcessor.calculate_streaming_usage(
@@ -414,11 +429,13 @@ class OpenAIServingCompletion(OpenAIServingBase):
         cached_tokens_details = process_cached_tokens_details_from_ret(
             first_ret, request
         )
+        tier_stats = first_ret["meta_info"].get("tier_stats")
         response_sglext = None
-        if routed_experts or cached_tokens_details:
+        if routed_experts or cached_tokens_details or tier_stats:
             response_sglext = SglExt(
                 routed_experts=routed_experts,
                 cached_tokens_details=cached_tokens_details,
+                tier_stats=tier_stats,
             )
 
         for idx, ret_item in enumerate(ret):

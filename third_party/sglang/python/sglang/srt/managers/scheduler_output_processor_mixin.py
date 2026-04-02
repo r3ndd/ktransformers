@@ -8,6 +8,7 @@ import torch
 from sglang.srt.disaggregation.utils import DisaggregationMode
 from sglang.srt.environ import envs
 from sglang.srt.layers.logits_processor import LogitsProcessorOutput
+from sglang.srt.layers.moe.expert_tier_cache import ExpertTierResidencyManager
 from sglang.srt.layers.moe.routed_experts_capturer import get_global_experts_capturer
 from sglang.srt.managers.io_struct import (
     AbortReq,
@@ -117,6 +118,30 @@ class SchedulerOutputProcessorMixin:
                 elif hasattr(elem, "copy") and callable(elem.copy):
                     elem = elem.copy()
                 req.customized_info[k].append(elem)
+
+    @staticmethod
+    def _parse_custom_param_bool(value) -> bool:
+        if isinstance(value, bool):
+            return value
+        if isinstance(value, (int, float)):
+            return value != 0
+        if isinstance(value, str):
+            v = value.strip().lower()
+            return v in {"1", "true", "yes", "on"}
+        return False
+
+    def _maybe_get_tier_stats_snapshot(self, req: Req) -> Optional[dict]:
+        custom_params = getattr(req.sampling_params, "custom_params", None)
+        if not isinstance(custom_params, dict):
+            return None
+        if not self._parse_custom_param_bool(custom_params.get("return_tier_stats")):
+            return None
+
+        context_id = req.kt_tier_context_id or str(req.rid)
+        try:
+            return ExpertTierResidencyManager.get_context_stats(str(context_id))
+        except Exception:
+            return None
 
     def process_batch_result_prefill(
         self: Scheduler,
@@ -1106,6 +1131,12 @@ class SchedulerOutputProcessorMixin:
                 if "kt_tier_context_id" not in customized_info:
                     customized_info["kt_tier_context_id"] = []
                 customized_info["kt_tier_context_id"].append(req.kt_tier_context_id)
+
+                tier_stats_snapshot = self._maybe_get_tier_stats_snapshot(req)
+                if tier_stats_snapshot is not None:
+                    if "tier_stats" not in customized_info:
+                        customized_info["tier_stats"] = []
+                    customized_info["tier_stats"].append(tier_stats_snapshot)
 
             if (
                 req.finished()
