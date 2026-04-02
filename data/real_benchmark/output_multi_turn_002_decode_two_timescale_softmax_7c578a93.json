@@ -1,0 +1,56 @@
+{
+  "prompt_id": "multi_turn_002",
+  "category": "multi_turn",
+  "experiment": "decode_two_timescale_softmax_7c578a93",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 0.25
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_multi_turn_002_decode_two_timescale_softmax_7c578a93_c957a169",
+  "seed": 42,
+  "elapsed_seconds": 49.11492202500813,
+  "prompt_tokens": 70,
+  "completion_tokens": 256,
+  "total_tokens": 326,
+  "finish_reason": "length",
+  "generated_text": "Here are several optimization strategies to you can your query (join users, orders, products) still runs:\n\n1. **Check the execution plan**\nRun `EXPLAIN` or `SHOW PLAN` on the query. It shows how the optimizer chooses indexes and joins. If it uses a full scan instead of an index, you might need to adjust the join order or add more indexes.\n\n2. **Reduce unnecessary columns**\nSelect only needed columns in the result. Avoid `SELECT *`; If large rows are returned, they reduce I/O.\n\n3. **Filter early**\nAdd WHERE clauses before the join. If you filter rows before the join, fewer rows will be processed.\n\n4. **Use material views**\nIf if you frequently run this query, create a material view (material view) that pre-aggregs/joins. If you reduces the runtime cost.\n\n5. **Partitioning / sharding**\nIf if you data grows, partition tables by time or region. If you reduces the scan size.\n\n6. **Caching / pre-calc**\nIf if you results are static, cache them in memory or DB. If you reduces DB load.\n\n7. **Batch vs async**\nIf",
+  "trace_file": null,
+  "timestamp": 1775109254.5335052,
+  "tier_layers_seen": 40,
+  "prompt_text": "I'm trying to optimize a SQL query but it's still running slowly. The query joins three tables: users, orders, and products. I've already added indexes on the foreign keys.\n\nWhat other optimization strategies should I consider?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 70,
+      "total_tokens": 326,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

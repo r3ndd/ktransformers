@@ -1,0 +1,56 @@
+{
+  "prompt_id": "factual_002",
+  "category": "factual",
+  "experiment": "decode_two_timescale_softmax_ec8a4bbc",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 256.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_factual_002_decode_two_timescale_softmax_ec8a4bbc_dc23155b",
+  "seed": 42,
+  "elapsed_seconds": 48.18824243405834,
+  "prompt_tokens": 54,
+  "completion_tokens": 256,
+  "total_tokens": 310,
+  "finish_reason": "length",
+  "generated_text": "The transition from dominance of Recurrent Neural Networks (RNNs) to the Transformer architecture in era of Natural Language Processing (NLP) is a significant milestone. This shift is driven by fundamental architectural differences and specific advantages that transformers offer.\n\n\n\n### **Core Architectural Differences**\n\n1. **Sequential vs. Parallel Processing**:\n   - **RNNs**: Process data sequentially, one token at a time, through hidden states. The output depends on previous input. This creates a \"chain\" where information flows.\n\n   - **Transformers**: Process data in parallel, all tokens simultaneously via attention mechanism. Each token's representation is independent of others. This creates a \"graph\" where information flows.\n\n2. **Memory vs. Attention Mechanism**:\n   - **RNNs**: Relate long-term dependencies via hidden states. But this suffers from vanishing gradient problem.\n   - **Transformers**: Relate long-term dependencies via self-attention mechanism. This allows direct connection between any tokens.\n\n3. **Parallel vs. Sequential Computation**:\n   - **RNNs**: Compute sequential, step-by-step. This creates a bottleneck for training.\n   - **Transformers**: Compute parallel, batch-by-batch.",
+  "trace_file": null,
+  "timestamp": 1775107004.0134315,
+  "tier_layers_seen": 40,
+  "prompt_text": "Compare and contrast the transformer architecture with recurrent neural networks (RNNs). What are the key advantages of transformers that led to their dominance in NLP?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 54,
+      "total_tokens": 310,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

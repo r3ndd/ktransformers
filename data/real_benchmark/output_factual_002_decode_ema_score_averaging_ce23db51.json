@@ -1,0 +1,55 @@
+{
+  "prompt_id": "factual_002",
+  "category": "factual",
+  "experiment": "decode_ema_score_averaging_ce23db51",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "ema_score_averaging",
+      "params": {
+        "ema_beta": 0.5
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_factual_002_decode_ema_score_averaging_ce23db51_4d28dfa2",
+  "seed": 42,
+  "elapsed_seconds": 45.318555783014745,
+  "prompt_tokens": 54,
+  "completion_tokens": 256,
+  "total_tokens": 310,
+  "finish_reason": "length",
+  "generated_text": "The shift from Recurrent Neural Networks (RNNs) to Transformer architectures represents one of the most significant paradigm shifts in Natural Language Processing (NLP). This transition was driven by fundamental architectural differences that address RNN's inherent limitations.\n\nHere is a detailed comparison and analysis of why Transformers became the dominant standard.\n\n### 1. Core Architectural Differences\n\n#### Recurrent Neural Networks (RNNs)\nRNNs process data **sequentially**. time step $t$ depends on the hidden state from time step $t-1$.\n*   **Mechanism:** The network maintains a \"hidden state\" that acts as a memory, passing information forward through the sequence.\n\n*   **Directionality:** Standard RNNs are inherently unidirectional (past to future). Bi-directional RNNs (Bi-RNNs) require two separate passes (one forward, one backward), but still process sequentially.\n*   **Context Dependency:** To capture long-range dependencies, the signal must propagate through every intermediate time step.\n\n\n\n#### Transformer Architecture\nTransformers rely on **self-attention mechanisms** and process data **in parallel**.\n*   **Mechanism:** Each token in the sequence can attend to every other token simultaneously via a",
+  "trace_file": null,
+  "timestamp": 1775106399.9143195,
+  "tier_layers_seen": 40,
+  "prompt_text": "Compare and contrast the transformer architecture with recurrent neural networks (RNNs). What are the key advantages of transformers that led to their dominance in NLP?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 54,
+      "total_tokens": 310,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

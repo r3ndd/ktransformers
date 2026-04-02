@@ -1,0 +1,55 @@
+{
+  "prompt_id": "factual_002",
+  "category": "factual",
+  "experiment": "prefill_prefill_block_mean_a211beda",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 32
+      }
+    },
+    "decode": {
+      "scheme": "sliding_window_score_averaging",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_factual_002_prefill_prefill_block_mean_a211beda_2c1db082",
+  "seed": 42,
+  "elapsed_seconds": 44.24531867890619,
+  "prompt_tokens": 54,
+  "completion_tokens": 256,
+  "total_tokens": 310,
+  "finish_reason": "length",
+  "generated_text": "assistant\n<think>\n\n</think>\n\nThe shift from **Recurrent Neural Networks (RNNs)** to **Transformers** represents one of the most significant paradigm shifts in the history of Natural Language Processing (NLP). While RNNs dominated for over a decade, the Transformer architecture, introduced in the 2017 paper *\"Attention Is All You Need,\"* quickly superseded them as the standard for state-of-the-art models.\n\nHere is a detailed comparison and an analysis of why Transformers achieved dominance.\n\n---\n\n### 1. Core Architectural Differences\n\n#### Recurrent Neural Networks (RNNs)\n*   **Mechanism:** RNNs process data sequentially, one token at a time. They maintain a hidden state ($h_t$) that acts as a \"memory\" of previous inputs. To predict the current word, the model looks at the current input and the hidden state from the previous step.\n*   **Flow:** $Input_1 \\rightarrow Hidden_1 \\rightarrow Input_2 \\rightarrow Hidden_2 \\dots$\n*   **Variants:** Standard RNNs suffer from vanishing gradients. Long Short-Term Memory (LSTM) and Gated Recurrent Units (GRU) were developed to",
+  "trace_file": null,
+  "timestamp": 1775107138.1215167,
+  "tier_layers_seen": 40,
+  "prompt_text": "Compare and contrast the transformer architecture with recurrent neural networks (RNNs). What are the key advantages of transformers that led to their dominance in NLP?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 259,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 54,
+      "total_tokens": 310,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

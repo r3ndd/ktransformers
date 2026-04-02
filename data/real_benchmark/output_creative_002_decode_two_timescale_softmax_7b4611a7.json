@@ -1,0 +1,56 @@
+{
+  "prompt_id": "creative_002",
+  "category": "creative",
+  "experiment": "decode_two_timescale_softmax_7b4611a7",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 1024.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_creative_002_decode_two_timescale_softmax_7b4611a7_b8879b60",
+  "seed": 42,
+  "elapsed_seconds": 46.78912173607387,
+  "prompt_tokens": 54,
+  "completion_tokens": 256,
+  "total_tokens": 310,
+  "finish_reason": "length",
+  "generated_text": "Blue light glow on screen,\nCoffee cup is cold,\nBug in code I found.\n\nA haiku is a poetic form originating from Japanese poetry tradition that consists of three lines with 5 and 7 syllables each. The structure is designed to evoke a moment of insight or a sudden realization.\n\nI chose these images because they represent the common experience of debugging late night: the blue light glow on screen, coffee cup is cold, bug in code I found.\n\nThe first line describes the environment: the screen's blue light glow, the second line describes physical state: the coffee cup is cold, third line describes the problem: bug in code I found.\n\nThese images are chosen because they represent the common experience of debugging late night: the screen's blue light glow, the coffee cup is cold, the bug in code I found.\n\nThe first line describes the environment: the screen's blue light glow, the second line describes physical state: the coffee cup is cold, third line describes the problem: bug in code I found.\n\nThese images are chosen because they represent the common experience of debugging late night: the screen's blue light glow, the coffee cup is cold, the bug in code I found.\n\nThe first line describes the environment:",
+  "trace_file": null,
+  "timestamp": 1775104537.619392,
+  "tier_layers_seen": 40,
+  "prompt_text": "Write a haiku about debugging code at 3 AM. Then write a brief explanation of what a haiku is and why you chose those particular images.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 54,
+      "total_tokens": 310,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

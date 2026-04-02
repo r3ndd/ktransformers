@@ -1,0 +1,56 @@
+{
+  "prompt_id": "multi_turn_001",
+  "category": "multi_turn",
+  "experiment": "decode_two_timescale_softmax_38864957",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 64.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_multi_turn_001_decode_two_timescale_softmax_38864957_81c9931c",
+  "seed": 42,
+  "elapsed_seconds": 46.781080204062164,
+  "prompt_tokens": 66,
+  "completion_tokens": 256,
+  "total_tokens": 322,
+  "finish_reason": "length",
+  "generated_text": "An **LRU (Least Recently Used) cache** is a data structure that stores a limited number of items in memory, prioritizing access to the most recently used items. When an item is accessed, it becomes \"recently used\" and moves up in the list; when item is not accessed, it becomes \"least recently used\" and moves down in the list.\n\nWhen the cache reaches its capacity limit, the least recently used item is removed from cache.\n\n### Why LRU Cache is Useful?\n- **For Memory Efficiency**: It reduces memory usage by keeping only the most frequently accessed items.\n- **For Performance Optimization**: It improves performance by reducing latency for frequent access.\n- **For Data Management**: It manages data efficiently by keeping only the most frequently accessed items.\n\n### Example Use Cases:\n- **Web Browser**: A web browser uses LRU cache to keep the most frequently accessed pages.\n- **Database**: A database uses LRU cache to keep the most frequently accessed records.\n- **File System**: A file system uses LRU cache to keep the most frequently accessed files.\n\n### Implementation Steps:\n1. **Define Data Structure**: Define a data structure to store the items.\n2. **Define Access Logic",
+  "trace_file": null,
+  "timestamp": 1775108199.939447,
+  "tier_layers_seen": 40,
+  "prompt_text": "Let's work through a coding problem together. I need to implement a LRU (Least Recently Used) cache in Python.\n\nFirst, can you explain what an LRU cache is and when it's useful?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 66,
+      "total_tokens": 322,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

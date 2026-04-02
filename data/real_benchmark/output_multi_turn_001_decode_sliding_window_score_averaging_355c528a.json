@@ -1,0 +1,55 @@
+{
+  "prompt_id": "multi_turn_001",
+  "category": "multi_turn",
+  "experiment": "decode_sliding_window_score_averaging_355c528a",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "sliding_window_score_averaging",
+      "params": {
+        "window_size": 64
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_multi_turn_001_decode_sliding_window_score_averaging_355c528a_cdb6e5b1",
+  "seed": 42,
+  "elapsed_seconds": 53.92319596000016,
+  "prompt_tokens": 66,
+  "completion_tokens": 256,
+  "total_tokens": 322,
+  "finish_reason": "length",
+  "generated_text": "An **LRU (Least Recently Used) cache** is a data structure that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that that",
+  "trace_file": null,
+  "timestamp": 1775107505.1289432,
+  "tier_layers_seen": 40,
+  "prompt_text": "Let's work through a coding problem together. I need to implement a LRU (Least Recently Used) cache in Python.\n\nFirst, can you explain what an LRU cache is and when it's useful?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 66,
+      "total_tokens": 322,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "prompt_id": "mixed_002",
+  "category": "mixed",
+  "experiment": "decode_two_timescale_softmax_f375d90f",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 16.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_mixed_002_decode_two_timescale_softmax_f375d90f_54fb80bd",
+  "seed": 42,
+  "elapsed_seconds": 46.92823626403697,
+  "prompt_tokens": 96,
+  "completion_tokens": 256,
+  "total_tokens": 352,
+  "finish_reason": "length",
+  "generated_text": "```python\nimport pandas as pd\n\n# Step 1: Load the CSV data\n# Assuming the CSV file is named 'sales.csv' and contains columns: date, product_id, quantity, price\n# Replace 'sales.csv' with your actual file path if needed\ndata = pd.read_csv('sales.csv')\n\n# Ensure that the 'date' column is in datetime format for proper sorting\ndata['date'] = pd.to_datetime(data['date'])\n\n# Step 2: Calculate total revenue per product\n# Revenue = quantity * price\ndata['revenue'] = data['quantity'] * data['price']\n\n# Group by product_id to get total revenue per product\ntotal_revenue_per_product = data.groupby('product_id')['revenue'].sum()\n\nprint(\"Total Revenue Per Product:\")\nprint(total_revenue_per_product)\n\n# Step 3: Find top 5 best-selling products (by total quantity sold)\nbest_selling_products = data.groupby('product_id')['quantity'].sum().sort_values(ascending=False).head(5)\n\nprint(\"Top 5 Best-Selling Products:\")\nprint(best_selling_products)\n\n# Step 4: Generate a simple monthly sales report\n# Extract month from date using",
+  "trace_file": null,
+  "timestamp": 1775111892.1054695,
+  "tier_layers_seen": 40,
+  "prompt_text": "I need to analyze a CSV file containing sales data. The file has columns: date, product_id, quantity, price.\n\nWrite a Python script that:\n1. Loads the data\n2. Calculates total revenue per product\n3. Finds the top 5 best-selling products\n4. Generates a simple monthly sales report\n\nInclude comments explaining each section.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 96,
+      "total_tokens": 352,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

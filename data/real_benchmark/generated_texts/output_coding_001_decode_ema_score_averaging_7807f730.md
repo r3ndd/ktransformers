@@ -1,0 +1,19 @@
+## prompt_id: coding_001 | experiment: decode_ema_score_averaging_7807f730 | seed: 42
+
+### MoE Routing
+
+prefill: prefill_block_mean
+prefill_params: {"window_size": 1}
+decode: ema_score_averaging
+decode_params: {"ema_beta": 0.05}
+
+### Prompt
+
+Write a Python function to find the longest palindromic substring in a given string. Include a brief explanation of your approach and time complexity.
+
+### Generated Text
+
+Here’s’s is a approach and the implementation.
+
+**Appro**:
+The problem is to find the longest palpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpal

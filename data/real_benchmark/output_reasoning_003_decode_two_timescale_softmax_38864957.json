@@ -1,0 +1,56 @@
+{
+  "prompt_id": "reasoning_003",
+  "category": "reasoning",
+  "experiment": "decode_two_timescale_softmax_38864957",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 64.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_reasoning_003_decode_two_timescale_softmax_38864957_8d691ead",
+  "seed": 42,
+  "elapsed_seconds": 48.51605187985115,
+  "prompt_tokens": 67,
+  "completion_tokens": 256,
+  "total_tokens": 323,
+  "finish_reason": "length",
+  "generated_text": "No, this argument is **not valid**. It contains a logical fallacy known as **Affirming the consequent** (or *affirming the conclusion*).\n\n### Logical Analysis\n\nLet's break down the structure of the argument:\n\n1.  **Premise**: If it rains, the ground gets wet.\n    - This is a conditional statement ($P → Q$).\n    - $P$: \"It rains\"\n    - $Q$: \"The ground gets wet\"\n    - The logic here is that rain causes wetness.\n\n2.  **Premise**: The ground is wet.\n    - This is affirming the consequent ($Q$).\n    - The ground is wet.\n\n3.  **Conclusion**: Therefore, it rained.\n    - This is affirming the antecedent ($P$).\n    - It rained.\n\n### Fallacy Identification\n\nThe argument form is:\n$$\nIf P then Q.\nQ.\nTherefore P.\n$$\n\nThis is the classic **Affirming the consequent** fallacy. It is not valid because the premise only says that rain causes wetness. It does not say that wetness is caused by rain. There",
+  "trace_file": null,
+  "timestamp": 1775101983.9997215,
+  "tier_layers_seen": 40,
+  "prompt_text": "Analyze the following argument: 'If it rains, the ground gets wet. The ground is wet. Therefore, it rained.' Is this valid? What type of logical fallacy might be present, if any?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 67,
+      "total_tokens": 323,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

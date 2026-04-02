@@ -1,0 +1,55 @@
+{
+  "prompt_id": "multi_turn_002",
+  "category": "multi_turn",
+  "experiment": "decode_ema_score_averaging_ce23db51",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "ema_score_averaging",
+      "params": {
+        "ema_beta": 0.5
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_multi_turn_002_decode_ema_score_averaging_ce23db51_52a3d295",
+  "seed": 42,
+  "elapsed_seconds": 45.97419442003593,
+  "prompt_tokens": 70,
+  "completion_tokens": 256,
+  "total_tokens": 326,
+  "finish_reason": "length",
+  "generated_text": "Here are key optimization strategies beyond indexes on foreign keys:\n\n1. **Review the `EXPLAIN` plan**\n   - Run `EXPLAIN` (or `EXPLAIN ANALYZE` in PostgreSQL) to see how the DB engine is executing your query.\n   - Look for:\n     - Full table scans on large tables\n     - Missing indexes on filter columns (`WHERE`, `JOIN ON`, `ORDER BY`, `GROUP BY`)\n     - Nested loops vs hash joins vs merge joins and their costs\n\n\n\n2. **Filter data early**\n   - Add selective conditions in `WHERE` clauses before joining:\n     - Filter by date ranges, status flags, or other narrow criteria.\n     - Avoid `SELECT *` unless you need all columns; select only needed fields.\n\n3. **Cover covering indexes**\n   - Create composite indexes that include columns used in:\n     - `WHERE` filters\n     - `JOIN` conditions\n     - `ORDER BY` / `GROUP BY`\n     - Even selected columns if possible (covering index avoids table lookups).\n\n4. **Avoid unnecessary joins**\n   - Check if you really need all three tables:\n     - Can some data be pre-aggregated",
+  "trace_file": null,
+  "timestamp": 1775108884.5690627,
+  "tier_layers_seen": 40,
+  "prompt_text": "I'm trying to optimize a SQL query but it's still running slowly. The query joins three tables: users, orders, and products. I've already added indexes on the foreign keys.\n\nWhat other optimization strategies should I consider?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 70,
+      "total_tokens": 326,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

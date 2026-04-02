@@ -1,0 +1,56 @@
+{
+  "prompt_id": "factual_002",
+  "category": "factual",
+  "experiment": "decode_two_timescale_softmax_7b4611a7",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 1024.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_factual_002_decode_two_timescale_softmax_7b4611a7_98c985f3",
+  "seed": 42,
+  "elapsed_seconds": 45.87607673788443,
+  "prompt_tokens": 54,
+  "completion_tokens": 256,
+  "total_tokens": 310,
+  "finish_reason": "length",
+  "generated_text": "The transition from Recurrent Neural Networks (RNNs) to Transformer architecture has been a defining moment in the history of Natural Language Processing (NLP).. The following comparison and contrast analysis will highlight key advantages that led to their dominance.\n\n\n\n### **Comparison and Contrast**\n\n| Feature | RNNs (Recurrent Neural Networks) | Transformers (Transformer Architecture) |\n|---|---|---|\n| **Sequence Modeling** | Sequential processing: Each step processes data sequentially, capturing dependencies on previous steps. | Parallel processing: All tokens are processed simultaneously, capturing dependencies on all tokens. |\n| **Attention Mechanism** | Implicit attention: Hidden state captures long-term dependencies via hidden state. | Explicit attention: Self-attention mechanism captures dependencies via explicit attention. |\n| **Parallelization** | Sequential processing: Each step processes data sequentially, capturing dependencies on previous steps. | Parallel processing: All tokens are processed simultaneously, capturing dependencies on all tokens. |\n| **Long-term Dependencies** | Vanishing gradient: Long-term dependencies via vanishing gradient. | Attention mechanism: Long-term dependencies via attention mechanism. |\n| **Computational Complexity** | High complexity: Sequential processing leads to high computational complexity. | Low complexity: Parallel processing leads",
+  "trace_file": null,
+  "timestamp": 1775107049.9155607,
+  "tier_layers_seen": 40,
+  "prompt_text": "Compare and contrast the transformer architecture with recurrent neural networks (RNNs). What are the key advantages of transformers that led to their dominance in NLP?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 54,
+      "total_tokens": 310,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

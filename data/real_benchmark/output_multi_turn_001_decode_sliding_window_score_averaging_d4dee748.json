@@ -1,0 +1,55 @@
+{
+  "prompt_id": "multi_turn_001",
+  "category": "multi_turn",
+  "experiment": "decode_sliding_window_score_averaging_d4dee748",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "sliding_window_score_averaging",
+      "params": {
+        "window_size": 4
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_multi_turn_001_decode_sliding_window_score_averaging_d4dee748_96557aa5",
+  "seed": 42,
+  "elapsed_seconds": 45.14145231596194,
+  "prompt_tokens": 66,
+  "completion_tokens": 256,
+  "total_tokens": 322,
+  "finish_reason": "length",
+  "generated_text": "An **LRU (Least Recently Used) cache** is a fixed-size data structure that stores key-value pairs, and when the it reaches capacity, it evates the least recently used item.\n\n It's useful in scenarios where: you need to limit memory usage but access patterns are \"temp locality\" (recently accessed items are likely to be accessed again soon).—common examples include web caching, database query results, session storage, or any other systems where you want fast O(1) access with bounded memory.\n\n\n\n### Core How It Works\n-\n1. **Capacity**: You has a a maximum size `N`.\n2. **Operations**:\n   - `get(key`: str) -> value | None`: Returns the value if key exists, else `None` (or maybe raise error).\n   - `put(key: str, value): None`: Adds/updates the entry; If full capacity, remove the *least recently used* entry before.\n3. **Order**: The order of \"access recency\" tracks: most recent = front, least recent = back.\n\n4. **Implementation**: Typically uses a **hash map + doubly linked list** for: O(1) get/put time.\n\n5.",
+  "trace_file": null,
+  "timestamp": 1775107403.6002326,
+  "tier_layers_seen": 40,
+  "prompt_text": "Let's work through a coding problem together. I need to implement a LRU (Least Recently Used) cache in Python.\n\nFirst, can you explain what an LRU cache is and when it's useful?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 66,
+      "total_tokens": 322,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

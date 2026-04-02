@@ -1,0 +1,55 @@
+{
+  "prompt_id": "reasoning_002",
+  "category": "reasoning",
+  "experiment": "decode_two_timescale_ema_9c387768",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_ema",
+      "params": {
+        "mix_lambda": 0.2
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_reasoning_002_decode_two_timescale_ema_9c387768_bc2093cb",
+  "seed": 42,
+  "elapsed_seconds": 47.01705501996912,
+  "prompt_tokens": 86,
+  "completion_tokens": 256,
+  "total_tokens": 342,
+  "finish_reason": "length",
+  "generated_text": "Based on the the logical constraints, let's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step step.\n\nLet's ded step",
+  "trace_file": null,
+  "timestamp": 1775100411.8241906,
+  "tier_layers_seen": 40,
+  "prompt_text": "Four people (Alice, Bob, Carol, Dave) are sitting in a row. We know:\n1. Alice is not at either end\n2. Bob is to the left of Carol\n3. Dave is not next to Alice\n\nDetermine their seating order from left to right, explaining your reasoning.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 86,
+      "total_tokens": 342,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

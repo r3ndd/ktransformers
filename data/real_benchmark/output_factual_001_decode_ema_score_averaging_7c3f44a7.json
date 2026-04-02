@@ -1,0 +1,55 @@
+{
+  "prompt_id": "factual_001",
+  "category": "factual",
+  "experiment": "decode_ema_score_averaging_7c3f44a7",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "ema_score_averaging",
+      "params": {
+        "ema_beta": 0.7
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_factual_001_decode_ema_score_averaging_7c3f44a7_a4a347ae",
+  "seed": 42,
+  "elapsed_seconds": 46.02915692795068,
+  "prompt_tokens": 55,
+  "completion_tokens": 256,
+  "total_tokens": 311,
+  "finish_reason": "length",
+  "generated_text": "Python’s memory management is a hybrid system that combines **reference counting** with a **generational garbage collector**. This design allows Python to reclaim most memory quickly while also handling complex cases (like reference cycles) that reference counting alone cannot solve.\n\n---\n\n## 1. Reference Counting: The First Line of Defense\n\n### How It Works\n- Every object in Python has an internal counter (`ob_refcnt`) that tracks how many references point to it.\n- When you create an object, its reference count starts at 1.\n- Each time a new reference is created (e.g., assigning to a variable, adding to a list), the count increments.\n- When a reference goes out of scope or is reassigned, the count decrements.\n- **As soon as the reference count drops to zero**, the object’s `__del__` method (if defined) is called, and its memory is immediately freed.\n\n### Example\n```python\na = [1, 2, 3]      # ref count = 1\nb = a              # ref count = 2\ndel b              # ref count = 1\ndel a              # ref count = 0 → object freed immediately\n```\n\n### Adv",
+  "trace_file": null,
+  "timestamp": 1775105085.8709576,
+  "tier_layers_seen": 40,
+  "prompt_text": "Explain how garbage collection works in Python. Include a discussion of reference counting, the generational garbage collector, and when memory might not be freed as expected.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 55,
+      "total_tokens": 311,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

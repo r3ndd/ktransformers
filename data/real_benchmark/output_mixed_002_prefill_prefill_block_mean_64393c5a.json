@@ -1,0 +1,55 @@
+{
+  "prompt_id": "mixed_002",
+  "category": "mixed",
+  "experiment": "prefill_prefill_block_mean_64393c5a",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 128
+      }
+    },
+    "decode": {
+      "scheme": "sliding_window_score_averaging",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_mixed_002_prefill_prefill_block_mean_64393c5a_97e3e84c",
+  "seed": 42,
+  "elapsed_seconds": 44.13682472310029,
+  "prompt_tokens": 96,
+  "completion_tokens": 256,
+  "total_tokens": 352,
+  "finish_reason": "length",
+  "generated_text": "assistant\n<think>\n\n</think>\n\nHere is a complete Python script to analyze your sales data. This script uses the `pandas` library, which is the standard tool for data manipulation in Python.\n\n### Prerequisites\nYou will need to install pandas if you haven't already:\n```bash\npip install pandas matplotlib\n```\n\n### Python Script: `sales_analysis.py`\n\n```python\nimport pandas as pd\nimport numpy as np\nfrom datetime import datetime\n\n# ==========================================\n# 1. LOAD THE DATA\n# ==========================================\ndef load_data(file_path):\n    \"\"\"\n    Reads the CSV file into a DataFrame and ensures date columns are parsed correctly.\n    \"\"\"\n    try:\n        # Read the CSV file\n        df = pd.read_csv(file_path)\n        \n        # Ensure 'date' column is treated as datetime objects for time-based analysis\n        df['date'] = pd.to_datetime(df['date'])\n        \n        # Basic validation to ensure required columns exist\n        required_cols = ['date', 'product_id', 'quantity', 'price']\n        missing_cols = [col for col in required_cols if col not in df.columns]\n        \n        if missing_cols:\n            raise ValueError(f\"Missing",
+  "trace_file": null,
+  "timestamp": 1775112213.2531512,
+  "tier_layers_seen": 40,
+  "prompt_text": "I need to analyze a CSV file containing sales data. The file has columns: date, product_id, quantity, price.\n\nWrite a Python script that:\n1. Loads the data\n2. Calculates total revenue per product\n3. Finds the top 5 best-selling products\n4. Generates a simple monthly sales report\n\nInclude comments explaining each section.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 259,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 96,
+      "total_tokens": 352,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

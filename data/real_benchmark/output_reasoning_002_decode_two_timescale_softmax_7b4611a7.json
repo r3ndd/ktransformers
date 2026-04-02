@@ -1,0 +1,56 @@
+{
+  "prompt_id": "reasoning_002",
+  "category": "reasoning",
+  "experiment": "decode_two_timescale_softmax_7b4611a7",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 1024.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_reasoning_002_decode_two_timescale_softmax_7b4611a7_b23d3312",
+  "seed": 42,
+  "elapsed_seconds": 46.98492176295258,
+  "prompt_tokens": 86,
+  "completion_tokens": 256,
+  "total_tokens": 342,
+  "finish_reason": "length",
+  "generated_text": "Based on the constraints provided, let's step-by-step reasoning to determine the seating order.\n\n### 1. Analysis of Constraints\n**Constraint 1:** Alice is not at either end.\nThis means Alice must be in position 2 or position 3 (the middle seats). Positions 1 and 4 are reserved for Bob, Carol, or Dave.\n\n**Constraint 2:** Bob is to the left of Carol.\nThis implies Bob is positioned before Carol. This could be:\n- Bob immediately left of Carol (Bob + Carol)\n- Bob separated by one seat from Carol (Bob + X + Carol)\n- Bob separated by two seats from Carol (Bob + X + X + Carol)\n\n**Constraint 3:** Dave is not next to Alice.\nThis means Dave cannot be adjacent to Alice. If Alice is in position 2, then Dave must be in position 1 or 4. If Alice is in position 3, then Dave must be in position 1 or 4.\n\n### 2. Logical Deduction\nLet's try to find the possible arrangement based on the above constraints.\n\n **Case A:** Alice is in position 2.\nThen Dave must be in position 1 or ",
+  "trace_file": null,
+  "timestamp": 1775100832.7906742,
+  "tier_layers_seen": 40,
+  "prompt_text": "Four people (Alice, Bob, Carol, Dave) are sitting in a row. We know:\n1. Alice is not at either end\n2. Bob is to the left of Carol\n3. Dave is not next to Alice\n\nDetermine their seating order from left to right, explaining your reasoning.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 86,
+      "total_tokens": 342,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

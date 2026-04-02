@@ -1,0 +1,56 @@
+{
+  "prompt_id": "edge_001",
+  "category": "edge_case",
+  "experiment": "decode_two_timescale_softmax_ec8a4bbc",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 256.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_edge_001_decode_two_timescale_softmax_ec8a4bbc_5586ec80",
+  "seed": 42,
+  "elapsed_seconds": 45.83912532310933,
+  "prompt_tokens": 28,
+  "completion_tokens": 256,
+  "total_tokens": 284,
+  "finish_reason": "length",
+  "generated_text": "I'd love to tell you about it! But I need a little more context. Could you clarify what \"it\" refers? Are you asking about:\n\n- A specific topic (e.g., technology, history, science)\n- A recent event or news story\n- A cultural phenomenon (e.g., art, music, fashion)\n- A particular product or service (e.g., software, hardware, app)\n- A personal experience or anecd\n- Something else that you might want to know about?\n\nIf you could provide me with some more details, I'll be happy to share the information! Let's start! �!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n!\n\n",
+  "trace_file": null,
+  "timestamp": 1775113223.0209205,
+  "tier_layers_seen": 40,
+  "prompt_text": "Tell me about it.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 28,
+      "total_tokens": 284,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

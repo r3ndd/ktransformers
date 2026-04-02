@@ -1,0 +1,56 @@
+{
+  "prompt_id": "coding_001",
+  "category": "coding",
+  "experiment": "decode_two_timescale_softmax_7b4611a7",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 1024.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_coding_001_decode_two_timescale_softmax_7b4611a7_9ae7fa08",
+  "seed": 42,
+  "elapsed_seconds": 47.19252362684347,
+  "prompt_tokens": 52,
+  "completion_tokens": 256,
+  "total_tokens": 308,
+  "finish_reason": "length",
+  "generated_text": "Here’s a Python function to find the longest palindromic substring using the **expand around center** approach, which is efficient and widely used.\n\n```python\ndef longest_palindrome(s):\n    \"\"\"\n    Find the longest palindromic substring in string `s`.\n    Returns: the longest palindrome substring (or empty if input is empty).\n    \"\"\"\n    \"\"\"\n    Approach:\n    Expand around center for each character position.\n    For each character, we expand left and right until as long as they are equal.\n    This time complexity is O(n^2) because worst case is all characters.\n    \"\"\"\n    \"\"\"\n    Time Complexity: O(n^2) where n is length of string.\n    Space Complexity: O(1) constant space.\n    \"\"\"\n    \"\"\"\n    \"\"\"\n    \"\"\"\n    \"\"\"\n    \"\"\"\n    \"\"\"\n    \"\"\"\n    \"\"\"\n    \"\"\"\n    \"\"\"\n    \"\"\"\n    \"\"\"\n    \"\"\"\n    \"\"\"\n    \"\"\"\n    \"\"\"\n    \"\"\"\n    \"\"\"\n    \"\"\"\n    \"\"\"\n    \"\"\"\n    \"\"\"\n    \"\"\"\n    \"\"\"\n    \"\"\"\n    \"\"\"\n    \"\"\"\n    \"\"\"\n    \"\"\"",
+  "trace_file": null,
+  "timestamp": 1775095788.4689922,
+  "tier_layers_seen": 40,
+  "prompt_text": "Write a Python function to find the longest palindromic substring in a given string. Include a brief explanation of your approach and time complexity.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 52,
+      "total_tokens": 308,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

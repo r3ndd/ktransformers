@@ -1,0 +1,55 @@
+{
+  "prompt_id": "factual_002",
+  "category": "factual",
+  "experiment": "decode_ema_score_averaging_d27b125a",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "ema_score_averaging",
+      "params": {
+        "ema_beta": 0.1
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_factual_002_decode_ema_score_averaging_d27b125a_b15d2c13",
+  "seed": 42,
+  "elapsed_seconds": 44.5324784880504,
+  "prompt_tokens": 54,
+  "completion_tokens": 256,
+  "total_tokens": 310,
+  "finish_reason": "length",
+  "generated_text": "The shift of field N landscape from last 20 decade, the **Transformer architecture** has been a **R recurrent neural networks (RNNs)** in **N natural language processing (NLP**.\n\n. **Transformers** have **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **a** **",
+  "trace_file": null,
+  "timestamp": 1775106489.1391435,
+  "tier_layers_seen": 40,
+  "prompt_text": "Compare and contrast the transformer architecture with recurrent neural networks (RNNs). What are the key advantages of transformers that led to their dominance in NLP?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 54,
+      "total_tokens": 310,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

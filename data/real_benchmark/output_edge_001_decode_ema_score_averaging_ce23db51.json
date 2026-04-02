@@ -1,0 +1,55 @@
+{
+  "prompt_id": "edge_001",
+  "category": "edge_case",
+  "experiment": "decode_ema_score_averaging_ce23db51",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "ema_score_averaging",
+      "params": {
+        "ema_beta": 0.5
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_edge_001_decode_ema_score_averaging_ce23db51_51a560e9",
+  "seed": 42,
+  "elapsed_seconds": 44.37041536788456,
+  "prompt_tokens": 28,
+  "completion_tokens": 256,
+  "total_tokens": 284,
+  "finish_reason": "length",
+  "generated_text": "I'd love to tell you about it! could you clarify what \"it\" refers? I'm happy to discuss:\n\n- My capabilities as an AI assistant\n- A specific topic you're curious about (history, science, tech, culture, etc.)\n- Something we've discussed earlier in our conversation\n- Or anything else on your mind!\n\nJust let me know what you'd like to explore! 😊🌟🚀📚🎨🔬🌍🤖💡🎯🧠🌱🌈🎮🎵🎭🎪🎯🎨🎬🎧🎹🎺🎷🎸🎻🎼🎽🎾🎿🏀🏁🏂🏃🏄🏅🏆🏇🏉🏊🏋🏌🏍🏎🏏🏐🏑🏒🏓🏔🏕🏖🏗🏘🏙🏚🏛🏜�",
+  "trace_file": null,
+  "timestamp": 1775112629.2306917,
+  "tier_layers_seen": 40,
+  "prompt_text": "Tell me about it.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 147,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 28,
+      "total_tokens": 284,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

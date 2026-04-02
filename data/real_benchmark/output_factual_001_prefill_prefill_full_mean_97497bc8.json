@@ -1,0 +1,53 @@
+{
+  "prompt_id": "factual_001",
+  "category": "factual",
+  "experiment": "prefill_prefill_full_mean_97497bc8",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_full_mean",
+      "params": {}
+    },
+    "decode": {
+      "scheme": "sliding_window_score_averaging",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_factual_001_prefill_prefill_full_mean_97497bc8_b1e516f6",
+  "seed": 42,
+  "elapsed_seconds": 43.44937303988263,
+  "prompt_tokens": 55,
+  "completion_tokens": 256,
+  "total_tokens": 311,
+  "finish_reason": "length",
+  "generated_text": "assistant\n<think>\n\n</think>\n\nPython's memory management is a hybrid system that combines **reference counting** as the primary mechanism for immediate memory reclamation with a **generational garbage collector (GC)** to handle complex cases like reference cycles.\n\nHere is a detailed breakdown of how these mechanisms work and why memory might not be freed as expected.\n\n---\n\n### 1. Reference Counting: The Primary Mechanism\n\nThe most fundamental part of Python's memory management is **reference counting**. Every object in Python maintains a counter that tracks how many references point to it.\n\n*   **How it works:**\n    *   When an object is created, its reference count starts at 1.\n    *   When a new variable or container points to the object, the count increments.\n    *   When a variable goes out of scope or is reassigned, the count decrements.\n    *   **The Rule:** As soon as the reference count drops to **0**, the object is immediately deallocated, and its memory is returned to the system.\n\n*   **Example:**\n    ```python\n    x = [1, 2, 3]  # List created, ref_count = 1\n    y = x          #",
+  "trace_file": null,
+  "timestamp": 1775106024.3356724,
+  "tier_layers_seen": 40,
+  "prompt_text": "Explain how garbage collection works in Python. Include a discussion of reference counting, the generational garbage collector, and when memory might not be freed as expected.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 259,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 55,
+      "total_tokens": 311,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "prompt_id": "mixed_002",
+  "category": "mixed",
+  "experiment": "decode_ema_score_averaging_ce23db51",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "ema_score_averaging",
+      "params": {
+        "ema_beta": 0.5
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_mixed_002_decode_ema_score_averaging_ce23db51_367a9101",
+  "seed": 42,
+  "elapsed_seconds": 46.228870971128345,
+  "prompt_tokens": 96,
+  "completion_tokens": 256,
+  "total_tokens": 352,
+  "finish_reason": "length",
+  "generated_text": "```python\n# Import necessary libraries\nimport pandas as pd\n\ndef analyze_sales_data(csv_file_path):\n    \"\"\"\n    Analyzes sales data from a CSV file and performs various calculations.\n    \n    Parameters:\n    csv_file_path (str): Path to the CSV file containing sales data.\n    \"\"\"\n    \n    # 1. Load the data\n    # Read the CSV file into a DataFrame\n    # The 'parse_dates' parameter ensures the 'date' column is treated as datetime objects\n    df = pd.read_csv(csv_file_path, parse_dates=['date'])\n    \n    # Display first few rows to verify loading\n    print(\"Data loaded successfully. First 5 rows:\")\n    print(df.head())\n    \n    # Ensure ensure required columns exist\n    required_columns = ['date', 'product_id', 'quantity', 'price']\n    if not all(col in df.columns for col in required_columns):\n        raise ValueError(f\"Missing required columns. Expected: {required_columns}\")\n    \n    # Calculate total revenue per product\n    # Revenue = quantity * price\n    df['revenue'] = df['quantity'] * df['price']\n    \n    # Group by product_id and sum the revenue\n   ",
+  "trace_file": null,
+  "timestamp": 1775111378.095832,
+  "tier_layers_seen": 40,
+  "prompt_text": "I need to analyze a CSV file containing sales data. The file has columns: date, product_id, quantity, price.\n\nWrite a Python script that:\n1. Loads the data\n2. Calculates total revenue per product\n3. Finds the top 5 best-selling products\n4. Generates a simple monthly sales report\n\nInclude comments explaining each section.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 96,
+      "total_tokens": 352,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

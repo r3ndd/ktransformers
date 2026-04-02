@@ -1,0 +1,55 @@
+{
+  "prompt_id": "multi_turn_001",
+  "category": "multi_turn",
+  "experiment": "prefill_prefill_block_mean_a211beda",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 32
+      }
+    },
+    "decode": {
+      "scheme": "sliding_window_score_averaging",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_multi_turn_001_prefill_prefill_block_mean_a211beda_4d2fbcb3",
+  "seed": 42,
+  "elapsed_seconds": 45.01259320182726,
+  "prompt_tokens": 66,
+  "completion_tokens": 256,
+  "total_tokens": 322,
+  "finish_reason": "length",
+  "generated_text": "assistant\n<think>\n\n</think>\n\n### What is an LRU Cache?\n\n**LRU** stands for **Least Recently Used**. It is a caching strategy used to manage a fixed-size collection of data. The core principle is simple: when the cache reaches its capacity and a new item needs to be added, the system removes the item that has not been accessed (read or written) for the longest time.\n\nThink of it like a stack of books on a desk with limited space:\n1.  You have a desk that can only hold 5 books.\n2.  When you need a book, you take it from the shelf and place it at the front of the stack (marking it as \"recently used\").\n3.  If the desk is full and you need to add a new book, you remove the book sitting at the very back of the stack (the one you haven't looked at in the longest time).\n\n### When is it Useful?\n\nLRU caches are essential in scenarios where:\n*   **Data access follows the \"Locality of Reference\" principle:** This means recently accessed items are likely to be accessed again soon. By keeping these items in fast memory (RAM), you avoid expensive operations like disk I",
+  "trace_file": null,
+  "timestamp": 1775108382.4528983,
+  "tier_layers_seen": 40,
+  "prompt_text": "Let's work through a coding problem together. I need to implement a LRU (Least Recently Used) cache in Python.\n\nFirst, can you explain what an LRU cache is and when it's useful?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 259,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 66,
+      "total_tokens": 322,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

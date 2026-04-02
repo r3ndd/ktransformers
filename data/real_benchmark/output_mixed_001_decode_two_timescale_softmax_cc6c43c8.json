@@ -1,0 +1,56 @@
+{
+  "prompt_id": "mixed_001",
+  "category": "mixed",
+  "experiment": "decode_two_timescale_softmax_cc6c43c8",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 4.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_mixed_001_decode_two_timescale_softmax_cc6c43c8_527e1093",
+  "seed": 42,
+  "elapsed_seconds": 48.31844669301063,
+  "prompt_tokens": 59,
+  "completion_tokens": 256,
+  "total_tokens": 315,
+  "finish_reason": "length",
+  "generated_text": "Here’s a complete implementation of a Binary Search Tree (BST) in Python with `insert`, `search`, and `delete` operations, along with explanations of time complexity and step-by-step walkthroughs using a small example.\n\n### 1. BST Definition & Properties\n- A **Binary Search Tree** is a tree where each node has a left child and right child.\n- For every node:\n  - All keys in the left subtree are less than the key at node.\n  - All keys in the right subtree are greater than the key at node.\n- This property allows efficient search, insert, and delete operations.\n\n### 2. Implementation Code\n\n```python\nclass Node:\n    def __init__(self, value):\n        self.value = value\n        self.left = None\n        self.right = None\n\nclass BST:\n    def __init__(self):\n        self.root = None\n\n    # Insert operation\n    def insert(self, value):\n        if self.root is None:\n            self.root = Node(value)\n        else:\n            self._insert_recursive(self.root, value)\n\n    def _insert_recursive(self, node, value):\n        if value < node.value:\n           ",
+  "trace_file": null,
+  "timestamp": 1775110596.193871,
+  "tier_layers_seen": 40,
+  "prompt_text": "Implement a binary search tree in Python with insert, search, and delete operations. For each operation, explain the time complexity and walk through how the algorithm works using a small example.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 59,
+      "total_tokens": 315,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

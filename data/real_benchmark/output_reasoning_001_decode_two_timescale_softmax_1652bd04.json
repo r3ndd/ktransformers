@@ -1,0 +1,56 @@
+{
+  "prompt_id": "reasoning_001",
+  "category": "reasoning",
+  "experiment": "decode_two_timescale_softmax_1652bd04",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 1.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_reasoning_001_decode_two_timescale_softmax_1652bd04_f31d6c33",
+  "seed": 42,
+  "elapsed_seconds": 47.36816443596035,
+  "prompt_tokens": 70,
+  "completion_tokens": 256,
+  "total_tokens": 326,
+  "finish_reason": "length",
+  "generated_text": "To find the distance between city A and city B, we can set up a equation based on the time and speed relationships.\n\n### Step 1: Define Variables\nLet $ $ be the distance between the two cities (in miles).\nLet $ $ be the total time for the round trip (5 hours).\n\nWe know the following speeds:\n*   Speed from A to B ($$ = 60$ mph)\n*   Speed from B to A ($$ = 40$ mph)\n\n### Step 2: Express Time in Terms of Distance\nThe formula for time is: $\\$$ = \\frac{\\text{Distance}}{\\text{Speed}}$.\n\n*   **Time to travel A to B:**\n    $$t_1 = \\frac{d}{60}$$\n*   **Time to travel B to A:**\n    $$t_2 = \\frac{d}{40}$$\n\n### Step 3: Set the Equation\nThe total time for the round trip is the sum of the time for both legs of the journey.\n$$$$ = t_1 + t_2 = 5$$\n\nSubstituting our expressions into the equation:\n$$\\frac{d}{",
+  "trace_file": null,
+  "timestamp": 1775099348.5871823,
+  "tier_layers_seen": 40,
+  "prompt_text": "A train travels from city A to city B at 60 mph and returns at 40 mph. If the total round trip takes 5 hours, how far apart are the two cities? Show your work step by step.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 70,
+      "total_tokens": 326,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

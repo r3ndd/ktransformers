@@ -1,0 +1,55 @@
+{
+  "prompt_id": "mixed_001",
+  "category": "mixed",
+  "experiment": "decode_ema_score_averaging_bf390907",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "ema_score_averaging",
+      "params": {
+        "ema_beta": 0.9
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_mixed_001_decode_ema_score_averaging_bf390907_fa8f4b9c",
+  "seed": 42,
+  "elapsed_seconds": 44.842544219922274,
+  "prompt_tokens": 59,
+  "completion_tokens": 256,
+  "total_tokens": 315,
+  "finish_reason": "length",
+  "generated_text": "Here’s a complete implementation of a Binary Search Tree (BST) in Python with `insert`, `search`, and `delete` operations, along with explanations of time complexity and step-by-step walkthroughs.\n\n---\n\n## BST Implementation in Python\n\n```python\nclass TreeNode:\n    def __init__(self, key):\n        self.key = key\n        self.left = None\n        self.right = None\n\nclass BST:\n    def __init__(self):\n        self.root = None\n\n    # Insert a key into the BST\n    def insert(self, key):\n        self.root = self._insert(self.root, key)\n\n    def _insert(self, node, key):\n        if node is None:\n            return TreeNode(key)\n        if key < node.key:\n            node.left = self._insert(node.left, key)\n        elif key > node.key:\n            node.right = self._insert(node.right, key)\n        # If key == node.key, we do nothing (no duplicates)\n        return node\n\n    # Search for a key in the BST\n    def search(self, key):\n        return self._search(self.root, key)\n\n    def _search(self, node,",
+  "trace_file": null,
+  "timestamp": 1775110040.190153,
+  "tier_layers_seen": 40,
+  "prompt_text": "Implement a binary search tree in Python with insert, search, and delete operations. For each operation, explain the time complexity and walk through how the algorithm works using a small example.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 59,
+      "total_tokens": 315,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

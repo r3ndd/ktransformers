@@ -1,0 +1,55 @@
+{
+  "prompt_id": "factual_001",
+  "category": "factual",
+  "experiment": "prefill_prefill_block_mean_37f356d3",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 64
+      }
+    },
+    "decode": {
+      "scheme": "sliding_window_score_averaging",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_factual_001_prefill_prefill_block_mean_37f356d3_6cba2683",
+  "seed": 42,
+  "elapsed_seconds": 44.7432651061099,
+  "prompt_tokens": 55,
+  "completion_tokens": 256,
+  "total_tokens": 311,
+  "finish_reason": "length",
+  "generated_text": "assistant\n<think>\n\n</think>\n\nPython's memory management is a sophisticated blend of **automatic reference counting** and a **generational garbage collector**. This hybrid approach allows Python to reclaim memory efficiently for most objects while handling complex cases that simple counting cannot solve.\n\nHere is a detailed breakdown of how it works, the roles of its components, and scenarios where memory might not be freed as expected.\n\n---\n\n### 1. Reference Counting: The First Line of Defense\nThe primary mechanism Python uses to manage memory is **reference counting**. Every object in Python maintains a counter tracking how many references (variables, list items, dictionary keys, etc.) point to it.\n\n*   **How it works:**\n    *   When a new reference to an object is created (e.g., `a = b`), the count increments.\n    *   When a reference goes out of scope or is reassigned (e.g., `del a` or `a = None`), the count decrements.\n    *   **Immediate Reclamation:** As soon as the reference count drops to **zero**, the object is immediately deallocated, and its memory is returned to the system.\n\n*   **Pros:** It is extremely fast and deterministic. There is",
+  "trace_file": null,
+  "timestamp": 1775105936.686661,
+  "tier_layers_seen": 40,
+  "prompt_text": "Explain how garbage collection works in Python. Include a discussion of reference counting, the generational garbage collector, and when memory might not be freed as expected.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 259,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 55,
+      "total_tokens": 311,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

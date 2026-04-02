@@ -1,0 +1,55 @@
+{
+  "prompt_id": "coding_003",
+  "category": "coding",
+  "experiment": "decode_two_timescale_ema_a955b791",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_ema",
+      "params": {
+        "mix_lambda": 0.3
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_coding_003_decode_two_timescale_ema_a955b791_174670a8",
+  "seed": 42,
+  "elapsed_seconds": 45.3770644760225,
+  "prompt_tokens": 51,
+  "completion_tokens": 256,
+  "total_tokens": 307,
+  "finish_reason": "length",
+  "generated_text": "Here is a design of a simple REST API for a Todo List application, including the endpoints, request/response formats, and a basic Python implementation using Flask.\n\n### **1**: API Design\n\nThe API follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows follows",
+  "trace_file": null,
+  "timestamp": 1775097961.8714597,
+  "tier_layers_seen": 40,
+  "prompt_text": "Design a simple REST API for a todo list application. Include the endpoints, request/response formats, and provide a basic Python implementation using Flask.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 51,
+      "total_tokens": 307,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

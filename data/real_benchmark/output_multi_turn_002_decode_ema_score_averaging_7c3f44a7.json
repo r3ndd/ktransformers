@@ -1,0 +1,55 @@
+{
+  "prompt_id": "multi_turn_002",
+  "category": "multi_turn",
+  "experiment": "decode_ema_score_averaging_7c3f44a7",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "ema_score_averaging",
+      "params": {
+        "ema_beta": 0.7
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_multi_turn_002_decode_ema_score_averaging_7c3f44a7_d5ca5787",
+  "seed": 42,
+  "elapsed_seconds": 45.444099369924515,
+  "prompt_tokens": 70,
+  "completion_tokens": 256,
+  "total_tokens": 326,
+  "finish_reason": "length",
+  "generated_text": "Here are practical steps to speed up a multi-table join query, beyond just indexing foreign keys:\n\n1. **Inspect the execution plan**\n   - Run `EXPLAIN` (or `EXPLAIN ANALYZE` in PostgreSQL) on your query.\n   - Look for:\n     - Full table scans on large tables\n     - Nested loops with huge row counts\n     - Missing indexes on filter/join columns\n     - Unselective predicates pushing down too late\n\n2. **Filter early and narrow result sets**\n   - Move most selective conditions into subqueries or CTEs so they run before joins.\n   - Example:\n     ```sql\n     SELECT u.name, o.order_date, p.product_name\n     FROM users u\n     JOIN orders o ON o.user_id = u.id\n     JOIN products p ON p.id = o.product_id\n     WHERE o.status = 'completed'\n       AND o.order_date >= '2024-01-01';\n     ```\n   - If you only need certain users/products, add more filters before the join.\n\n3. **Ensure proper indexes for all join/filter columns**\n   - Indexes should cover:\n     - Join columns (`user",
+  "trace_file": null,
+  "timestamp": 1775108838.5501122,
+  "tier_layers_seen": 40,
+  "prompt_text": "I'm trying to optimize a SQL query but it's still running slowly. The query joins three tables: users, orders, and products. I've already added indexes on the foreign keys.\n\nWhat other optimization strategies should I consider?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 70,
+      "total_tokens": 326,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

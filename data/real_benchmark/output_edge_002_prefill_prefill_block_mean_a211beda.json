@@ -1,0 +1,55 @@
+{
+  "prompt_id": "edge_002",
+  "category": "edge_case",
+  "experiment": "prefill_prefill_block_mean_a211beda",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 32
+      }
+    },
+    "decode": {
+      "scheme": "sliding_window_score_averaging",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_edge_002_prefill_prefill_block_mean_a211beda_58b74914",
+  "seed": 42,
+  "elapsed_seconds": 43.7961482941173,
+  "prompt_tokens": 24,
+  "completion_tokens": 256,
+  "total_tokens": 280,
+  "finish_reason": "length",
+  "generated_text": "Hello! How can I help you today? 😊 Whether you have a question, need assistance with a task, or just want to chat, feel free to let me know! 🌟📚💬✨\n\nWhat's on your mind? 🤔👇🎉🚀🌈🎨🎵🍕🏖️📸🧠🎯🎁🎈🎪🎭🎬🎮🎲🎳🎰🎱🎾🎿⛷️🏂🏄‍♂️🏊‍♀️🏋️‍♂️🏌️‍♀️🏇🏆🥇🥈🥉🏅🎖️🏵️🌹🌺🌻🌼🌷🌱🌳🌴🌵🌲🌾🌽🌾🌿🍃🍂🍁🍄🍅🍆🍇🍈",
+  "trace_file": null,
+  "timestamp": 1775113972.3825555,
+  "tier_layers_seen": 40,
+  "prompt_text": "Hi",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 131,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 24,
+      "total_tokens": 280,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

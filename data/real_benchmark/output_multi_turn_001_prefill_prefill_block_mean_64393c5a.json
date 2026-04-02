@@ -1,0 +1,55 @@
+{
+  "prompt_id": "multi_turn_001",
+  "category": "multi_turn",
+  "experiment": "prefill_prefill_block_mean_64393c5a",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 128
+      }
+    },
+    "decode": {
+      "scheme": "sliding_window_score_averaging",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_multi_turn_001_prefill_prefill_block_mean_64393c5a_74ed8875",
+  "seed": 42,
+  "elapsed_seconds": 44.69171696808189,
+  "prompt_tokens": 66,
+  "completion_tokens": 256,
+  "total_tokens": 322,
+  "finish_reason": "length",
+  "generated_text": "assistant\n<think>\n\n</think>\n\n### What is an LRU Cache?\n\n**LRU** stands for **Least Recently Used**. It is a caching strategy used to manage memory or storage efficiently by keeping the most recently accessed items and discarding the least recently accessed ones when the cache reaches its capacity.\n\nThink of it like a stack of plates in a cafeteria:\n1.  When you take a plate, you use it (access it).\n2.  After using it, you put it back on top of the stack (marking it as \"most recent\").\n3.  If the stack gets too full and you need to add a new plate, you remove the one at the very bottom (the \"least recently used\") to make space.\n\n#### Key Characteristics:\n*   **Capacity Limit:** The cache has a maximum size ($N$).\n*   **Access Updates:** Every time an item is read or written, it becomes the \"most recently used\" and moves to the front/top.\n*   **Eviction Policy:** When the cache is full and a new item needs to be added, the item that hasn't been accessed for the longest time is automatically removed.\n\n---\n\n### When is an LRU Cache Useful",
+  "trace_file": null,
+  "timestamp": 1775108472.0507514,
+  "tier_layers_seen": 40,
+  "prompt_text": "Let's work through a coding problem together. I need to implement a LRU (Least Recently Used) cache in Python.\n\nFirst, can you explain what an LRU cache is and when it's useful?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 259,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 66,
+      "total_tokens": 322,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

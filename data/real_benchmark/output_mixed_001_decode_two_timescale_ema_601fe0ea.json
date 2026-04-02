@@ -1,0 +1,55 @@
+{
+  "prompt_id": "mixed_001",
+  "category": "mixed",
+  "experiment": "decode_two_timescale_ema_601fe0ea",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_ema",
+      "params": {
+        "mix_lambda": 0.4
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_mixed_001_decode_two_timescale_ema_601fe0ea_c06fe7b4",
+  "seed": 42,
+  "elapsed_seconds": 45.86688883416355,
+  "prompt_tokens": 59,
+  "completion_tokens": 256,
+  "total_tokens": 315,
+  "finish_reason": "length",
+  "generated_text": "Here’s is a implementation of a binary search tree (BST) in Python with `insert`, `search`, and `delete` operations, followed explanations for each operation, including time complexity and step-by-step walkthrough using a small example.\n\n```\ncode:\n```python\nclass BSTNode:\n    def __init__(self, key):\n        self.key = key\n        self.left = None\n        self.right = None\n\nclass BinarySearchTree:\n    def __init__(self):\n        self.root = None\n\n    # Insert operation\n    def insert(self, key):\n        \"\"\"Insert a key into the BST\"\"\"\n        if self.root is None:\n            self.root = BSTNode(key)\n        else:\n            self._insert(self.root, key)\n\n    def _insert(self, node, key):\n        \"\"\"Helper recursive insertion\"\"\"\n        if key < node.key:\n            if node.left is None:\n                node.left = BSTNode(key)\n        else:\n            self._insert(node.left, key)\n        elif key > node.key:\n            if node.right is None:\n                node.right = BSTNode(key)\n        else:\n            self._insert(node.right, key",
+  "trace_file": null,
+  "timestamp": 1775110450.1853607,
+  "tier_layers_seen": 40,
+  "prompt_text": "Implement a binary search tree in Python with insert, search, and delete operations. For each operation, explain the time complexity and walk through how the algorithm works using a small example.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 59,
+      "total_tokens": 315,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

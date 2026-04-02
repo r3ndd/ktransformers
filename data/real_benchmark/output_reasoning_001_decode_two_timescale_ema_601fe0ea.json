@@ -1,0 +1,55 @@
+{
+  "prompt_id": "reasoning_001",
+  "category": "reasoning",
+  "experiment": "decode_two_timescale_ema_601fe0ea",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_ema",
+      "params": {
+        "mix_lambda": 0.4
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_reasoning_001_decode_two_timescale_ema_601fe0ea_16fed5d0",
+  "seed": 42,
+  "elapsed_seconds": 45.74499554396607,
+  "prompt_tokens": 70,
+  "completion_tokens": 256,
+  "total_tokens": 326,
+  "finish_reason": "length",
+  "generated_text": "To find the distance between city A and city B, we can use the formula for distance, time, and speed:\n\n$\nDistance = Speed \\ × Time$\n$\nTime = Distance / Speed$\n$\n\nLet's define variables:\nLet $d$ be the one distance (between cities A and B).\nLet $t_1$ be the time to travel from A to B.\nLet $t_2$ be the time to return from B to A.\nLet $v_1$ be the speed from A to B ($60 mph).\nLet $v_2$ be the speed from B to A ($40 mph).\nLet $T$ be the total round trip time ($5 hours).\n\nWe have the equations:\n$\n$d = v_1 \\ × t_1$\n$\n$d = v_2 \\ × t_2$\n$\n$t_1 + t_2 = T$\n$\n\nSince we are the same distance in both directions, we can set the equation:\n$\n$v_1 \\ × t_1 = v_2 \\ × t_2$\n$\n$\n$\n$\n$\n$\n$\n",
+  "trace_file": null,
+  "timestamp": 1775099253.7254453,
+  "tier_layers_seen": 40,
+  "prompt_text": "A train travels from city A to city B at 60 mph and returns at 40 mph. If the total round trip takes 5 hours, how far apart are the two cities? Show your work step by step.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 70,
+      "total_tokens": 326,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

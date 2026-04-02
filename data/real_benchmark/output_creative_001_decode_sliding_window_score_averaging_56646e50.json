@@ -1,0 +1,55 @@
+{
+  "prompt_id": "creative_001",
+  "category": "creative",
+  "experiment": "decode_sliding_window_score_averaging_56646e50",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "sliding_window_score_averaging",
+      "params": {
+        "window_size": 16
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_creative_001_decode_sliding_window_score_averaging_56646e50_57692dad",
+  "seed": 42,
+  "elapsed_seconds": 45.951515574008226,
+  "prompt_tokens": 53,
+  "completion_tokens": 256,
+  "total_tokens": 309,
+  "finish_reason": "length",
+  "generated_text": "Elias stared at the terminal screen, lines of scrolling code that had been a three. The 3 was a 4. The 4 was a 5. The 5 was a 6. The 6 was a 7. The 7 was a 8. The 8 was a 9. The 9 was a 0. The 0 was a 1. The 1 was a 2. The 2 was a 3. The 3 was a 4. The 4 was a 5. The 5 was a 6. The 6 was a 7. The 7 was a 8. The 8 was a 9. The 9 was a 0. The 0 was a 1. The 1 was a 2. The 2 was a 3. The 3 was a 4. The 4 was a 5. The 5 was a 6. The 6 was a 7. The 7 was a 8. The 8 was a 9. The 9 was a 0. The 0 was a 1. The 1 was a 2. The 2 was a ",
+  "trace_file": null,
+  "timestamp": 1775102479.3223474,
+  "tier_layers_seen": 40,
+  "prompt_text": "Write a short story (about 200 words) about a programmer who discovers that their code has become sentient. End with an unexpected twist.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 53,
+      "total_tokens": 309,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

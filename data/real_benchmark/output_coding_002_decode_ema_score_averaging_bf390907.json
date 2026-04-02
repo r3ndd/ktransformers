@@ -1,0 +1,55 @@
+{
+  "prompt_id": "coding_002",
+  "category": "coding",
+  "experiment": "decode_ema_score_averaging_bf390907",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "ema_score_averaging",
+      "params": {
+        "ema_beta": 0.9
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_coding_002_decode_ema_score_averaging_bf390907_8109f3dd",
+  "seed": 42,
+  "elapsed_seconds": 47.800780626013875,
+  "prompt_tokens": 145,
+  "completion_tokens": 256,
+  "total_tokens": 401,
+  "finish_reason": "length",
+  "generated_text": "Your code is actually correct for the given example and will produce the expected output:\n\n```python\ndef flatten(nested):\n    result = []\n    for item in nested:\n        if isinstance(item, list):\n            result.extend(flatten(item))\n        else:\n            result.append(item)\n    return result\n\n# Test\nprint(flatten([1, [2, 3], [[4, 5], 6]]))  # Output: [1, 2, 3, 4, 5, 6]\n```\n\nIf you’re seeing unexpected behavior, possible causes are:\n\n- You’re running an older or modified version of the function.\n- There’s another `flatten` function shadowing this one (e.g., from a library).\n- The input isn’t what you think it is (e.g., tuples instead of lists, or non-list iterables).\n\nTo make it more robust (and handle tuples as well), you could do:\n\n```python\ndef flatten(nested):\n    result = []\n    for item in nested:\n        if isinstance(item, (list, tuple)):\n            result.extend(flatten(item))\n        else:\n            result.append(item",
+  "trace_file": null,
+  "timestamp": 1775096307.6646287,
+  "tier_layers_seen": 40,
+  "prompt_text": "I have this Python code that's supposed to flatten a nested list, but it's not working correctly. Can you debug it?\n\ndef flatten(nested):\n    result = []\n    for item in nested:\n        if isinstance(item, list):\n            result.extend(flatten(item))\n        else:\n            result.append(item)\n    return result\n\n# Test\nprint(flatten([1, [2, 3], [[4, 5], 6]]))  # Expected: [1, 2, 3, 4, 5, 6]",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 145,
+      "total_tokens": 401,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

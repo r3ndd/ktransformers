@@ -1,0 +1,55 @@
+{
+  "prompt_id": "edge_003",
+  "category": "edge_case",
+  "experiment": "decode_two_timescale_ema_601fe0ea",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_ema",
+      "params": {
+        "mix_lambda": 0.4
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_edge_003_decode_two_timescale_ema_601fe0ea_ac79bb7e",
+  "seed": 42,
+  "elapsed_seconds": 46.13583140494302,
+  "prompt_tokens": 38,
+  "completion_tokens": 256,
+  "total_tokens": 294,
+  "finish_reason": "length",
+  "generated_text": "That is a certainly a vividly surreal scene! The quantum waffle must be quite the crunchy.\n\nThe elephant's recit was quite the amusing, \"no\" \"was\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\" \"I\"",
+  "trace_file": null,
+  "timestamp": 1775114743.4726741,
+  "tier_layers_seen": 40,
+  "prompt_text": "The purple elephant danced on the quantum waffle while reciting Shakespeare backwards.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 38,
+      "total_tokens": 294,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "prompt_id": "reasoning_003",
+  "category": "reasoning",
+  "experiment": "decode_ema_score_averaging_b5aee75c",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "ema_score_averaging",
+      "params": {
+        "ema_beta": 0.3
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_reasoning_003_decode_ema_score_averaging_b5aee75c_8cc636e9",
+  "seed": 42,
+  "elapsed_seconds": 44.2186528199818,
+  "prompt_tokens": 67,
+  "completion_tokens": 256,
+  "total_tokens": 323,
+  "finish_reason": "length",
+  "generated_text": "No, this argument is **invalid**. It commits the logical fallacy of **affirming the consequent**.\n\nThe structure of the argument is:\n- If $P$, then $Q$ (If it rains, the ground gets wet)\n- $Q$ (The ground is wet)\n- Therefore, $P$ (Therefore, it rained).\n\nThis is a formal invalid form because the \"wet\" ground could be caused by other things like sprinkers, or spilled water, etc. The conclusion does not necessarily follow from the premises. The fall name is **affirming the consequent** (the error in the logic that assumes the \"consequent\" must be true because the antecedant must be true). This is a a classic example of **affirming the consequent**. The conclusion does not necessarily follow from the premises. The fall name is **affirming the consequent** (the error in the logic that assumes the \"consequent\" must be true because the antecedant must be true). This is a a classic example of **affirming the consequent**. The conclusion does not necessarily follow from the premises. The fall name is **affirming the consequent** (the error in the logic that",
+  "trace_file": null,
+  "timestamp": 1775101467.5223715,
+  "tier_layers_seen": 40,
+  "prompt_text": "Analyze the following argument: 'If it rains, the ground gets wet. The ground is wet. Therefore, it rained.' Is this valid? What type of logical fallacy might be present, if any?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 67,
+      "total_tokens": 323,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

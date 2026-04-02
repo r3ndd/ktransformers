@@ -1,0 +1,56 @@
+{
+  "prompt_id": "edge_002",
+  "category": "edge_case",
+  "experiment": "decode_two_timescale_softmax_7c578a93",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 0.25
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_edge_002_decode_two_timescale_softmax_7c578a93_4eac3d34",
+  "seed": 42,
+  "elapsed_seconds": 45.786971209105104,
+  "prompt_tokens": 24,
+  "completion_tokens": 256,
+  "total_tokens": 280,
+  "finish_reason": "length",
+  "generated_text": "Hello! How can I help? � What's you need? � Do you want to know something? � Ask me anything! � Let's chat! � Have fun! � Good! � Ready! � Go! � Start! � Hello! � Hi! � Welcome! � Chat! � Talk! � Fun! � Joy! � Happy! � Smile! � Laugh! � Play! � Game! � Win! � Lose! � Try! � Fail! � Success! � Win! � Lose! � Try! � Fail! � Success! � Win! � Lose! � Try! � Fail! � Success! � Win! � Lose! � Try! � Fail! � Success! � Win! � Lose! � Try! � Fail! � Success! � Win! � Lose! � Try! � Fail! � Success! � Win! � Lose! � Try! � Fail! � Success! � Win! � Lose! � Try! � Fail! � Success! � Win! � Lose! � Try! � Fail! � Success! � Win! � Lose! � Try! � Fail! � Success! � Win! � Lose! � Try! � Fail! � Success! � Win! � Lose! � Try",
+  "trace_file": null,
+  "timestamp": 1775113866.1835628,
+  "tier_layers_seen": 40,
+  "prompt_text": "Hi",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 24,
+      "total_tokens": 280,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

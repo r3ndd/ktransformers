@@ -1,0 +1,56 @@
+{
+  "prompt_id": "multi_turn_002",
+  "category": "multi_turn",
+  "experiment": "decode_two_timescale_softmax_7b4611a7",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 1024.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_multi_turn_002_decode_two_timescale_softmax_7b4611a7_1154369b",
+  "seed": 42,
+  "elapsed_seconds": 47.13017592509277,
+  "prompt_tokens": 70,
+  "completion_tokens": 256,
+  "total_tokens": 326,
+  "finish_reason": "length",
+  "generated_text": "Here are a few key strategies beyond indexes on foreign keys that you should consider:\n\n1. **Check the query structure and logic**\n   - If it’s a `SELECT` with `JOIN` across three tables, look at the join conditions (WHERE clauses) and whether they are selective or non‑selective.\n   - If there is a `GROUP`, `ORDER`, `HAV` clause, check if those can be pushed to the early stage of filtering rows before joining.\n   - If there is a `DIST` clause, check whether it can be replaced by a `WHERE` clause.\n\n2. **Use covering indexes**\n   - If there is a `SELECT` with `JOIN` across three tables, look at the join conditions (WHERE clauses) and whether they are selective or non‑selective.\n   - If there is a `GROUP`, `ORDER`, `HAV` clause, check if those can be pushed to the early stage of filtering rows before joining.\n   - If there is a `DIST` clause, check whether it can be replaced by a `WHERE` clause.\n\n3. **Use covering indexes**\n   - If there is a `SELECT` with `JOIN` across three tables, look",
+  "trace_file": null,
+  "timestamp": 1775109537.9553988,
+  "tier_layers_seen": 40,
+  "prompt_text": "I'm trying to optimize a SQL query but it's still running slowly. The query joins three tables: users, orders, and products. I've already added indexes on the foreign keys.\n\nWhat other optimization strategies should I consider?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 70,
+      "total_tokens": 326,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

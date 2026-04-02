@@ -1,0 +1,55 @@
+{
+  "prompt_id": "edge_001",
+  "category": "edge_case",
+  "experiment": "decode_two_timescale_ema_9c387768",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_ema",
+      "params": {
+        "mix_lambda": 0.2
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_edge_001_decode_two_timescale_ema_9c387768_e62589d2",
+  "seed": 42,
+  "elapsed_seconds": 45.66008281102404,
+  "prompt_tokens": 28,
+  "completion_tokens": 256,
+  "total_tokens": 284,
+  "finish_reason": "length",
+  "generated_text": "I'd love to help! tell me about what? I'm not sure you're asking \"tell me about what\" but I'm ready to chat any topics! just say: history, science, art, tech, life, health, or anything else! I'll be happy to share! � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � �",
+  "trace_file": null,
+  "timestamp": 1775112854.474355,
+  "tier_layers_seen": 40,
+  "prompt_text": "Tell me about it.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 28,
+      "total_tokens": 284,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

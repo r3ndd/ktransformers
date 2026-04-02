@@ -1,0 +1,56 @@
+{
+  "prompt_id": "multi_turn_002",
+  "category": "multi_turn",
+  "experiment": "decode_two_timescale_softmax_cc6c43c8",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 4.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_multi_turn_002_decode_two_timescale_softmax_cc6c43c8_2084e21e",
+  "seed": 42,
+  "elapsed_seconds": 48.099475640105084,
+  "prompt_tokens": 70,
+  "completion_tokens": 256,
+  "total_tokens": 326,
+  "finish_reason": "length",
+  "generated_text": "Here are several optimization strategies you can consider, beyond just indexing foreign keys:\n\n1. **Check the query structure**\n   - Rewrite the query to avoid unnecessary joins or subqueries.\n   - Use `SELECT` only columns you need; don’t select all columns (`SELECT *`).\n   - If possible, push filters into the `WHERE` clause early and before the join.\n\n2. **Use covering indexes**\n   - Create composite indexes that include the columns used in `WHERE`, `JOIN`, and `ORDER BY`.\n   - Example: `(user_id, order_date)` if you filter by date and user.\n\n3. **Partitioning / materialized views**\n   - If the data is large, partition tables by time or region.\n   - Consider a materialized view for common patterns of queries.\n\n4. **Avoid redundant joins**\n   - If you can use a `LEFT JOIN` instead of `INNER JOIN` where appropriate.\n   - Or use `GROUP BY` with aggregation instead of multiple joins.\n\n5. **Optimize execution plan**\n   - Run `EXPLAIN` on your query to see how it executes.\n   - Look for missing indexes, table scans, or nested loops",
+  "trace_file": null,
+  "timestamp": 1775109349.2390628,
+  "tier_layers_seen": 40,
+  "prompt_text": "I'm trying to optimize a SQL query but it's still running slowly. The query joins three tables: users, orders, and products. I've already added indexes on the foreign keys.\n\nWhat other optimization strategies should I consider?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 70,
+      "total_tokens": 326,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

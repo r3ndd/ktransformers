@@ -1,0 +1,55 @@
+{
+  "prompt_id": "coding_002",
+  "category": "coding",
+  "experiment": "prefill_w64",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 64
+      }
+    },
+    "decode": {
+      "scheme": "sliding_window_score_averaging",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_coding_002_prefill_w64_4d1070fa",
+  "seed": 42,
+  "elapsed_seconds": 166.28136316291057,
+  "ttft_seconds": 3.8998433629749343,
+  "ttft_ms": 3899.8433629749343,
+  "prefill_latency_seconds": 3.8998433629749343,
+  "decode_latency_seconds": 162.38151979993563,
+  "e2e_latency_seconds": 166.28136316291057,
+  "itl_mean_ms": 170.5711908086637,
+  "itl_p50_ms": 165.42992705944926,
+  "itl_p95_ms": 196.31939299870282,
+  "itl_count": 951,
+  "decode_tokens_per_second": 5.875052784180052,
+  "prefill_tokens_per_second": 37.1809804918393,
+  "e2e_tokens_per_second": 6.609279471225398,
+  "prompt_tokens": 145,
+  "completion_tokens": 954,
+  "total_tokens": 1099,
+  "finish_reason": "stop",
+  "generated_text": "assistant\n<think>\n\n</think>\n\nThe code you provided is actually **logically correct** for a standard recursive flattening algorithm. It correctly handles lists nested at arbitrary depths.\n\nHowever, there is a subtle issue with the **input data structure** in your test case that might be causing confusion or an error if you are running this in a specific environment (like older Python versions where `isinstance` checks behave differently, though unlikely here).\n\nLet's trace the execution of your specific test case: `[1, [2, 3], [[4, 5], 6]]`.\n\n1.  **Level 0**: Input `[1, [2, 3], [[4, 5], 6]]`\n    *   Item `1`: Not a list. Append `1`. Result: `[1]`\n    *   Item `[2, 3]`: Is a list. Recurse.\n        *   **Level 1**: Input `[2, 3]`\n            *   Item `2`: Append `2`.\n            *   Item `3`: Append `3`.\n        *   Returns `[2, 3]`. Extend Level 0 result. Result: `[1, 2, 3]`\n    *   Item `[[4, 5], 6]`: Is a list. Recurse.\n        *   **Level 2**: Input `[[4, 5], 6]`\n            *   Item `[4, 5]`: Is a list. Recurse.\n                *   **Level 3**: Input `[4, 5]` -> Returns `[4, 5]`.\n            *   Item `6`: Not a list. Append `6`.\n            *   Returns `[4, 5, 6]`.\n        *   Extend Level 0 result. Result: `[1, 2, 3, 4, 5, 6]`\n\nThe logic holds up perfectly. If your code isn't working, it is likely due to one of these two reasons:\n\n### 1. The input is not exactly what you think\nIf the output is wrong, check if any of the inner items are **tuples** instead of lists. Your function uses `isinstance(item, list)`, which returns `False` for tuples.\n\n*   **Input**: `[1, (2, 3), [[4, 5], 6]]` (Note the parentheses)\n*   **Result**: `[1, (2, 3), 4, 5, 6]` (The tuple `(2, 3)` remains nested).\n\n### 2. You need to handle other iterables (like tuples)\nIf your data might contain tuples or other sequences, you should update the condition to check for `collections.abc.Iterable` but exclude strings (since strings are iterable but shouldn't be flattened character-by-character).\n\nHere is the **robust version** of your code that handles lists and tuples:\n\n```python\nfrom collections.abc import Iterable\n\ndef flatten(nested):\n    result = []\n    for item in nested:\n        # Check if it's an iterable (list, tuple, etc.) but NOT a string\n        if isinstance(item, Iterable) and not isinstance(item, (str, bytes)):\n            result.extend(flatten(item))\n        else:\n            result.append(item)\n    return result\n\n# Test with lists\nprint(flatten([1, [2, 3], [[4, 5], 6]])) \n# Output: [1, 2, 3, 4, 5, 6]\n\n# Test with mixed types (lists and tuples)\nprint(flatten([1, (2, 3), [[4, 5], 6]])) \n# Output: [1, 2, 3, 4, 5, 6]\n```\n\n### Summary\nYour original code is **correct** for pure lists. If it failed in your environment, verify that:\n1.  There are no **tuples** inside the list.\n2.  You aren't accidentally passing a **string** as the top-level argument (e.g., `flatten(\"abc\")` would return `['a', 'b', 'c']` which might look like \"flattening\" when you didn't intend it).\n\nIf you provide the **actual output** you are getting versus the expected output, I can pinpoint the exact discrepancy!",
+  "trace_file": null,
+  "timestamp": 1774831564.0851257,
+  "prompt_text": "I have this Python code that's supposed to flatten a nested list, but it's not working correctly. Can you debug it?\n\ndef flatten(nested):\n    result = []\n    for item in nested:\n        if isinstance(item, list):\n            result.extend(flatten(item))\n        else:\n            result.append(item)\n    return result\n\n# Test\nprint(flatten([1, [2, 3], [[4, 5], 6]]))  # Expected: [1, 2, 3, 4, 5, 6]",
+  "stream_meta": {
+    "chunks": 955,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 145,
+      "total_tokens": 1099,
+      "completion_tokens": 954,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "stop"
+  }
+}

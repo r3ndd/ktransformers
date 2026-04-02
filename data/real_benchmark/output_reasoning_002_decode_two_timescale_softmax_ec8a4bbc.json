@@ -1,0 +1,56 @@
+{
+  "prompt_id": "reasoning_002",
+  "category": "reasoning",
+  "experiment": "decode_two_timescale_softmax_ec8a4bbc",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 256.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_reasoning_002_decode_two_timescale_softmax_ec8a4bbc_cb315dc6",
+  "seed": 42,
+  "elapsed_seconds": 47.6316026521381,
+  "prompt_tokens": 86,
+  "completion_tokens": 256,
+  "total_tokens": 342,
+  "finish_reason": "length",
+  "generated_text": "Based on the constraints provided, let's logical deduction step-by-step.\n\n### Step 1: Analyzing Alice's Position\nThe first constraint states that **Alice is not at either end**.\nThis means Alice must be sitting in the middle two seats (2nd or 3rd position).\nSince there are four people, we can eliminate the possibilities of 1st and 4th positions for Alice.\n\n### Step 2: Analyzing Bob and Carol's Relationship\nThe second constraint says **Bob is to the left of Carol**.\nThis implies Bob must be sitting before Carol.\nHowever, this does not necessarily mean they are adjacent.\nBut it also means Bob cannot be sitting at the 4th position because Carol must be sitting after him.\nAnd Carol cannot be sitting at the 1st position because Bob must be sitting before her.\n\n\n\n### Step 3: Analyzing Dave's Position Relative to Alice\nThe third constraint says **Dave is not next to Alice**.\nThis means Dave cannot be sitting adjacent to Alice.\nIf Alice sits at the 2nd position, then Dave cannot be sitting at the 1st or 3rd position.\nIf Alice sits at the 3rd position, then Dave cannot",
+  "trace_file": null,
+  "timestamp": 1775100785.7768521,
+  "tier_layers_seen": 40,
+  "prompt_text": "Four people (Alice, Bob, Carol, Dave) are sitting in a row. We know:\n1. Alice is not at either end\n2. Bob is to the left of Carol\n3. Dave is not next to Alice\n\nDetermine their seating order from left to right, explaining your reasoning.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 86,
+      "total_tokens": 342,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

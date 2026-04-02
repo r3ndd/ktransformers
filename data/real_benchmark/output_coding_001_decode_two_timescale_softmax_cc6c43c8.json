@@ -1,0 +1,56 @@
+{
+  "prompt_id": "coding_001",
+  "category": "coding",
+  "experiment": "decode_two_timescale_softmax_cc6c43c8",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 4.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_coding_001_decode_two_timescale_softmax_cc6c43c8_d75132c9",
+  "seed": 42,
+  "elapsed_seconds": 48.135570395039394,
+  "prompt_tokens": 52,
+  "completion_tokens": 256,
+  "total_tokens": 308,
+  "finish_reason": "length",
+  "generated_text": "Here’s a Python function that finds the longest palindromic substring using the **expand-around-center** approach (also known as “center expansion” or “expand around center”).\n\n### Approach Explanation\n- For each character in the string, treat it as the potential center of a palindrome.\n- If the center is a single character (odd-length palindrome), expand outward while characters match.\n- If the center is two adjacent characters (even-length palindrome), expand outward while characters match.\n- Track the longest palindrome found during this process.\n- This runs in `O(n)` time for number of centers and `O(n)` for expansion in worst case, giving overall `O(n²)` time complexity, but with average-case much faster than brute-force.\n\n### Time Complexity\n- **Time**: `O(n²)` where `n` is length of input string.\n- **Space**: `O(1)` auxiliary space (just tracking indices).\n\n### Implementation\n\n```python\ndef longest_palindromic_substring(s: str) -> str:\n    if not s:\n        return \"\"\n\n    n = len(s)\n    start = 0\n    max_len = 0\n\n    def expand(left: int,",
+  "trace_file": null,
+  "timestamp": 1775095597.849432,
+  "tier_layers_seen": 40,
+  "prompt_text": "Write a Python function to find the longest palindromic substring in a given string. Include a brief explanation of your approach and time complexity.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 52,
+      "total_tokens": 308,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

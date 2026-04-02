@@ -1,0 +1,55 @@
+{
+  "prompt_id": "mixed_001",
+  "category": "mixed",
+  "experiment": "prefill_prefill_block_mean_a211beda",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 32
+      }
+    },
+    "decode": {
+      "scheme": "sliding_window_score_averaging",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_mixed_001_prefill_prefill_block_mean_a211beda_e5d3df40",
+  "seed": 42,
+  "elapsed_seconds": 44.67667527706362,
+  "prompt_tokens": 59,
+  "completion_tokens": 256,
+  "total_tokens": 315,
+  "finish_reason": "length",
+  "generated_text": "assistant\n<think>\n\n</think>\n\nHere is a complete implementation of a Binary Search Tree (BST) in Python, including `insert`, `search`, and `delete` operations. Following the code, I will provide a detailed breakdown of the time complexity and a step-by-step walkthrough for each operation using a small example.\n\n### Python Implementation\n\n```python\nclass TreeNode:\n    def __init__(self, key):\n        self.key = key\n        self.left = None\n        self.right = None\n\nclass BinarySearchTree:\n    def __init__(self):\n        self.root = None\n\n    # --- INSERT OPERATION ---\n    def insert(self, key):\n        \"\"\"Inserts a new key into the BST.\"\"\"\n        if self.root is None:\n            self.root = TreeNode(key)\n        else:\n            self._insert_recursive(self.root, key)\n\n    def _insert_recursive(self, node, key):\n        if key < node.key:\n            if node.left is None:\n                node.left = TreeNode(key)\n            else:\n                self._insert_recursive(node.left, key)\n        elif key > node.key:\n            if node.right is None:\n                node.right = TreeNode(key)\n",
+  "trace_file": null,
+  "timestamp": 1775110870.9982448,
+  "tier_layers_seen": 40,
+  "prompt_text": "Implement a binary search tree in Python with insert, search, and delete operations. For each operation, explain the time complexity and walk through how the algorithm works using a small example.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 259,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 59,
+      "total_tokens": 315,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

@@ -1,0 +1,1644 @@
+{
+  "prompt_id": "factual_002",
+  "runs": [
+    {
+      "prompt_id": "factual_002",
+      "category": "factual",
+      "experiment": "baseline",
+      "moe_routing": null,
+      "context_id": "ctx_factual_002_baseline_efa5614e",
+      "elapsed_seconds": 45.3276596700307,
+      "ttft_seconds": 2.2136678190436214,
+      "prefill_latency_seconds": 2.2136678190436214,
+      "decode_latency_seconds": 43.11399185098708,
+      "e2e_latency_seconds": 45.3276596700307,
+      "itl_mean_ms": 169.07321625462203,
+      "itl_p50_ms": 165.90711590833962,
+      "itl_p95_ms": 192.0236509758979,
+      "decode_tokens_per_second": 5.937747561970164,
+      "prefill_tokens_per_second": 24.393903880000302,
+      "e2e_tokens_per_second": 6.839091236050795,
+      "prompt_tokens": 54,
+      "completion_tokens": 256,
+      "total_tokens": 310,
+      "finish_reason": "length",
+      "trace_file": null,
+      "timestamp": 1775106069.6856427,
+      "tier_stats_delta": {
+        "gpu_hits": 31672,
+        "cpu_hits": 17072,
+        "ssd_loads": 50136,
+        "promotions_to_gpu": 67208,
+        "promotions_to_cpu": 50136,
+        "demotions_from_gpu": 67208,
+        "demotions_from_cpu": 67877,
+        "layers_seen": 40,
+        "ssd_load_rate": 0.5070388349514563
+      },
+      "tier_delta_ssd_load_rate": 0.5070388349514563,
+      "output_file": "/root/ktransformers/data/real_benchmark/output_factual_002_baseline.json",
+      "success": true,
+      "quality_jaccard": 1.0,
+      "quality_degradation": 0.0,
+      "decode_speedup_ratio": 1.0,
+      "speedup_ratio": 1.0,
+      "ssd_load_ratio": 1.0,
+      "latency_ratio": 1.0,
+      "quality_speed_score": 1.0,
+      "exact_text_match": true
+    },
+    {
+      "prompt_id": "factual_002",
+      "category": "factual",
+      "experiment": "decode_ema_score_averaging_7807f730",
+      "moe_routing": {
+        "prefill": {
+          "scheme": "prefill_block_mean",
+          "params": {
+            "window_size": 1
+          }
+        },
+        "decode": {
+          "scheme": "ema_score_averaging",
+          "params": {
+            "ema_beta": 0.05
+          }
+        },
+        "scope": "request"
+      },
+      "context_id": "ctx_factual_002_decode_ema_score_averaging_7807f730_76c37618",
+      "elapsed_seconds": 45.4217059800867,
+      "ttft_seconds": 1.688586191041395,
+      "prefill_latency_seconds": 1.688586191041395,
+      "decode_latency_seconds": 43.733119789045304,
+      "e2e_latency_seconds": 45.4217059800867,
+      "itl_mean_ms": 171.50207670569858,
+      "itl_p50_ms": 165.89528089389205,
+      "itl_p95_ms": 215.85277607664466,
+      "decode_tokens_per_second": 5.8536871193928715,
+      "prefill_tokens_per_second": 31.979415848886454,
+      "e2e_tokens_per_second": 6.824930797093066,
+      "prompt_tokens": 54,
+      "completion_tokens": 256,
+      "total_tokens": 310,
+      "finish_reason": "length",
+      "trace_file": null,
+      "timestamp": 1775106534.5862439,
+      "tier_stats_delta": {
+        "gpu_hits": 80543,
+        "cpu_hits": 8096,
+        "ssd_loads": 10241,
+        "promotions_to_gpu": 18337,
+        "promotions_to_cpu": 10241,
+        "demotions_from_gpu": 18337,
+        "demotions_from_cpu": 13843,
+        "layers_seen": 40,
+        "ssd_load_rate": 0.10356998381877022
+      },
+      "tier_delta_ssd_load_rate": 0.10356998381877022,
+      "output_file": "/root/ktransformers/data/real_benchmark/output_factual_002_decode_ema_score_averaging_7807f730.json",
+      "success": true,
+      "quality_jaccard": 0.09558823529411764,
+      "quality_degradation": 0.9044117647058824,
+      "decode_speedup_ratio": 0.9858430420458292,
+      "speedup_ratio": 0.9979294852972447,
+      "ssd_load_ratio": 0.2042644008297431,
+      "latency_ratio": 1.0020748106286674,
+      "quality_speed_score": 0.09539031844753074,
+      "exact_text_match": false
+    },
+    {
+      "prompt_id": "factual_002",
+      "category": "factual",
+      "experiment": "decode_ema_score_averaging_7c3f44a7",
+      "moe_routing": {
+        "prefill": {
+          "scheme": "prefill_block_mean",
+          "params": {
+            "window_size": 1
+          }
+        },
+        "decode": {
+          "scheme": "ema_score_averaging",
+          "params": {
+            "ema_beta": 0.7
+          }
+        },
+        "scope": "request"
+      },
+      "context_id": "ctx_factual_002_decode_ema_score_averaging_7c3f44a7_370959af",
+      "elapsed_seconds": 46.025355777004734,
+      "ttft_seconds": 1.8227224959991872,
+      "prefill_latency_seconds": 1.8227224959991872,
+      "decode_latency_seconds": 44.20263328100555,
+      "e2e_latency_seconds": 46.025355777004734,
+      "itl_mean_ms": 173.3423290710312,
+      "itl_p50_ms": 169.08767400309443,
+      "itl_p95_ms": 215.9807390999049,
+      "decode_tokens_per_second": 5.791510165753102,
+      "prefill_tokens_per_second": 29.6260128014704,
+      "e2e_tokens_per_second": 6.735417788011597,
+      "prompt_tokens": 54,
+      "completion_tokens": 256,
+      "total_tokens": 310,
+      "finish_reason": "length",
+      "trace_file": null,
+      "timestamp": 1775106354.572389,
+      "tier_stats_delta": {
+        "gpu_hits": 43178,
+        "cpu_hits": 16536,
+        "ssd_loads": 39166,
+        "promotions_to_gpu": 55702,
+        "promotions_to_cpu": 39166,
+        "demotions_from_gpu": 55702,
+        "demotions_from_cpu": 50829,
+        "layers_seen": 40,
+        "ssd_load_rate": 0.3960962783171521
+      },
+      "tier_delta_ssd_load_rate": 0.3960962783171521,
+      "output_file": "/root/ktransformers/data/real_benchmark/output_factual_002_decode_ema_score_averaging_7c3f44a7.json",
+      "success": true,
+      "quality_jaccard": 0.4260355029585799,
+      "quality_degradation": 0.5739644970414202,
+      "decode_speedup_ratio": 0.9753715706687032,
+      "speedup_ratio": 0.9848410491305182,
+      "ssd_load_ratio": 0.7811951491941919,
+      "latency_ratio": 1.015392281711719,
+      "quality_speed_score": 0.4195772517005758,
+      "exact_text_match": false
+    },
+    {
+      "prompt_id": "factual_002",
+      "category": "factual",
+      "experiment": "decode_ema_score_averaging_b5aee75c",
+      "moe_routing": {
+        "prefill": {
+          "scheme": "prefill_block_mean",
+          "params": {
+            "window_size": 1
+          }
+        },
+        "decode": {
+          "scheme": "ema_score_averaging",
+          "params": {
+            "ema_beta": 0.3
+          }
+        },
+        "scope": "request"
+      },
+      "context_id": "ctx_factual_002_decode_ema_score_averaging_b5aee75c_ce143367",
+      "elapsed_seconds": 44.584937090054154,
+      "ttft_seconds": 1.7365269029978663,
+      "prefill_latency_seconds": 1.7365269029978663,
+      "decode_latency_seconds": 42.84841018705629,
+      "e2e_latency_seconds": 44.584937090054154,
+      "itl_mean_ms": 168.03198087887438,
+      "itl_p50_ms": 160.38898495025933,
+      "itl_p95_ms": 191.02346384897828,
+      "decode_tokens_per_second": 5.97455072154189,
+      "prefill_tokens_per_second": 31.096552496121248,
+      "e2e_tokens_per_second": 6.953020913180871,
+      "prompt_tokens": 54,
+      "completion_tokens": 256,
+      "total_tokens": 310,
+      "finish_reason": "length",
+      "trace_file": null,
+      "timestamp": 1775106444.5458753,
+      "tier_stats_delta": {
+        "gpu_hits": 63502,
+        "cpu_hits": 14259,
+        "ssd_loads": 21119,
+        "promotions_to_gpu": 35378,
+        "promotions_to_cpu": 21119,
+        "demotions_from_gpu": 35378,
+        "demotions_from_cpu": 27581,
+        "layers_seen": 40,
+        "ssd_load_rate": 0.21358211974110033
+      },
+      "tier_delta_ssd_load_rate": 0.21358211974110033,
+      "output_file": "/root/ktransformers/data/real_benchmark/output_factual_002_decode_ema_score_averaging_b5aee75c.json",
+      "success": true,
+      "quality_jaccard": 0.14215686274509803,
+      "quality_degradation": 0.857843137254902,
+      "decode_speedup_ratio": 1.006198168444789,
+      "speedup_ratio": 1.0166585988105439,
+      "ssd_load_ratio": 0.4212342428594224,
+      "latency_ratio": 0.9836143629434367,
+      "quality_speed_score": 0.14452499688973416,
+      "exact_text_match": false
+    },
+    {
+      "prompt_id": "factual_002",
+      "category": "factual",
+      "experiment": "decode_ema_score_averaging_bf390907",
+      "moe_routing": {
+        "prefill": {
+          "scheme": "prefill_block_mean",
+          "params": {
+            "window_size": 1
+          }
+        },
+        "decode": {
+          "scheme": "ema_score_averaging",
+          "params": {
+            "ema_beta": 0.9
+          }
+        },
+        "scope": "request"
+      },
+      "context_id": "ctx_factual_002_decode_ema_score_averaging_bf390907_91033053",
+      "elapsed_seconds": 45.076259148074314,
+      "ttft_seconds": 1.7637172089889646,
+      "prefill_latency_seconds": 1.7637172089889646,
+      "decode_latency_seconds": 43.31254193908535,
+      "e2e_latency_seconds": 45.076259148074314,
+      "itl_mean_ms": 169.8521251023254,
+      "itl_p50_ms": 163.64666307345033,
+      "itl_p95_ms": 207.6061349362135,
+      "decode_tokens_per_second": 5.910528187425198,
+      "prefill_tokens_per_second": 30.617153206184923,
+      "e2e_tokens_per_second": 6.87723439919134,
+      "prompt_tokens": 54,
+      "completion_tokens": 256,
+      "total_tokens": 310,
+      "finish_reason": "length",
+      "trace_file": null,
+      "timestamp": 1775106308.5213506,
+      "tier_stats_delta": {
+        "gpu_hits": 35183,
+        "cpu_hits": 17264,
+        "ssd_loads": 46433,
+        "promotions_to_gpu": 63697,
+        "promotions_to_cpu": 46433,
+        "demotions_from_gpu": 63697,
+        "demotions_from_cpu": 61863,
+        "layers_seen": 40,
+        "ssd_load_rate": 0.4695894012944984
+      },
+      "tier_delta_ssd_load_rate": 0.4695894012944984,
+      "output_file": "/root/ktransformers/data/real_benchmark/output_factual_002_decode_ema_score_averaging_bf390907.json",
+      "success": true,
+      "quality_jaccard": 0.6081081081081081,
+      "quality_degradation": 0.3918918918918919,
+      "decode_speedup_ratio": 0.9954158754206226,
+      "speedup_ratio": 1.005577226830881,
+      "ssd_load_ratio": 0.9261408967608107,
+      "latency_ratio": 0.9944537061082241,
+      "quality_speed_score": 0.6114996649647249,
+      "exact_text_match": false
+    },
+    {
+      "prompt_id": "factual_002",
+      "category": "factual",
+      "experiment": "decode_ema_score_averaging_ce23db51",
+      "moe_routing": {
+        "prefill": {
+          "scheme": "prefill_block_mean",
+          "params": {
+            "window_size": 1
+          }
+        },
+        "decode": {
+          "scheme": "ema_score_averaging",
+          "params": {
+            "ema_beta": 0.5
+          }
+        },
+        "scope": "request"
+      },
+      "context_id": "ctx_factual_002_decode_ema_score_averaging_ce23db51_4d28dfa2",
+      "elapsed_seconds": 45.318555783014745,
+      "ttft_seconds": 1.892497539985925,
+      "prefill_latency_seconds": 1.892497539985925,
+      "decode_latency_seconds": 43.42605824302882,
+      "e2e_latency_seconds": 45.318555783014745,
+      "itl_mean_ms": 170.29663840418354,
+      "itl_p50_ms": 163.5741398204118,
+      "itl_p95_ms": 214.95974017307162,
+      "decode_tokens_per_second": 5.895077986754546,
+      "prefill_tokens_per_second": 28.5337226913392,
+      "e2e_tokens_per_second": 6.8404651172972075,
+      "prompt_tokens": 54,
+      "completion_tokens": 256,
+      "total_tokens": 310,
+      "finish_reason": "length",
+      "trace_file": null,
+      "timestamp": 1775106399.9143195,
+      "tier_stats_delta": {
+        "gpu_hits": 51609,
+        "cpu_hits": 15449,
+        "ssd_loads": 31822,
+        "promotions_to_gpu": 47271,
+        "promotions_to_cpu": 31822,
+        "demotions_from_gpu": 47271,
+        "demotions_from_cpu": 40859,
+        "layers_seen": 40,
+        "ssd_load_rate": 0.32182443365695795
+      },
+      "tier_delta_ssd_load_rate": 0.32182443365695795,
+      "output_file": "/root/ktransformers/data/real_benchmark/output_factual_002_decode_ema_score_averaging_ce23db51.json",
+      "success": true,
+      "quality_jaccard": 0.2887700534759358,
+      "quality_degradation": 0.7112299465240641,
+      "decode_speedup_ratio": 0.99281384485105,
+      "speedup_ratio": 1.0002008865211756,
+      "ssd_load_ratio": 0.6347135790649434,
+      "latency_ratio": 0.9997991538261135,
+      "quality_speed_score": 0.28882806348739826,
+      "exact_text_match": false
+    },
+    {
+      "prompt_id": "factual_002",
+      "category": "factual",
+      "experiment": "decode_ema_score_averaging_d27b125a",
+      "moe_routing": {
+        "prefill": {
+          "scheme": "prefill_block_mean",
+          "params": {
+            "window_size": 1
+          }
+        },
+        "decode": {
+          "scheme": "ema_score_averaging",
+          "params": {
+            "ema_beta": 0.1
+          }
+        },
+        "scope": "request"
+      },
+      "context_id": "ctx_factual_002_decode_ema_score_averaging_d27b125a_b15d2c13",
+      "elapsed_seconds": 44.5324784880504,
+      "ttft_seconds": 1.7834772730711848,
+      "prefill_latency_seconds": 1.7834772730711848,
+      "decode_latency_seconds": 42.74900121497922,
+      "e2e_latency_seconds": 44.5324784880504,
+      "itl_mean_ms": 167.64219666228576,
+      "itl_p50_ms": 163.16638188436627,
+      "itl_p95_ms": 188.14922007732093,
+      "decode_tokens_per_second": 5.988444003933776,
+      "prefill_tokens_per_second": 30.277929982819956,
+      "e2e_tokens_per_second": 6.961211469134459,
+      "prompt_tokens": 54,
+      "completion_tokens": 256,
+      "total_tokens": 310,
+      "finish_reason": "length",
+      "trace_file": null,
+      "timestamp": 1775106489.1391435,
+      "tier_stats_delta": {
+        "gpu_hits": 77029,
+        "cpu_hits": 11015,
+        "ssd_loads": 10836,
+        "promotions_to_gpu": 21851,
+        "promotions_to_cpu": 10836,
+        "demotions_from_gpu": 21851,
+        "demotions_from_cpu": 14532,
+        "layers_seen": 40,
+        "ssd_load_rate": 0.1095873786407767
+      },
+      "tier_delta_ssd_load_rate": 0.1095873786407767,
+      "output_file": "/root/ktransformers/data/real_benchmark/output_factual_002_decode_ema_score_averaging_d27b125a.json",
+      "success": true,
+      "quality_jaccard": 0.11851851851851852,
+      "quality_degradation": 0.8814814814814815,
+      "decode_speedup_ratio": 1.0085379921316142,
+      "speedup_ratio": 1.0178562076259392,
+      "ssd_load_ratio": 0.21613212063188128,
+      "latency_ratio": 0.9824570430556324,
+      "quality_speed_score": 0.12063480979270391,
+      "exact_text_match": false
+    },
+    {
+      "prompt_id": "factual_002",
+      "category": "factual",
+      "experiment": "decode_sliding_window_score_averaging_355c528a",
+      "moe_routing": {
+        "prefill": {
+          "scheme": "prefill_block_mean",
+          "params": {
+            "window_size": 1
+          }
+        },
+        "decode": {
+          "scheme": "sliding_window_score_averaging",
+          "params": {
+            "window_size": 64
+          }
+        },
+        "scope": "request"
+      },
+      "context_id": "ctx_factual_002_decode_sliding_window_score_averaging_355c528a_37fc90e2",
+      "elapsed_seconds": 55.35773890581913,
+      "ttft_seconds": 1.868194020818919,
+      "prefill_latency_seconds": 1.868194020818919,
+      "decode_latency_seconds": 53.489544885000214,
+      "e2e_latency_seconds": 55.35773890581913,
+      "itl_mean_ms": 209.7619163575491,
+      "itl_p50_ms": 200.88067115284503,
+      "itl_p95_ms": 286.49050602689385,
+      "decode_tokens_per_second": 4.785982018549362,
+      "prefill_tokens_per_second": 28.904920687161397,
+      "e2e_tokens_per_second": 5.5999397035960445,
+      "prompt_tokens": 54,
+      "completion_tokens": 256,
+      "total_tokens": 310,
+      "finish_reason": "length",
+      "trace_file": null,
+      "timestamp": 1775106263.4211247,
+      "tier_stats_delta": {
+        "gpu_hits": 82150,
+        "cpu_hits": 6494,
+        "ssd_loads": 10236,
+        "promotions_to_gpu": 16730,
+        "promotions_to_cpu": 10236,
+        "demotions_from_gpu": 16730,
+        "demotions_from_cpu": 13819,
+        "layers_seen": 40,
+        "ssd_load_rate": 0.10351941747572815
+      },
+      "tier_delta_ssd_load_rate": 0.10351941747572815,
+      "output_file": "/root/ktransformers/data/real_benchmark/output_factual_002_decode_sliding_window_score_averaging_355c528a.json",
+      "success": true,
+      "quality_jaccard": 0.10077519379844961,
+      "quality_degradation": 0.8992248062015504,
+      "decode_speedup_ratio": 0.8060265224480775,
+      "speedup_ratio": 0.8188134227654648,
+      "ssd_load_ratio": 0.20416467209191,
+      "latency_ratio": 1.2212794419302444,
+      "quality_speed_score": 0.08251608136396156,
+      "exact_text_match": false
+    },
+    {
+      "prompt_id": "factual_002",
+      "category": "factual",
+      "experiment": "decode_sliding_window_score_averaging_56646e50",
+      "moe_routing": {
+        "prefill": {
+          "scheme": "prefill_block_mean",
+          "params": {
+            "window_size": 1
+          }
+        },
+        "decode": {
+          "scheme": "sliding_window_score_averaging",
+          "params": {
+            "window_size": 16
+          }
+        },
+        "scope": "request"
+      },
+      "context_id": "ctx_factual_002_decode_sliding_window_score_averaging_56646e50_2ca17e92",
+      "elapsed_seconds": 47.2930117060896,
+      "ttft_seconds": 1.7782660040538758,
+      "prefill_latency_seconds": 1.7782660040538758,
+      "decode_latency_seconds": 45.514745702035725,
+      "e2e_latency_seconds": 47.2930117060896,
+      "itl_mean_ms": 178.4889442983138,
+      "itl_p50_ms": 172.93902300298214,
+      "itl_p95_ms": 203.23393400758505,
+      "decode_tokens_per_second": 5.624550814277097,
+      "prefill_tokens_per_second": 30.36666048661861,
+      "e2e_tokens_per_second": 6.554879649588554,
+      "prompt_tokens": 54,
+      "completion_tokens": 256,
+      "total_tokens": 310,
+      "finish_reason": "length",
+      "trace_file": null,
+      "timestamp": 1775106208.041446,
+      "tier_stats_delta": {
+        "gpu_hits": 81976,
+        "cpu_hits": 6205,
+        "ssd_loads": 10699,
+        "promotions_to_gpu": 16904,
+        "promotions_to_cpu": 10699,
+        "demotions_from_gpu": 16904,
+        "demotions_from_cpu": 14420,
+        "layers_seen": 40,
+        "ssd_load_rate": 0.10820186084142394
+      },
+      "tier_delta_ssd_load_rate": 0.10820186084142394,
+      "output_file": "/root/ktransformers/data/real_benchmark/output_factual_002_decode_sliding_window_score_averaging_56646e50.json",
+      "success": true,
+      "quality_jaccard": 0.0859375,
+      "quality_degradation": 0.9140625,
+      "decode_speedup_ratio": 0.9472532733289275,
+      "speedup_ratio": 0.9584430772082583,
+      "ssd_load_ratio": 0.2133995532152545,
+      "latency_ratio": 1.0433587802760163,
+      "quality_speed_score": 0.08236620194758469,
+      "exact_text_match": false
+    },
+    {
+      "prompt_id": "factual_002",
+      "category": "factual",
+      "experiment": "decode_sliding_window_score_averaging_d2224a52",
+      "moe_routing": {
+        "prefill": {
+          "scheme": "prefill_block_mean",
+          "params": {
+            "window_size": 1
+          }
+        },
+        "decode": {
+          "scheme": "sliding_window_score_averaging",
+          "params": {
+            "window_size": 1
+          }
+        },
+        "scope": "request"
+      },
+      "context_id": "ctx_factual_002_decode_sliding_window_score_averaging_d2224a52_cdfa2208",
+      "elapsed_seconds": 44.93982228101231,
+      "ttft_seconds": 1.8216607589274645,
+      "prefill_latency_seconds": 1.8216607589274645,
+      "decode_latency_seconds": 43.11816152208485,
+      "e2e_latency_seconds": 44.93982228101231,
+      "itl_mean_ms": 169.08925450954806,
+      "itl_p50_ms": 166.7855829000473,
+      "itl_p95_ms": 207.80616300180554,
+      "decode_tokens_per_second": 5.937173361829874,
+      "prefill_tokens_per_second": 29.643280031894342,
+      "e2e_tokens_per_second": 6.898113616505761,
+      "prompt_tokens": 54,
+      "completion_tokens": 256,
+      "total_tokens": 310,
+      "finish_reason": "length",
+      "trace_file": null,
+      "timestamp": 1775106114.649099,
+      "tier_stats_delta": {
+        "gpu_hits": 31682,
+        "cpu_hits": 17084,
+        "ssd_loads": 50114,
+        "promotions_to_gpu": 67198,
+        "promotions_to_cpu": 50114,
+        "demotions_from_gpu": 67198,
+        "demotions_from_cpu": 67865,
+        "layers_seen": 40,
+        "ssd_load_rate": 0.5068163430420712
+      },
+      "tier_delta_ssd_load_rate": 0.5068163430420712,
+      "output_file": "/root/ktransformers/data/real_benchmark/output_factual_002_decode_sliding_window_score_averaging_d2224a52.json",
+      "success": true,
+      "quality_jaccard": 1.0,
+      "quality_degradation": 0.0,
+      "decode_speedup_ratio": 0.9999032966399638,
+      "speedup_ratio": 1.008630149594122,
+      "ssd_load_ratio": 0.9995611935535345,
+      "latency_ratio": 0.9914436926185534,
+      "quality_speed_score": 1.008630149594122,
+      "exact_text_match": true
+    },
+    {
+      "prompt_id": "factual_002",
+      "category": "factual",
+      "experiment": "decode_sliding_window_score_averaging_d4dee748",
+      "moe_routing": {
+        "prefill": {
+          "scheme": "prefill_block_mean",
+          "params": {
+            "window_size": 1
+          }
+        },
+        "decode": {
+          "scheme": "sliding_window_score_averaging",
+          "params": {
+            "window_size": 4
+          }
+        },
+        "scope": "request"
+      },
+      "context_id": "ctx_factual_002_decode_sliding_window_score_averaging_d4dee748_ad07beb7",
+      "elapsed_seconds": 46.02462070295587,
+      "ttft_seconds": 1.935356748988852,
+      "prefill_latency_seconds": 1.935356748988852,
+      "decode_latency_seconds": 44.08926395396702,
+      "e2e_latency_seconds": 46.02462070295587,
+      "itl_mean_ms": 172.89807130947855,
+      "itl_p50_ms": 166.33244417607784,
+      "itl_p95_ms": 216.1671279463917,
+      "decode_tokens_per_second": 5.8064022177209855,
+      "prefill_tokens_per_second": 27.901832583689227,
+      "e2e_tokens_per_second": 6.7355253615396045,
+      "prompt_tokens": 54,
+      "completion_tokens": 256,
+      "total_tokens": 310,
+      "finish_reason": "length",
+      "trace_file": null,
+      "timestamp": 1775106160.7006326,
+      "tier_stats_delta": {
+        "gpu_hits": 62483,
+        "cpu_hits": 12384,
+        "ssd_loads": 24013,
+        "promotions_to_gpu": 36397,
+        "promotions_to_cpu": 24013,
+        "demotions_from_gpu": 36397,
+        "demotions_from_cpu": 31514,
+        "layers_seen": 40,
+        "ssd_load_rate": 0.24284991909385115
+      },
+      "tier_delta_ssd_load_rate": 0.24284991909385115,
+      "output_file": "/root/ktransformers/data/real_benchmark/output_factual_002_decode_sliding_window_score_averaging_d4dee748.json",
+      "success": true,
+      "quality_jaccard": 0.14213197969543148,
+      "quality_degradation": 0.8578680203045685,
+      "decode_speedup_ratio": 0.9778796011655306,
+      "speedup_ratio": 0.9848567783442828,
+      "ssd_load_ratio": 0.4789572363172172,
+      "latency_ratio": 1.015376064813379,
+      "quality_speed_score": 0.13997964362253765,
+      "exact_text_match": false
+    },
+    {
+      "prompt_id": "factual_002",
+      "category": "factual",
+      "experiment": "decode_two_timescale_ema_601fe0ea",
+      "moe_routing": {
+        "prefill": {
+          "scheme": "prefill_block_mean",
+          "params": {
+            "window_size": 1
+          }
+        },
+        "decode": {
+          "scheme": "two_timescale_ema",
+          "params": {
+            "mix_lambda": 0.4
+          }
+        },
+        "scope": "request"
+      },
+      "context_id": "ctx_factual_002_decode_two_timescale_ema_601fe0ea_ecb5730a",
+      "elapsed_seconds": 45.94909742800519,
+      "ttft_seconds": 1.8559475259389728,
+      "prefill_latency_seconds": 1.8559475259389728,
+      "decode_latency_seconds": 44.093149902066216,
+      "e2e_latency_seconds": 45.94909742800519,
+      "itl_mean_ms": 172.91336712226564,
+      "itl_p50_ms": 165.95660708844662,
+      "itl_p95_ms": 197.92329287156463,
+      "decode_tokens_per_second": 5.805890497018082,
+      "prefill_tokens_per_second": 29.095650197696173,
+      "e2e_tokens_per_second": 6.746596067218076,
+      "prompt_tokens": 54,
+      "completion_tokens": 256,
+      "total_tokens": 310,
+      "finish_reason": "length",
+      "trace_file": null,
+      "timestamp": 1775106719.020863,
+      "tier_stats_delta": {
+        "gpu_hits": 68431,
+        "cpu_hits": 17432,
+        "ssd_loads": 13017,
+        "promotions_to_gpu": 30449,
+        "promotions_to_cpu": 13017,
+        "demotions_from_gpu": 30449,
+        "demotions_from_cpu": 17243,
+        "layers_seen": 40,
+        "ssd_load_rate": 0.13164441747572816
+      },
+      "tier_delta_ssd_load_rate": 0.13164441747572816,
+      "output_file": "/root/ktransformers/data/real_benchmark/output_factual_002_decode_two_timescale_ema_601fe0ea.json",
+      "success": true,
+      "quality_jaccard": 0.18125,
+      "quality_degradation": 0.81875,
+      "decode_speedup_ratio": 0.9777934202193783,
+      "speedup_ratio": 0.98647551763235,
+      "ssd_load_ratio": 0.2596337960746769,
+      "latency_ratio": 1.0137099016913367,
+      "quality_speed_score": 0.17879868757086342,
+      "exact_text_match": false
+    },
+    {
+      "prompt_id": "factual_002",
+      "category": "factual",
+      "experiment": "decode_two_timescale_ema_82f7dbee",
+      "moe_routing": {
+        "prefill": {
+          "scheme": "prefill_block_mean",
+          "params": {
+            "window_size": 1
+          }
+        },
+        "decode": {
+          "scheme": "two_timescale_ema",
+          "params": {
+            "mix_lambda": 0.1
+          }
+        },
+        "scope": "request"
+      },
+      "context_id": "ctx_factual_002_decode_two_timescale_ema_82f7dbee_dfdc9a77",
+      "elapsed_seconds": 46.022006186889485,
+      "ttft_seconds": 1.7747278870083392,
+      "prefill_latency_seconds": 1.7747278870083392,
+      "decode_latency_seconds": 44.247278299881145,
+      "e2e_latency_seconds": 46.022006186889485,
+      "itl_mean_ms": 173.51816401122977,
+      "itl_p50_ms": 166.7323529254645,
+      "itl_p95_ms": 202.90490495972335,
+      "decode_tokens_per_second": 5.785666595468035,
+      "prefill_tokens_per_second": 30.42719979513471,
+      "e2e_tokens_per_second": 6.735908007598139,
+      "prompt_tokens": 54,
+      "completion_tokens": 256,
+      "total_tokens": 310,
+      "finish_reason": "length",
+      "trace_file": null,
+      "timestamp": 1775106580.6313806,
+      "tier_stats_delta": {
+        "gpu_hits": 75130,
+        "cpu_hits": 13339,
+        "ssd_loads": 10411,
+        "promotions_to_gpu": 23750,
+        "promotions_to_cpu": 10411,
+        "demotions_from_gpu": 23750,
+        "demotions_from_cpu": 13899,
+        "layers_seen": 40,
+        "ssd_load_rate": 0.10528923948220065
+      },
+      "tier_delta_ssd_load_rate": 0.10528923948220065,
+      "output_file": "/root/ktransformers/data/real_benchmark/output_factual_002_decode_two_timescale_ema_82f7dbee.json",
+      "success": true,
+      "quality_jaccard": 0.031496062992125984,
+      "quality_degradation": 0.9685039370078741,
+      "decode_speedup_ratio": 0.9743874314435038,
+      "speedup_ratio": 0.9849127281840097,
+      "ssd_load_ratio": 0.2076551779160683,
+      "latency_ratio": 1.0153183844459075,
+      "quality_speed_score": 0.031020873328630225,
+      "exact_text_match": false
+    },
+    {
+      "prompt_id": "factual_002",
+      "category": "factual",
+      "experiment": "decode_two_timescale_ema_9c387768",
+      "moe_routing": {
+        "prefill": {
+          "scheme": "prefill_block_mean",
+          "params": {
+            "window_size": 1
+          }
+        },
+        "decode": {
+          "scheme": "two_timescale_ema",
+          "params": {
+            "mix_lambda": 0.2
+          }
+        },
+        "scope": "request"
+      },
+      "context_id": "ctx_factual_002_decode_two_timescale_ema_9c387768_58c87a55",
+      "elapsed_seconds": 45.99209966114722,
+      "ttft_seconds": 1.722512974170968,
+      "prefill_latency_seconds": 1.722512974170968,
+      "decode_latency_seconds": 44.269586686976254,
+      "e2e_latency_seconds": 45.99209966114722,
+      "itl_mean_ms": 173.60484832532558,
+      "itl_p50_ms": 165.70901777595282,
+      "itl_p95_ms": 222.3063511773944,
+      "decode_tokens_per_second": 5.782751074911506,
+      "prefill_tokens_per_second": 31.349546162919196,
+      "e2e_tokens_per_second": 6.740288055643585,
+      "prompt_tokens": 54,
+      "completion_tokens": 256,
+      "total_tokens": 310,
+      "finish_reason": "length",
+      "trace_file": null,
+      "timestamp": 1775106626.6453667,
+      "tier_stats_delta": {
+        "gpu_hits": 74190,
+        "cpu_hits": 14314,
+        "ssd_loads": 10376,
+        "promotions_to_gpu": 24690,
+        "promotions_to_cpu": 10376,
+        "demotions_from_gpu": 24690,
+        "demotions_from_cpu": 13897,
+        "layers_seen": 40,
+        "ssd_load_rate": 0.10493527508090615
+      },
+      "tier_delta_ssd_load_rate": 0.10493527508090615,
+      "output_file": "/root/ktransformers/data/real_benchmark/output_factual_002_decode_two_timescale_ema_9c387768.json",
+      "success": true,
+      "quality_jaccard": 0.07407407407407407,
+      "quality_degradation": 0.9259259259259259,
+      "decode_speedup_ratio": 0.9738964168750835,
+      "speedup_ratio": 0.9855531711747915,
+      "ssd_load_ratio": 0.20695707675123665,
+      "latency_ratio": 1.0146585990971828,
+      "quality_speed_score": 0.07300393860554011,
+      "exact_text_match": false
+    },
+    {
+      "prompt_id": "factual_002",
+      "category": "factual",
+      "experiment": "decode_two_timescale_ema_a955b791",
+      "moe_routing": {
+        "prefill": {
+          "scheme": "prefill_block_mean",
+          "params": {
+            "window_size": 1
+          }
+        },
+        "decode": {
+          "scheme": "two_timescale_ema",
+          "params": {
+            "mix_lambda": 0.3
+          }
+        },
+        "scope": "request"
+      },
+      "context_id": "ctx_factual_002_decode_two_timescale_ema_a955b791_4ea3b125",
+      "elapsed_seconds": 46.35516919614747,
+      "ttft_seconds": 1.8940393379889429,
+      "prefill_latency_seconds": 1.8940393379889429,
+      "decode_latency_seconds": 44.46112985815853,
+      "e2e_latency_seconds": 46.35516919614747,
+      "itl_mean_ms": 174.35637077627084,
+      "itl_p50_ms": 166.40840517356992,
+      "itl_p95_ms": 220.4949939623475,
+      "decode_tokens_per_second": 5.757838381901231,
+      "prefill_tokens_per_second": 28.510495488090672,
+      "e2e_tokens_per_second": 6.68749581493845,
+      "prompt_tokens": 54,
+      "completion_tokens": 256,
+      "total_tokens": 310,
+      "finish_reason": "length",
+      "trace_file": null,
+      "timestamp": 1775106673.0432122,
+      "tier_stats_delta": {
+        "gpu_hits": 71828,
+        "cpu_hits": 16582,
+        "ssd_loads": 10470,
+        "promotions_to_gpu": 27052,
+        "promotions_to_cpu": 10470,
+        "demotions_from_gpu": 27052,
+        "demotions_from_cpu": 14017,
+        "layers_seen": 40,
+        "ssd_load_rate": 0.10588592233009708
+      },
+      "tier_delta_ssd_load_rate": 0.10588592233009708,
+      "output_file": "/root/ktransformers/data/real_benchmark/output_factual_002_decode_two_timescale_ema_a955b791.json",
+      "success": true,
+      "quality_jaccard": 0.06338028169014084,
+      "quality_degradation": 0.9366197183098591,
+      "decode_speedup_ratio": 0.9697007698304307,
+      "speedup_ratio": 0.977833981755757,
+      "ssd_load_ratio": 0.2088319770224988,
+      "latency_ratio": 1.0226684883710448,
+      "quality_speed_score": 0.06197539320987192,
+      "exact_text_match": false
+    },
+    {
+      "prompt_id": "factual_002",
+      "category": "factual",
+      "experiment": "decode_two_timescale_softmax_1652bd04",
+      "moe_routing": {
+        "prefill": {
+          "scheme": "prefill_block_mean",
+          "params": {
+            "window_size": 1
+          }
+        },
+        "decode": {
+          "scheme": "two_timescale_softmax",
+          "params": {
+            "mix_lambda": 0.2,
+            "rho": 1.0
+          }
+        },
+        "scope": "request"
+      },
+      "context_id": "ctx_factual_002_decode_two_timescale_softmax_1652bd04_98ac991b",
+      "elapsed_seconds": 48.09249314409681,
+      "ttft_seconds": 1.7966413621325046,
+      "prefill_latency_seconds": 1.7966413621325046,
+      "decode_latency_seconds": 46.2958517819643,
+      "e2e_latency_seconds": 48.09249314409681,
+      "itl_mean_ms": 181.55089345504987,
+      "itl_p50_ms": 171.74521391279995,
+      "itl_p95_ms": 239.96083089150488,
+      "decode_tokens_per_second": 5.529653093017098,
+      "prefill_tokens_per_second": 30.056081941643193,
+      "e2e_tokens_per_second": 6.4459124435733575,
+      "prompt_tokens": 54,
+      "completion_tokens": 256,
+      "total_tokens": 310,
+      "finish_reason": "length",
+      "trace_file": null,
+      "timestamp": 1775106814.0753098,
+      "tier_stats_delta": {
+        "gpu_hits": 72886,
+        "cpu_hits": 11488,
+        "ssd_loads": 14506,
+        "promotions_to_gpu": 25994,
+        "promotions_to_cpu": 14506,
+        "demotions_from_gpu": 25994,
+        "demotions_from_cpu": 18874,
+        "layers_seen": 40,
+        "ssd_load_rate": 0.14670307443365696
+      },
+      "tier_delta_ssd_load_rate": 0.14670307443365696,
+      "output_file": "/root/ktransformers/data/real_benchmark/output_factual_002_decode_two_timescale_softmax_1652bd04.json",
+      "success": true,
+      "quality_jaccard": 0.10096153846153846,
+      "quality_degradation": 0.8990384615384616,
+      "decode_speedup_ratio": 0.9312711655903305,
+      "speedup_ratio": 0.9425100822745455,
+      "ssd_load_ratio": 0.2893330142013723,
+      "latency_ratio": 1.0609966076826625,
+      "quality_speed_score": 0.0951572679219493,
+      "exact_text_match": false
+    },
+    {
+      "prompt_id": "factual_002",
+      "category": "factual",
+      "experiment": "decode_two_timescale_softmax_38864957",
+      "moe_routing": {
+        "prefill": {
+          "scheme": "prefill_block_mean",
+          "params": {
+            "window_size": 1
+          }
+        },
+        "decode": {
+          "scheme": "two_timescale_softmax",
+          "params": {
+            "mix_lambda": 0.2,
+            "rho": 64.0
+          }
+        },
+        "scope": "request"
+      },
+      "context_id": "ctx_factual_002_decode_two_timescale_softmax_38864957_c3ef05d5",
+      "elapsed_seconds": 47.003049202030525,
+      "ttft_seconds": 1.7300048489123583,
+      "prefill_latency_seconds": 1.7300048489123583,
+      "decode_latency_seconds": 45.273044353118166,
+      "e2e_latency_seconds": 47.003049202030525,
+      "itl_mean_ms": 177.54108836125656,
+      "itl_p50_ms": 169.98950182460248,
+      "itl_p95_ms": 221.4026669971645,
+      "decode_tokens_per_second": 5.654578870448064,
+      "prefill_tokens_per_second": 31.213785345139012,
+      "e2e_tokens_per_second": 6.595316798864361,
+      "prompt_tokens": 54,
+      "completion_tokens": 256,
+      "total_tokens": 310,
+      "finish_reason": "length",
+      "trace_file": null,
+      "timestamp": 1775106955.807106,
+      "tier_stats_delta": {
+        "gpu_hits": 81923,
+        "cpu_hits": 5351,
+        "ssd_loads": 11606,
+        "promotions_to_gpu": 16957,
+        "promotions_to_cpu": 11606,
+        "demotions_from_gpu": 16957,
+        "demotions_from_cpu": 15452,
+        "layers_seen": 40,
+        "ssd_load_rate": 0.11737459546925566
+      },
+      "tier_delta_ssd_load_rate": 0.11737459546925566,
+      "output_file": "/root/ktransformers/data/real_benchmark/output_factual_002_decode_two_timescale_softmax_38864957.json",
+      "success": true,
+      "quality_jaccard": 0.1568627450980392,
+      "quality_degradation": 0.8431372549019608,
+      "decode_speedup_ratio": 0.9523104193018028,
+      "speedup_ratio": 0.9643557266934195,
+      "ssd_load_ratio": 0.23149034625817777,
+      "latency_ratio": 1.036961747952488,
+      "quality_speed_score": 0.15127148654014425,
+      "exact_text_match": false
+    },
+    {
+      "prompt_id": "factual_002",
+      "category": "factual",
+      "experiment": "decode_two_timescale_softmax_7b4611a7",
+      "moe_routing": {
+        "prefill": {
+          "scheme": "prefill_block_mean",
+          "params": {
+            "window_size": 1
+          }
+        },
+        "decode": {
+          "scheme": "two_timescale_softmax",
+          "params": {
+            "mix_lambda": 0.2,
+            "rho": 1024.0
+          }
+        },
+        "scope": "request"
+      },
+      "context_id": "ctx_factual_002_decode_two_timescale_softmax_7b4611a7_98c985f3",
+      "elapsed_seconds": 45.87607673788443,
+      "ttft_seconds": 1.7729789258446544,
+      "prefill_latency_seconds": 1.7729789258446544,
+      "decode_latency_seconds": 44.10309781203978,
+      "e2e_latency_seconds": 45.87607673788443,
+      "itl_mean_ms": 172.95260496948865,
+      "itl_p50_ms": 167.82468277961016,
+      "itl_p95_ms": 197.59056088514626,
+      "decode_tokens_per_second": 5.8045809183525,
+      "prefill_tokens_per_second": 30.457214811097757,
+      "e2e_tokens_per_second": 6.757334585762479,
+      "prompt_tokens": 54,
+      "completion_tokens": 256,
+      "total_tokens": 310,
+      "finish_reason": "length",
+      "trace_file": null,
+      "timestamp": 1775107049.9155607,
+      "tier_stats_delta": {
+        "gpu_hits": 82088,
+        "cpu_hits": 4988,
+        "ssd_loads": 11804,
+        "promotions_to_gpu": 16792,
+        "promotions_to_cpu": 11804,
+        "demotions_from_gpu": 16792,
+        "demotions_from_cpu": 15730,
+        "layers_seen": 40,
+        "ssd_load_rate": 0.11937702265372169
+      },
+      "tier_delta_ssd_load_rate": 0.11937702265372169,
+      "output_file": "/root/ktransformers/data/real_benchmark/output_factual_002_decode_two_timescale_softmax_7b4611a7.json",
+      "success": true,
+      "quality_jaccard": 0.14659685863874344,
+      "quality_degradation": 0.8534031413612566,
+      "decode_speedup_ratio": 0.9775728687978311,
+      "speedup_ratio": 0.9880456850966758,
+      "ssd_load_ratio": 0.2354396042763683,
+      "latency_ratio": 1.0120989495563197,
+      "quality_speed_score": 0.1448443936267378,
+      "exact_text_match": false
+    },
+    {
+      "prompt_id": "factual_002",
+      "category": "factual",
+      "experiment": "decode_two_timescale_softmax_7c578a93",
+      "moe_routing": {
+        "prefill": {
+          "scheme": "prefill_block_mean",
+          "params": {
+            "window_size": 1
+          }
+        },
+        "decode": {
+          "scheme": "two_timescale_softmax",
+          "params": {
+            "mix_lambda": 0.2,
+            "rho": 0.25
+          }
+        },
+        "scope": "request"
+      },
+      "context_id": "ctx_factual_002_decode_two_timescale_softmax_7c578a93_d0541e10",
+      "elapsed_seconds": 46.88868952798657,
+      "ttft_seconds": 1.9768884021323174,
+      "prefill_latency_seconds": 1.9768884021323174,
+      "decode_latency_seconds": 44.911801125854254,
+      "e2e_latency_seconds": 46.88868952798657,
+      "itl_mean_ms": 176.12371184297052,
+      "itl_p50_ms": 169.13348506204784,
+      "itl_p95_ms": 202.17783097177744,
+      "decode_tokens_per_second": 5.700060865575689,
+      "prefill_tokens_per_second": 27.315654207771342,
+      "e2e_tokens_per_second": 6.611402517764322,
+      "prompt_tokens": 54,
+      "completion_tokens": 256,
+      "total_tokens": 310,
+      "finish_reason": "length",
+      "trace_file": null,
+      "timestamp": 1775106765.9345958,
+      "tier_stats_delta": {
+        "gpu_hits": 66938,
+        "cpu_hits": 15423,
+        "ssd_loads": 16519,
+        "promotions_to_gpu": 31942,
+        "promotions_to_cpu": 16519,
+        "demotions_from_gpu": 31942,
+        "demotions_from_cpu": 21052,
+        "layers_seen": 40,
+        "ssd_load_rate": 0.16706108414239482
+      },
+      "tier_delta_ssd_load_rate": 0.16706108414239482,
+      "output_file": "/root/ktransformers/data/real_benchmark/output_factual_002_decode_two_timescale_softmax_7c578a93.json",
+      "success": true,
+      "quality_jaccard": 0.09848484848484848,
+      "quality_degradation": 0.9015151515151515,
+      "decode_speedup_ratio": 0.9599702254240647,
+      "speedup_ratio": 0.9667077524735654,
+      "ssd_load_ratio": 0.3294838040529759,
+      "latency_ratio": 1.034438792325031,
+      "quality_speed_score": 0.0952060665314875,
+      "exact_text_match": false
+    },
+    {
+      "prompt_id": "factual_002",
+      "category": "factual",
+      "experiment": "decode_two_timescale_softmax_cc6c43c8",
+      "moe_routing": {
+        "prefill": {
+          "scheme": "prefill_block_mean",
+          "params": {
+            "window_size": 1
+          }
+        },
+        "decode": {
+          "scheme": "two_timescale_softmax",
+          "params": {
+            "mix_lambda": 0.2,
+            "rho": 4.0
+          }
+        },
+        "scope": "request"
+      },
+      "context_id": "ctx_factual_002_decode_two_timescale_softmax_cc6c43c8_51ad6a5a",
+      "elapsed_seconds": 46.9644868329633,
+      "ttft_seconds": 1.8737313060555607,
+      "prefill_latency_seconds": 1.8737313060555607,
+      "decode_latency_seconds": 45.09075552690774,
+      "e2e_latency_seconds": 46.9644868329633,
+      "itl_mean_ms": 176.8255345176394,
+      "itl_p50_ms": 169.02296105399728,
+      "itl_p95_ms": 199.25589300692081,
+      "decode_tokens_per_second": 5.6774386902262695,
+      "prefill_tokens_per_second": 28.819500333629357,
+      "e2e_tokens_per_second": 6.60073218946402,
+      "prompt_tokens": 54,
+      "completion_tokens": 256,
+      "total_tokens": 310,
+      "finish_reason": "length",
+      "trace_file": null,
+      "timestamp": 1775106861.0831816,
+      "tier_stats_delta": {
+        "gpu_hits": 75036,
+        "cpu_hits": 9981,
+        "ssd_loads": 13863,
+        "promotions_to_gpu": 23844,
+        "promotions_to_cpu": 13863,
+        "demotions_from_gpu": 23844,
+        "demotions_from_cpu": 18136,
+        "layers_seen": 40,
+        "ssd_load_rate": 0.1402002427184466
+      },
+      "tier_delta_ssd_load_rate": 0.1402002427184466,
+      "output_file": "/root/ktransformers/data/real_benchmark/output_factual_002_decode_two_timescale_softmax_cc6c43c8.json",
+      "success": true,
+      "quality_jaccard": 0.22797927461139897,
+      "quality_degradation": 0.772020725388601,
+      "decode_speedup_ratio": 0.9561603336909926,
+      "speedup_ratio": 0.9651475556678765,
+      "ssd_load_ratio": 0.2765078985160364,
+      "latency_ratio": 1.0361110009836847,
+      "quality_speed_score": 0.22003363963412728,
+      "exact_text_match": false
+    },
+    {
+      "prompt_id": "factual_002",
+      "category": "factual",
+      "experiment": "decode_two_timescale_softmax_ec8a4bbc",
+      "moe_routing": {
+        "prefill": {
+          "scheme": "prefill_block_mean",
+          "params": {
+            "window_size": 1
+          }
+        },
+        "decode": {
+          "scheme": "two_timescale_softmax",
+          "params": {
+            "mix_lambda": 0.2,
+            "rho": 256.0
+          }
+        },
+        "scope": "request"
+      },
+      "context_id": "ctx_factual_002_decode_two_timescale_softmax_ec8a4bbc_dc23155b",
+      "elapsed_seconds": 48.18824243405834,
+      "ttft_seconds": 1.8131766258738935,
+      "prefill_latency_seconds": 1.8131766258738935,
+      "decode_latency_seconds": 46.375065808184445,
+      "e2e_latency_seconds": 48.18824243405834,
+      "itl_mean_ms": 181.86270794192075,
+      "itl_p50_ms": 174.11235999315977,
+      "itl_p95_ms": 237.6846121624112,
+      "decode_tokens_per_second": 5.520207800003168,
+      "prefill_tokens_per_second": 29.78198551063591,
+      "e2e_tokens_per_second": 6.433104515571607,
+      "prompt_tokens": 54,
+      "completion_tokens": 256,
+      "total_tokens": 310,
+      "finish_reason": "length",
+      "trace_file": null,
+      "timestamp": 1775107004.0134315,
+      "tier_stats_delta": {
+        "gpu_hits": 81383,
+        "cpu_hits": 5092,
+        "ssd_loads": 12405,
+        "promotions_to_gpu": 17497,
+        "promotions_to_cpu": 12405,
+        "demotions_from_gpu": 17497,
+        "demotions_from_cpu": 16423,
+        "layers_seen": 40,
+        "ssd_load_rate": 0.12545509708737865
+      },
+      "tier_delta_ssd_load_rate": 0.12545509708737865,
+      "output_file": "/root/ktransformers/data/real_benchmark/output_factual_002_decode_two_timescale_softmax_ec8a4bbc.json",
+      "success": true,
+      "quality_jaccard": 0.193717277486911,
+      "quality_degradation": 0.806282722513089,
+      "decode_speedup_ratio": 0.9296804457230151,
+      "speedup_ratio": 0.9406373293663467,
+      "ssd_load_ratio": 0.2474269985639062,
+      "latency_ratio": 1.0631089887466432,
+      "quality_speed_score": 0.1822177025474075,
+      "exact_text_match": false
+    },
+    {
+      "prompt_id": "factual_002",
+      "category": "factual",
+      "experiment": "decode_two_timescale_softmax_f375d90f",
+      "moe_routing": {
+        "prefill": {
+          "scheme": "prefill_block_mean",
+          "params": {
+            "window_size": 1
+          }
+        },
+        "decode": {
+          "scheme": "two_timescale_softmax",
+          "params": {
+            "mix_lambda": 0.2,
+            "rho": 16.0
+          }
+        },
+        "scope": "request"
+      },
+      "context_id": "ctx_factual_002_decode_two_timescale_softmax_f375d90f_f7b77e2a",
+      "elapsed_seconds": 47.651868734974414,
+      "ttft_seconds": 1.8665037457831204,
+      "prefill_latency_seconds": 1.8665037457831204,
+      "decode_latency_seconds": 45.785364989191294,
+      "e2e_latency_seconds": 47.651868734974414,
+      "itl_mean_ms": 179.54977657280716,
+      "itl_p50_ms": 172.68415307626128,
+      "itl_p95_ms": 225.59497691690922,
+      "decode_tokens_per_second": 5.591306306293174,
+      "prefill_tokens_per_second": 28.931096507038333,
+      "e2e_tokens_per_second": 6.505516115729442,
+      "prompt_tokens": 54,
+      "completion_tokens": 256,
+      "total_tokens": 310,
+      "finish_reason": "length",
+      "trace_file": null,
+      "timestamp": 1775106908.7595148,
+      "tier_stats_delta": {
+        "gpu_hits": 79252,
+        "cpu_hits": 6833,
+        "ssd_loads": 12795,
+        "promotions_to_gpu": 19628,
+        "promotions_to_cpu": 12795,
+        "demotions_from_gpu": 19628,
+        "demotions_from_cpu": 16840,
+        "layers_seen": 40,
+        "ssd_load_rate": 0.12939927184466019
+      },
+      "tier_delta_ssd_load_rate": 0.12939927184466019,
+      "output_file": "/root/ktransformers/data/real_benchmark/output_factual_002_decode_two_timescale_softmax_f375d90f.json",
+      "success": true,
+      "quality_jaccard": 0.19796954314720813,
+      "quality_degradation": 0.8020304568527918,
+      "decode_speedup_ratio": 0.9416544317417834,
+      "speedup_ratio": 0.9512252273280135,
+      "ssd_load_ratio": 0.2552058401148875,
+      "latency_ratio": 1.051275734989698,
+      "quality_speed_score": 0.18831362368422602,
+      "exact_text_match": false
+    },
+    {
+      "prompt_id": "factual_002",
+      "category": "factual",
+      "experiment": "prefill_prefill_block_mean_37f356d3",
+      "moe_routing": {
+        "prefill": {
+          "scheme": "prefill_block_mean",
+          "params": {
+            "window_size": 64
+          }
+        },
+        "decode": {
+          "scheme": "sliding_window_score_averaging",
+          "params": {
+            "window_size": 1
+          }
+        },
+        "scope": "request"
+      },
+      "context_id": "ctx_factual_002_prefill_prefill_block_mean_37f356d3_f9ce35a6",
+      "elapsed_seconds": 43.921616287902,
+      "ttft_seconds": 1.5833021609578282,
+      "prefill_latency_seconds": 1.5833021609578282,
+      "decode_latency_seconds": 42.33831412694417,
+      "e2e_latency_seconds": 43.921616287902,
+      "itl_mean_ms": 166.6857139014925,
+      "itl_p50_ms": 163.78112905658782,
+      "itl_p95_ms": 194.67924814671278,
+      "decode_tokens_per_second": 6.046532680361999,
+      "prefill_tokens_per_second": 34.10593462926393,
+      "e2e_tokens_per_second": 7.058028055433562,
+      "prompt_tokens": 54,
+      "completion_tokens": 256,
+      "total_tokens": 310,
+      "finish_reason": "length",
+      "trace_file": null,
+      "timestamp": 1775107182.0615923,
+      "tier_stats_delta": {
+        "gpu_hits": 38012,
+        "cpu_hits": 17667,
+        "ssd_loads": 43201,
+        "promotions_to_gpu": 60868,
+        "promotions_to_cpu": 43201,
+        "demotions_from_gpu": 60868,
+        "demotions_from_cpu": 59471,
+        "layers_seen": 40,
+        "ssd_load_rate": 0.43690331715210357
+      },
+      "tier_delta_ssd_load_rate": 0.43690331715210357,
+      "output_file": "/root/ktransformers/data/real_benchmark/output_factual_002_prefill_prefill_block_mean_37f356d3.json",
+      "success": true,
+      "quality_jaccard": 0.11737089201877934,
+      "quality_degradation": 0.8826291079812206,
+      "decode_speedup_ratio": 1.0183209402650557,
+      "speedup_ratio": 1.0320125601232937,
+      "ssd_load_ratio": 0.8616762406254986,
+      "latency_ratio": 0.968980454928311,
+      "quality_speed_score": 0.12112823475625513,
+      "exact_text_match": false
+    },
+    {
+      "prompt_id": "factual_002",
+      "category": "factual",
+      "experiment": "prefill_prefill_block_mean_64393c5a",
+      "moe_routing": {
+        "prefill": {
+          "scheme": "prefill_block_mean",
+          "params": {
+            "window_size": 128
+          }
+        },
+        "decode": {
+          "scheme": "sliding_window_score_averaging",
+          "params": {
+            "window_size": 1
+          }
+        },
+        "scope": "request"
+      },
+      "context_id": "ctx_factual_002_prefill_prefill_block_mean_64393c5a_bae50d78",
+      "elapsed_seconds": 43.66619864688255,
+      "ttft_seconds": 1.7221808608155698,
+      "prefill_latency_seconds": 1.7221808608155698,
+      "decode_latency_seconds": 41.94401778606698,
+      "e2e_latency_seconds": 43.66619864688255,
+      "itl_mean_ms": 165.13319622439252,
+      "itl_p50_ms": 160.7381529174745,
+      "itl_p95_ms": 180.95819698646665,
+      "decode_tokens_per_second": 6.10337334171736,
+      "prefill_tokens_per_second": 31.355591754995654,
+      "e2e_tokens_per_second": 7.099312731728521,
+      "prompt_tokens": 54,
+      "completion_tokens": 256,
+      "total_tokens": 310,
+      "finish_reason": "length",
+      "trace_file": null,
+      "timestamp": 1775107225.775708,
+      "tier_stats_delta": {
+        "gpu_hits": 38019,
+        "cpu_hits": 17684,
+        "ssd_loads": 43177,
+        "promotions_to_gpu": 60861,
+        "promotions_to_cpu": 43177,
+        "demotions_from_gpu": 60861,
+        "demotions_from_cpu": 59457,
+        "layers_seen": 40,
+        "ssd_load_rate": 0.4366605987055016
+      },
+      "tier_delta_ssd_load_rate": 0.4366605987055016,
+      "output_file": "/root/ktransformers/data/real_benchmark/output_factual_002_prefill_prefill_block_mean_64393c5a.json",
+      "success": true,
+      "quality_jaccard": 0.11737089201877934,
+      "quality_degradation": 0.8826291079812206,
+      "decode_speedup_ratio": 1.027893705149742,
+      "speedup_ratio": 1.038049133531956,
+      "ssd_load_ratio": 0.8611975426838998,
+      "latency_ratio": 0.9633455370243468,
+      "quality_speed_score": 0.12183675276196666,
+      "exact_text_match": false
+    },
+    {
+      "prompt_id": "factual_002",
+      "category": "factual",
+      "experiment": "prefill_prefill_block_mean_81581d58",
+      "moe_routing": {
+        "prefill": {
+          "scheme": "prefill_block_mean",
+          "params": {
+            "window_size": 1
+          }
+        },
+        "decode": {
+          "scheme": "sliding_window_score_averaging",
+          "params": {
+            "window_size": 1
+          }
+        },
+        "scope": "request"
+      },
+      "context_id": "ctx_factual_002_prefill_prefill_block_mean_81581d58_d7eb00f2",
+      "elapsed_seconds": 43.89305203501135,
+      "ttft_seconds": 1.825920935953036,
+      "prefill_latency_seconds": 1.825920935953036,
+      "decode_latency_seconds": 42.067131099058315,
+      "e2e_latency_seconds": 43.89305203501135,
+      "itl_mean_ms": 164.96817554146344,
+      "itl_p50_ms": 159.92398816160858,
+      "itl_p95_ms": 185.4359528515488,
+      "decode_tokens_per_second": 6.085511260494078,
+      "prefill_tokens_per_second": 29.574117332640586,
+      "e2e_tokens_per_second": 7.062621203755166,
+      "prompt_tokens": 54,
+      "completion_tokens": 256,
+      "total_tokens": 310,
+      "finish_reason": "length",
+      "trace_file": null,
+      "timestamp": 1775107093.8505878,
+      "tier_stats_delta": {
+        "gpu_hits": 31673,
+        "cpu_hits": 17069,
+        "ssd_loads": 50138,
+        "promotions_to_gpu": 67207,
+        "promotions_to_cpu": 50138,
+        "demotions_from_gpu": 67207,
+        "demotions_from_cpu": 67868,
+        "layers_seen": 40,
+        "ssd_load_rate": 0.5070590614886732
+      },
+      "tier_delta_ssd_load_rate": 0.5070590614886732,
+      "output_file": "/root/ktransformers/data/real_benchmark/output_factual_002_prefill_prefill_block_mean_81581d58.json",
+      "success": true,
+      "quality_jaccard": 1.0,
+      "quality_degradation": 0.0,
+      "decode_speedup_ratio": 1.0248854800548115,
+      "speedup_ratio": 1.0326841622650216,
+      "ssd_load_ratio": 1.0000398914951334,
+      "latency_ratio": 0.968350282245702,
+      "quality_speed_score": 1.0326841622650216,
+      "exact_text_match": true
+    },
+    {
+      "prompt_id": "factual_002",
+      "category": "factual",
+      "experiment": "prefill_prefill_block_mean_a211beda",
+      "moe_routing": {
+        "prefill": {
+          "scheme": "prefill_block_mean",
+          "params": {
+            "window_size": 32
+          }
+        },
+        "decode": {
+          "scheme": "sliding_window_score_averaging",
+          "params": {
+            "window_size": 1
+          }
+        },
+        "scope": "request"
+      },
+      "context_id": "ctx_factual_002_prefill_prefill_block_mean_a211beda_2c1db082",
+      "elapsed_seconds": 44.24531867890619,
+      "ttft_seconds": 1.5986012700013816,
+      "prefill_latency_seconds": 1.5986012700013816,
+      "decode_latency_seconds": 42.646717408904806,
+      "e2e_latency_seconds": 44.24531867890619,
+      "itl_mean_ms": 167.9001630982384,
+      "itl_p50_ms": 164.2797940876335,
+      "itl_p95_ms": 202.06653699278831,
+      "decode_tokens_per_second": 6.002806676664548,
+      "prefill_tokens_per_second": 33.77953027646058,
+      "e2e_tokens_per_second": 7.006390941597885,
+      "prompt_tokens": 54,
+      "completion_tokens": 256,
+      "total_tokens": 310,
+      "finish_reason": "length",
+      "trace_file": null,
+      "timestamp": 1775107138.1215167,
+      "tier_stats_delta": {
+        "gpu_hits": 41569,
+        "cpu_hits": 15273,
+        "ssd_loads": 42038,
+        "promotions_to_gpu": 57311,
+        "promotions_to_cpu": 42038,
+        "demotions_from_gpu": 57311,
+        "demotions_from_cpu": 56593,
+        "layers_seen": 40,
+        "ssd_load_rate": 0.4251415857605178
+      },
+      "tier_delta_ssd_load_rate": 0.4251415857605178,
+      "output_file": "/root/ktransformers/data/real_benchmark/output_factual_002_prefill_prefill_block_mean_a211beda.json",
+      "success": true,
+      "quality_jaccard": 0.6068965517241379,
+      "quality_degradation": 0.3931034482758621,
+      "decode_speedup_ratio": 1.0109568677373677,
+      "speedup_ratio": 1.0244622713417253,
+      "ssd_load_ratio": 0.8384793362055211,
+      "latency_ratio": 0.9761218426231671,
+      "quality_speed_score": 0.6217426198487712,
+      "exact_text_match": false
+    },
+    {
+      "prompt_id": "factual_002",
+      "category": "factual",
+      "experiment": "prefill_prefill_full_mean_97497bc8",
+      "moe_routing": {
+        "prefill": {
+          "scheme": "prefill_full_mean",
+          "params": {}
+        },
+        "decode": {
+          "scheme": "sliding_window_score_averaging",
+          "params": {
+            "window_size": 1
+          }
+        },
+        "scope": "request"
+      },
+      "context_id": "ctx_factual_002_prefill_prefill_full_mean_97497bc8_74ab02f5",
+      "elapsed_seconds": 43.39501640689559,
+      "ttft_seconds": 1.3874969859607518,
+      "prefill_latency_seconds": 1.3874969859607518,
+      "decode_latency_seconds": 42.00751942093484,
+      "e2e_latency_seconds": 43.39501640689559,
+      "itl_mean_ms": 165.38297094122368,
+      "itl_p50_ms": 163.23602898046374,
+      "itl_p95_ms": 179.62068784981966,
+      "decode_tokens_per_second": 6.0941470367426644,
+      "prefill_tokens_per_second": 38.919003461912745,
+      "e2e_tokens_per_second": 7.143677446582094,
+      "prompt_tokens": 54,
+      "completion_tokens": 256,
+      "total_tokens": 310,
+      "finish_reason": "length",
+      "trace_file": null,
+      "timestamp": 1775107269.2023869,
+      "tier_stats_delta": {
+        "gpu_hits": 42975,
+        "cpu_hits": 15328,
+        "ssd_loads": 40577,
+        "promotions_to_gpu": 55905,
+        "promotions_to_cpu": 40577,
+        "demotions_from_gpu": 55905,
+        "demotions_from_cpu": 54672,
+        "layers_seen": 40,
+        "ssd_load_rate": 0.4103661003236246
+      },
+      "tier_delta_ssd_load_rate": 0.4103661003236246,
+      "output_file": "/root/ktransformers/data/real_benchmark/output_factual_002_prefill_prefill_full_mean_97497bc8.json",
+      "success": true,
+      "quality_jaccard": 0.5246913580246914,
+      "quality_degradation": 0.47530864197530864,
+      "decode_speedup_ratio": 1.0263398659407823,
+      "speedup_ratio": 1.0445360648101518,
+      "ssd_load_ratio": 0.8093385990106909,
+      "latency_ratio": 0.9573628270860648,
+      "quality_speed_score": 0.5480590463510056,
+      "exact_text_match": false
+    }
+  ],
+  "metric_note": {
+    "quality_jaccard": "token-set Jaccard similarity against baseline text for same prompt_id and seed",
+    "quality_degradation": "1.0 - quality_jaccard",
+    "ttft_seconds": "time from request send to first streamed content token",
+    "prefill_latency_seconds": "time from request send to first streamed content token",
+    "decode_latency_seconds": "time from first streamed content token to end of stream",
+    "e2e_latency_seconds": "time from request send to end of stream",
+    "itl_mean_ms": "mean inter-token latency (ms) between streamed content chunks",
+    "itl_p50_ms": "p50 inter-token latency (ms) between streamed content chunks",
+    "itl_p95_ms": "p95 inter-token latency (ms) between streamed content chunks",
+    "decode_tokens_per_second": "completion_tokens / decode_latency_seconds",
+    "prefill_tokens_per_second": "prompt_tokens / prefill_latency_seconds",
+    "e2e_tokens_per_second": "total_tokens / e2e_latency_seconds",
+    "tier_delta_gpu_hits": "change in cumulative KT tier gpu_hits during this request",
+    "tier_delta_cpu_hits": "change in cumulative KT tier cpu_hits during this request",
+    "tier_delta_ssd_loads": "change in cumulative KT tier ssd_loads during this request",
+    "tier_delta_promotions_to_gpu": "change in cumulative KT tier promotions_to_gpu during this request",
+    "tier_delta_promotions_to_cpu": "change in cumulative KT tier promotions_to_cpu during this request",
+    "tier_delta_demotions_from_gpu": "change in cumulative KT tier demotions_from_gpu during this request",
+    "tier_delta_demotions_from_cpu": "change in cumulative KT tier demotions_from_cpu during this request",
+    "tier_delta_ssd_load_rate": "tier_stats_delta.ssd_loads / (gpu_hits + cpu_hits + ssd_loads) for this request",
+    "tier_layers_seen": "number of MoE layers contributing request-scoped tier stats",
+    "ssd_load_ratio": "tier_stats_delta.ssd_load_rate / baseline tier_stats_delta.ssd_load_rate for same prompt_id",
+    "speedup_ratio": "e2e_tokens_per_second / baseline_e2e_tokens_per_second for same prompt_id",
+    "decode_speedup_ratio": "decode_tokens_per_second / baseline_decode_tokens_per_second for same prompt_id",
+    "quality_speed_score": "quality_jaccard * speedup_ratio",
+    "latency_ratio": "elapsed_seconds / baseline_elapsed_seconds for same prompt_id"
+  }
+}

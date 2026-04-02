@@ -1,0 +1,55 @@
+{
+  "prompt_id": "coding_002",
+  "category": "coding",
+  "experiment": "prefill_w128",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 128
+      }
+    },
+    "decode": {
+      "scheme": "sliding_window_score_averaging",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_coding_002_prefill_w128_c7b18248",
+  "seed": 42,
+  "elapsed_seconds": 178.24277958692983,
+  "ttft_seconds": 3.7822533269645646,
+  "ttft_ms": 3782.2533269645646,
+  "prefill_latency_seconds": 3.7822533269645646,
+  "decode_latency_seconds": 174.46052625996526,
+  "e2e_latency_seconds": 178.24277958692983,
+  "itl_mean_ms": 170.7049389373203,
+  "itl_p50_ms": 166.07921896502376,
+  "itl_p95_ms": 197.7667270693928,
+  "itl_count": 1022,
+  "decode_tokens_per_second": 5.869522590308641,
+  "prefill_tokens_per_second": 38.33693501338507,
+  "e2e_tokens_per_second": 6.558470434028848,
+  "prompt_tokens": 145,
+  "completion_tokens": 1024,
+  "total_tokens": 1169,
+  "finish_reason": "length",
+  "generated_text": "assistant\n<think>\n\n</think>\n\nThe code you provided is actually **correct** for the logic described. It successfully flattens a nested list of arbitrary depth using recursion and `extend`.\n\nHowever, if it \"isn't working correctly\" in your environment, here are the most likely reasons why, along with the corrected/verified version:\n\n### 1. The Code Logic is Actually Correct\nLet's trace your specific test case manually to confirm:\n*   Input: `[1, [2, 3], [[4, 5], 6]]`\n*   Iteration 1: `item` is `1`. Not a list. Append `1`. Result: `[1]`\n*   Iteration 2: `item` is `[2, 3]`. Is a list. Recurse.\n    *   Inner call `[2, 3]`: Returns `[2, 3]`.\n    *   `result.extend([2, 3])`. Result: `[1, 2, 3]`\n*   Iteration 3: `item` is `[[4, 5], 6]`. Is a list. Recurse.\n    *   Inner call `[[4, 5], 6]`:\n        *   Sub-item `[4, 5]`: Is a list. Recurse -> returns `[4, 5]`. Extend result.\n        *   Sub-item `6`: Not a list. Append `6`.\n        *   Returns `[4, 5, 6]`.\n    *   `result.extend([4, 5, 6])`. Result: `[1, 2, 3, 4, 5, 6]`\n\n**Output:** `[1, 2, 3, 4, 5, 6]`\n\nIf you ran this and got an error or wrong output, check these common issues:\n\n### 2. Common Pitfalls (Why it might fail)\n\n#### A. Python Version Issue (Lists vs Tuples)\nYour code only checks `isinstance(item, list)`. If your input contains **tuples** (e.g., `(1, 2)`), they will be treated as single items and not flattened.\n*   **Fix:** Check for any sequence type (excluding strings).\n\n```python\ndef flatten(nested):\n    result = []\n    for item in nested:\n        # Check for list OR tuple, but NOT string/bytes\n        if isinstance(item, (list, tuple)): \n            result.extend(flatten(item))\n        else:\n            result.append(item)\n    return result\n\n# Test with mixed types\nprint(flatten([1, (2, 3), [[4, 5], 6]])) \n# Output: [1, 2, 3, 4, 5, 6]\n```\n\n#### B. Strings being flattened\nIn Python, strings are iterable. If your list contains strings like `\"hello\"`, your current code will treat them as lists of characters and flatten them into `['h', 'e', 'l', 'l', 'o']`.\n*   **Fix:** Explicitly exclude strings.\n\n```python\ndef flatten(nested):\n    result = []\n    for item in nested:\n        # Exclude strings and bytes, allow lists/tuples\n        if isinstance(item, (list, tuple)) and not isinstance(item, str):\n            result.extend(flatten(item))\n        else:\n            result.append(item)\n    return result\n```\n\n#### C. Recursion Depth Limit\nIf your nested list is extremely deep (thousands of levels), Python might hit the recursion limit (`RecursionError`).\n*   **Fix:** Use an iterative approach with a stack instead of recursion.\n\n```python\ndef flatten_iterative(nested):\n    result = []\n    stack = [nested]\n    \n    while stack:\n        current = stack.pop()\n        \n        if isinstance(current, (list, tuple)) and not isinstance(current, str):\n            # Add items back to stack in reverse order so they process left-to-right\n            for item in reversed(current):\n                stack.append(item)\n        else:\n            result.append(current)\n            \n    return result\n```\n\n### Conclusion\nIf you are running standard Python code with standard lists, **your original code works perfectly**.\n\nIf you want to make it more robust against tuples and strings, use this version:\n\n```python\ndef flatten(nested):\n    result = []\n    for item in nested:\n        # Handle lists and tuples, but ignore strings\n        if isinstance(item, (list, tuple)) and not isinstance(item, str):\n            result.extend(flatten(item))\n        else:\n            result.append(item)\n    return result\n\n# Test\n",
+  "trace_file": null,
+  "timestamp": 1774831742.3334517,
+  "prompt_text": "I have this Python code that's supposed to flatten a nested list, but it's not working correctly. Can you debug it?\n\ndef flatten(nested):\n    result = []\n    for item in nested:\n        if isinstance(item, list):\n            result.extend(flatten(item))\n        else:\n            result.append(item)\n    return result\n\n# Test\nprint(flatten([1, [2, 3], [[4, 5], 6]]))  # Expected: [1, 2, 3, 4, 5, 6]",
+  "stream_meta": {
+    "chunks": 1026,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 145,
+      "total_tokens": 1169,
+      "completion_tokens": 1024,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

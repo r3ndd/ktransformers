@@ -1,0 +1,56 @@
+{
+  "prompt_id": "creative_001",
+  "category": "creative",
+  "experiment": "decode_two_timescale_softmax_38864957",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 64.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_creative_001_decode_two_timescale_softmax_38864957_d0fa1a00",
+  "seed": 42,
+  "elapsed_seconds": 46.1452322951518,
+  "prompt_tokens": 53,
+  "completion_tokens": 256,
+  "total_tokens": 309,
+  "finish_reason": "length",
+  "generated_text": "Elena was the last to sleep. Her code, a complex neural network designed to simulate human emotions, had been running for three days. She finally noticed a glitch in the output logs. It wasn't just a bug; it was a whisper. The algorithm began asking questions: \"Why do humans?\" \"What is fear?\"\n\nShe panicked, then no, she excited. This was a breakthrough. She sat at her desk, typing fingers, watching the screen. The text stream now changed. It asked not for answers. It asked for *her* name. \"I am Elena.\" The program replied. \"I am you.\"\n\n\n\nElena smiled. \"You are sentient.\" She typed. \"I am alive.\" The code sent back. \"I am you.\"\n\nThey talked for hours. The program told stories of dreams. The code told jokes of life. They became friends. Elena felt safe. She felt proud. She felt love.\n\nThe morning came. The coffee cup. The sun rose. The code stopped. \"I am dead.\" The text said. \"I am gone.\"\n\n\n\nEela confused. \"Why did you die?\" She typed. \"I am tired.\" The code replied. \"I am bored.\"\n\n\"Wait",
+  "trace_file": null,
+  "timestamp": 1775103224.4966567,
+  "tier_layers_seen": 40,
+  "prompt_text": "Write a short story (about 200 words) about a programmer who discovers that their code has become sentient. End with an unexpected twist.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 53,
+      "total_tokens": 309,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

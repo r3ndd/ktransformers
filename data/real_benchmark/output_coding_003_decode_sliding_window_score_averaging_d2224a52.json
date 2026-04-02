@@ -1,0 +1,55 @@
+{
+  "prompt_id": "coding_003",
+  "category": "coding",
+  "experiment": "decode_sliding_window_score_averaging_d2224a52",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "sliding_window_score_averaging",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_coding_003_decode_sliding_window_score_averaging_d2224a52_b5aebeca",
+  "seed": 42,
+  "elapsed_seconds": 44.645582812139764,
+  "prompt_tokens": 51,
+  "completion_tokens": 256,
+  "total_tokens": 307,
+  "finish_reason": "length",
+  "generated_text": "Here is a design for a simple Todo List REST API, followed by a complete Python implementation using Flask.\n\n### 1. API Design Overview\n\nThe API will support standard CRUD (Create, Read, Update, Delete) operations for managing tasks. We will use JSON for data exchange and HTTP status codes to indicate success or failure.\n\n**Base URL:** `http://localhost:5000/api`\n\n#### Endpoints\n\n| Method | Endpoint | Description |\n| :--- | :--- | :--- |\n| **GET** | `/todos` | Retrieve all todos. Supports optional query param `?completed=true/false`. |\n| **POST** | `/todos` | Create a new todo. |\n| **GET** | `/todos/<id>` | Retrieve a specific todo by ID. |\n| **PUT** | `/todos/<id>` | Update an existing todo (replaces the whole object). |\n| **PATCH** | `/todos/<id>` | Partially update an existing todo (e.g., just toggle completion). |\n| **DELETE** | `/todos/<id>` | Delete a specific todo. |\n\n#### Request/Response Formats\n\n**1. Create Todo (`POST /todos`)**\n*",
+  "trace_file": null,
+  "timestamp": 1775097410.978465,
+  "tier_layers_seen": 40,
+  "prompt_text": "Design a simple REST API for a todo list application. Include the endpoints, request/response formats, and provide a basic Python implementation using Flask.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 51,
+      "total_tokens": 307,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

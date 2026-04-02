@@ -1,0 +1,56 @@
+{
+  "prompt_id": "edge_003",
+  "category": "edge_case",
+  "experiment": "decode_two_timescale_softmax_38864957",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 64.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_edge_003_decode_two_timescale_softmax_38864957_479e44b1",
+  "seed": 42,
+  "elapsed_seconds": 46.75777396885678,
+  "prompt_tokens": 38,
+  "completion_tokens": 256,
+  "total_tokens": 294,
+  "finish_reason": "length",
+  "generated_text": "That sounds quite a surreal and whimsical scene!\n\nThe purple elephant dancing on the quantum waffle while reciting Shakespeare backwards is quite a surreal and whimsical scene!\n\n sounds quite a surreal and whimsical scene! that.\n\n The purple elephant danced on the quantum waffle while reciting Shakespeare backwards.\n\n That sounds quite a surreal and whimsical scene!\n\nThe purple elephant danced on the quantum waffle while reciting Shakespeare backwards.\n\nThat sounds quite a surreal and whimsical scene!\n\nThe purple elephant danced on the quantum waffle while reciting Shakespeare backwards.\n\nThat sounds quite a surreal and whimsical scene!\n\nThe purple elephant danced on the quantum waffle while reciting Shakespeare backwards.\n\nThat sounds quite a surreal and whimsical scene!\n\nThe purple elephant danced on the quantum waffle while reciting Shakespeare backwards.\n\nThat sounds quite a surreal and whimsical scene!\n\nThe purple elephant danced on the quantum waffle while reciting Shakespeare backwards.\n\nThat sounds quite a surreal and whimsical scene!\n\nThe purple elephant danced on the quantum waffle while reciting Shakespeare backwards.\n\nThat sounds quite a surreal and whimsical scene!\n\nThe purple elephant danced on the quantum waffle while reciting Shakespeare backwards.\n\nThat sounds quite a",
+  "trace_file": null,
+  "timestamp": 1775114946.9554963,
+  "tier_layers_seen": 40,
+  "prompt_text": "The purple elephant danced on the quantum waffle while reciting Shakespeare backwards.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 38,
+      "total_tokens": 294,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

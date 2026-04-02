@@ -1,0 +1,55 @@
+{
+  "prompt_id": "reasoning_001",
+  "category": "reasoning",
+  "experiment": "decode_ema_score_averaging_b5aee75c",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "ema_score_averaging",
+      "params": {
+        "ema_beta": 0.3
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_reasoning_001_decode_ema_score_averaging_b5aee75c_b69c5d38",
+  "seed": 42,
+  "elapsed_seconds": 45.15634515695274,
+  "prompt_tokens": 70,
+  "completion_tokens": 256,
+  "total_tokens": 326,
+  "finish_reason": "length",
+  "generated_text": "To find the distance between the two cities, we can use the formula relating to distance, speed, and time:\n$$$Distance = Speed \\times Time$$$$.\n\n\n\n### Step 1: Define Variables\nLet $ $$d$$$ be the one-way distance between City A and City B ( in miles).\n\nLet $ $$t_{out}$$$ be the time taken to travel from City A to City B.\nLet $ $$t_{return}$$$ be the time taken to return from City B to City A.\n\nThe total time for the round trip is given as 5 hours:\n$$$t_{out} + t_{return} = 5$$$$.\n\nWe are also given the speeds:\n$$$Speed_{out} = 60 \\text{ mph}$$$$.\n$$$Speed_{return} = 40 \\text{ mph}$$$$.\n\nSince the distance is the same for both trips, we can express the time for each leg of the journey using the formula $$$Time = Distance / Speed$$$$:\n$$$t_{out} = \\frac{d}{60}$$$$.\n$$$t_{return} = \\frac{d}{40}$$$",
+  "trace_file": null,
+  "timestamp": 1775098975.3724427,
+  "tier_layers_seen": 40,
+  "prompt_text": "A train travels from city A to city B at 60 mph and returns at 40 mph. If the total round trip takes 5 hours, how far apart are the two cities? Show your work step by step.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 70,
+      "total_tokens": 326,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

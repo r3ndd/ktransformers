@@ -1,0 +1,56 @@
+{
+  "prompt_id": "mixed_001",
+  "category": "mixed",
+  "experiment": "decode_two_timescale_softmax_f375d90f",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 16.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_mixed_001_decode_two_timescale_softmax_f375d90f_4c043ccb",
+  "seed": 42,
+  "elapsed_seconds": 46.01516092289239,
+  "prompt_tokens": 59,
+  "completion_tokens": 256,
+  "total_tokens": 315,
+  "finish_reason": "length",
+  "generated_text": "Here’s a complete implementation of binary search tree (BST) in Python with `insert`, `search`, and `delete` operations, plus explanations of time complexity and walkthroughs using a small example.\n\n## 1. Implementation Code\n\n```python\nclass Node:\n    def __init__(self):\n        self.data = None\n        self.left = None\n        self.right = None\n\nclass BST:\n    def __init__(self):\n        self.root = None\n\n    def insert(self, value):\n        # Insert the value into root or recursively\n        if self.root is None:\n            self.root = Node(value)\n        else:\n            _insert_recursive(self.root, value)\n\n    def _insert_recursive(self, node, value):\n        if value < node.data:\n            if node.left is None:\n                node.left = Node(value)\n            else:\n                _insert_recursive(node.left, value)\n        elif value > node.data:\n            if node.right is None:\n                node.right = Node(value)\n            else:\n                _insert_recursive(node.right, value)\n        else:\n            # duplicate values not inserted (optional)\n            pass\n\n    def search(self",
+  "trace_file": null,
+  "timestamp": 1775110642.2389784,
+  "tier_layers_seen": 40,
+  "prompt_text": "Implement a binary search tree in Python with insert, search, and delete operations. For each operation, explain the time complexity and walk through how the algorithm works using a small example.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 59,
+      "total_tokens": 315,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "prompt_id": "edge_001",
+  "category": "edge_case",
+  "experiment": "prefill_prefill_block_mean_64393c5a",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 128
+      }
+    },
+    "decode": {
+      "scheme": "sliding_window_score_averaging",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_edge_001_prefill_prefill_block_mean_64393c5a_6ac8514f",
+  "seed": 42,
+  "elapsed_seconds": 43.47163661196828,
+  "prompt_tokens": 28,
+  "completion_tokens": 256,
+  "total_tokens": 284,
+  "finish_reason": "length",
+  "generated_text": "</think>\n\nI'd love to help! But could you clarify **what** you'd like me to tell you about? For example:  \n- A specific topic (science, history, technology, etc.)?  \n- A recent event or trend?  \n- Something personal (like your interests or goals)?  \n- Or something else entirely?  \n\nJust let me know, and I'll tailor my response! 😊📚✨  \n\n*(P.S. If this is a playful \"tell me about it\" as in \"explain yourself,\" I'm an AI assistant designed to answer questions, solve problems, and chat about almost anything!)* 🤖💬*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`*`",
+  "trace_file": null,
+  "timestamp": 1775113443.4503047,
+  "tier_layers_seen": 40,
+  "prompt_text": "Tell me about it.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 256,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 28,
+      "total_tokens": 284,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

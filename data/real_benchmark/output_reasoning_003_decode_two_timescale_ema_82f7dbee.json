@@ -1,0 +1,55 @@
+{
+  "prompt_id": "reasoning_003",
+  "category": "reasoning",
+  "experiment": "decode_two_timescale_ema_82f7dbee",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_ema",
+      "params": {
+        "mix_lambda": 0.1
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_reasoning_003_decode_two_timescale_ema_82f7dbee_50462e3f",
+  "seed": 42,
+  "elapsed_seconds": 47.656400052132085,
+  "prompt_tokens": 67,
+  "completion_tokens": 256,
+  "total_tokens": 323,
+  "finish_reason": "length",
+  "generated_text": "No, this argument is **invalid**. it. The ground is wet. Therefore, it rained.\"\n\nThe argument contains a logical fall of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **aff** of the **",
+  "trace_file": null,
+  "timestamp": 1775101606.1811812,
+  "tier_layers_seen": 40,
+  "prompt_text": "Analyze the following argument: 'If it rains, the ground gets wet. The ground is wet. Therefore, it rained.' Is this valid? What type of logical fallacy might be present, if any?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 67,
+      "total_tokens": 323,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "prompt_id": "multi_turn_002",
+  "category": "multi_turn",
+  "experiment": "decode_ema_score_averaging_bf390907",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "ema_score_averaging",
+      "params": {
+        "ema_beta": 0.9
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_multi_turn_002_decode_ema_score_averaging_bf390907_aa9d4126",
+  "seed": 42,
+  "elapsed_seconds": 45.62233274197206,
+  "prompt_tokens": 70,
+  "completion_tokens": 256,
+  "total_tokens": 326,
+  "finish_reason": "length",
+  "generated_text": "Here are several optimization strategies to consider beyond indexing foreign keys:\n\n1. **Review the Query Structure**\n   - Ensure you're only selecting columns you actually need (avoid `SELECT *`)\n   - Check if unnecessary joins or subqueries can be eliminated\n   - Consider using EXISTS instead of IN for subqueries when appropriate\n\n2. **Analyze the Execution Plan**\n   - Use `EXPLAIN` or `EXPLAIN ANALYZE` to see how the database is executing your query\n   - Look for full table scans, inefficient join orders, or missing index usage\n   - Pay attention to row estimates vs actual rows returned\n\n3. **Optimize Join Conditions**\n   - Verify that join conditions use indexed columns\n   - Consider the order of joins in complex queries (sometimes reordering helps)\n   - Ensure data types match exactly between joined columns\n\n4. **Filter Early**\n   - Apply WHERE clauses as early as possible in the query\n   - Filter out unnecessary rows before joining large tables\n   - Consider materialized views for frequently accessed filtered data\n\n5. **Check Data Distribution**\n   - Highly skewed data distributions can cause poor performance\n   - Consider partitioning large tables if they contain millions of rows\n   -",
+  "trace_file": null,
+  "timestamp": 1775108793.0763428,
+  "tier_layers_seen": 40,
+  "prompt_text": "I'm trying to optimize a SQL query but it's still running slowly. The query joins three tables: users, orders, and products. I've already added indexes on the foreign keys.\n\nWhat other optimization strategies should I consider?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 70,
+      "total_tokens": 326,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

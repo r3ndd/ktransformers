@@ -1,0 +1,55 @@
+{
+  "prompt_id": "mixed_002",
+  "category": "mixed",
+  "experiment": "decode_sliding_window_score_averaging_355c528a",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "sliding_window_score_averaging",
+      "params": {
+        "window_size": 64
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_mixed_002_decode_sliding_window_score_averaging_355c528a_a4ef527f",
+  "seed": 42,
+  "elapsed_seconds": 54.42252462101169,
+  "prompt_tokens": 96,
+  "completion_tokens": 256,
+  "total_tokens": 352,
+  "finish_reason": "length",
+  "generated_text": "```python\n# Import necessary libraries for pandas and numpy (optional)\n# You can install them with: pip install pandas numpy\n\n\nimport pandas as pd\nimport numpy as np  # For optional, but not we use it.\n\nimport os  # For optional, to handle file paths.\n\nimport sys  # For optional, to handle file paths.\n\nimport matplotlib.pyplot as plt  # For optional, to handle file paths.\n\nimport seaborn as sns  # For optional, to handle file paths.\n\nimport datetime  # For optional, to handle file paths.\n\nimport warnings  # For optional, to handle file paths.\n\nimport warnings  # For optional, to handle file paths.\n\nimport warnings  # For optional, to handle file paths.\n\nimport warnings  # For optional, to handle file paths.\n\nimport warnings  # For optional, to handle file paths.\n\nimport warnings  # For optional, to handle file paths.\n\nimport warnings  # For optional, to handle file paths.\n\nimport warnings  # For optional, to handle file paths.\n\nimport warnings  # For optional, to handle file paths.\n\nimport warnings  # For optional, to handle file paths.\n\nimport warnings  # For optional,",
+  "trace_file": null,
+  "timestamp": 1775111240.80087,
+  "tier_layers_seen": 40,
+  "prompt_text": "I need to analyze a CSV file containing sales data. The file has columns: date, product_id, quantity, price.\n\nWrite a Python script that:\n1. Loads the data\n2. Calculates total revenue per product\n3. Finds the top 5 best-selling products\n4. Generates a simple monthly sales report\n\nInclude comments explaining each section.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 96,
+      "total_tokens": 352,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

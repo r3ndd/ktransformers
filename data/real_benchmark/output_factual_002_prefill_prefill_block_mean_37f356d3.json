@@ -1,0 +1,55 @@
+{
+  "prompt_id": "factual_002",
+  "category": "factual",
+  "experiment": "prefill_prefill_block_mean_37f356d3",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 64
+      }
+    },
+    "decode": {
+      "scheme": "sliding_window_score_averaging",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_factual_002_prefill_prefill_block_mean_37f356d3_f9ce35a6",
+  "seed": 42,
+  "elapsed_seconds": 43.921616287902,
+  "prompt_tokens": 54,
+  "completion_tokens": 256,
+  "total_tokens": 310,
+  "finish_reason": "length",
+  "generated_text": "<think>\nHere's a thinking process that leads to the comparison between Transformers and RNNs:\n\n1.  **Deconstruct the Request:**\n    *   **Topic:** Compare and contrast Transformer architecture vs. Recurrent Neural Networks (RNNs).\n    *   **Specific Focus:** Key advantages of Transformers that led to their dominance in Natural Language Processing (NLP).\n    *   **Goal:** Provide a clear, structured, and informative explanation suitable for someone interested in deep learning/NLP.\n\n2.  **Initial Brainstorming & Keyword Association:**\n    *   *RNNs:* Sequential processing, hidden states, vanishing gradients, long-term dependency issues, LSTM/GRU, slow training (cannot parallelize easily), fixed context window (effectively).\n    *   *Transformers:* Self-attention, parallelization, position encoding, scalability, \"Attention is All You Need,\" BERT, GPT, massive datasets, compute efficiency.\n    *   *Comparison:* Architecture, Training speed, Context handling, Performance on long sequences, Hardware utilization.\n    *   *Dominance:* Why did we switch? (Performance + Efficiency).\n\n3.  **Structuring the Response:**\n    *   **",
+  "trace_file": null,
+  "timestamp": 1775107182.0615923,
+  "tier_layers_seen": 40,
+  "prompt_text": "Compare and contrast the transformer architecture with recurrent neural networks (RNNs). What are the key advantages of transformers that led to their dominance in NLP?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 259,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 54,
+      "total_tokens": 310,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "prompt_id": "reasoning_002",
+  "category": "reasoning",
+  "experiment": "decode_sliding_window_score_averaging_56646e50",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "sliding_window_score_averaging",
+      "params": {
+        "window_size": 16
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_reasoning_002_decode_sliding_window_score_averaging_56646e50_23112671",
+  "seed": 42,
+  "elapsed_seconds": 47.69952831394039,
+  "prompt_tokens": 86,
+  "completion_tokens": 256,
+  "total_tokens": 342,
+  "finish_reason": "length",
+  "generated_text": "Based on the the constraints provided, we is a logical deduction step to determine the seating order.\n\nLet's analyze the four people (Alice, Bob, Carol, Dave) are sitting in a row. We know:\n1. Alice is not at either end\n2. Bob is to the left of Carol\n3. Dave is not next to Alice.\n\nDetermine their seating order from left to right, explaining your reasoning.\n\nLet's analyze the four people (Alice, Bob, Carol, Dave) are sitting in a row. We know:\n1. Alice is not at either end\n2. Bob is to the left of Carol\n3. Dave is not next to Alice.\n\nDetermine their seating order from left to right, explaining your reasoning.\n\nLet's analyze the four people (Alice, Bob, Carol, Dave) are sitting in a row. We know:\n1. Alice is not at either end\n2. Bob is to the left of Carol\n3. Dave is not next to Alice.\n\nDetermine their seating order from left to right, explaining your reasoning.\n\nLet's analyze the four people (Alice, Bob, Carol, Dave) are sitting in a row. We know:\n1. Alice is",
+  "trace_file": null,
+  "timestamp": 1775099991.6510923,
+  "tier_layers_seen": 40,
+  "prompt_text": "Four people (Alice, Bob, Carol, Dave) are sitting in a row. We know:\n1. Alice is not at either end\n2. Bob is to the left of Carol\n3. Dave is not next to Alice\n\nDetermine their seating order from left to right, explaining your reasoning.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 86,
+      "total_tokens": 342,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

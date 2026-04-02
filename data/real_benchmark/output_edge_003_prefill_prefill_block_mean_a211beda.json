@@ -1,0 +1,55 @@
+{
+  "prompt_id": "edge_003",
+  "category": "edge_case",
+  "experiment": "prefill_prefill_block_mean_a211beda",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 32
+      }
+    },
+    "decode": {
+      "scheme": "sliding_window_score_averaging",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_edge_003_prefill_prefill_block_mean_a211beda_1151042d",
+  "seed": 42,
+  "elapsed_seconds": 45.02335807797499,
+  "prompt_tokens": 38,
+  "completion_tokens": 256,
+  "total_tokens": 294,
+  "finish_reason": "length",
+  "generated_text": "assistant<think>\n\n</think>\n\nThat is a delightfully surreal and nonsensical image! It sounds like the opening line of an abstract poem or a scene from a dream logic story.\n\nSince purple elephants don't exist, quantum waffles are a play on physics and breakfast, and reciting Shakespeare backwards adds a layer of linguistic chaos, would you like to:\n\n1.  **Continue the story** in this whimsical style?\n2.  **Analyze the imagery** (perhaps treating it as a metaphor)?\n3.  **Try to \"translate\"** what the elephant might be saying backwards?\n4.  **Generate an image prompt** based on this description for an AI art generator?\n\nLet me know how you'd like to proceed with this quantum culinary performance! 🐘🎭🧇⚛️🔙📜🟣🥄🍽️🌈🦋🐘🎭🧇⚛️🔙📜🟣🥄🍽️🌈🦋🐘🎭🧇⚛️🔙📜🟣🥄�",
+  "trace_file": null,
+  "timestamp": 1775115130.3520136,
+  "tier_layers_seen": 40,
+  "prompt_text": "The purple elephant danced on the quantum waffle while reciting Shakespeare backwards.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 200,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 38,
+      "total_tokens": 294,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

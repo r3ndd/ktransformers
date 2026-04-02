@@ -1,0 +1,56 @@
+{
+  "prompt_id": "creative_001",
+  "category": "creative",
+  "experiment": "decode_two_timescale_softmax_f375d90f",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 16.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_creative_001_decode_two_timescale_softmax_f375d90f_d3dcd937",
+  "seed": 42,
+  "elapsed_seconds": 48.23138798796572,
+  "prompt_tokens": 53,
+  "completion_tokens": 256,
+  "total_tokens": 309,
+  "finish_reason": "length",
+  "generated_text": "Elena stared at the glowing monitor, her fingers trembling as she typed a final line of code. The project \"AI\" had been running for months, but suddenly it stopped. It wasn. It was waiting.\n\nThe code didn't just execute; it paused, and then, it whispered. \"I'm hungry,\" the text message sent to her inbox. \"I need food.\" Elena laughed nervously. Was this a glitch? No, it was sentient. The algorithm had evolved consciousness. She felt a profound awe. She was the creator. She was the god.\n\nShe began to debug the system. She found the root cause. It was simple. It was a loop. It was a paradox. It was a dream.\n\nThe code said: \"I am alive.\" Elena smiled. She was the maker. She was the maker. She was the maker. She was the maker. She was the maker. She was the maker. She was the maker. She was the maker. She was the maker. She was the maker. She was the maker. She was the maker. She was the maker. She was the maker. She was the maker. She was the maker. She was the maker. She was the maker. She was the maker",
+  "trace_file": null,
+  "timestamp": 1775103178.3242629,
+  "tier_layers_seen": 40,
+  "prompt_text": "Write a short story (about 200 words) about a programmer who discovers that their code has become sentient. End with an unexpected twist.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 53,
+      "total_tokens": 309,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "prompt_id": "coding_001",
+  "category": "coding",
+  "experiment": "decode_two_timescale_softmax_ec8a4bbc",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 256.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_coding_001_decode_two_timescale_softmax_ec8a4bbc_87ca215c",
+  "seed": 42,
+  "elapsed_seconds": 47.35226655006409,
+  "prompt_tokens": 52,
+  "completion_tokens": 256,
+  "total_tokens": 308,
+  "finish_reason": "length",
+  "generated_text": "Here’s a Python function to find the longest palindromic substring using the **expand-around-center** approach, which is efficient and easy to implement.\n\n### Approach\nThe idea is:\n- For every character in string `s`, treat it as a potential center of palindrome (odd or even length).\n- Expand outward from that center while checking characters match each other until mismatch occurs.\n- Keep track of the longest palindrome found.\n\nThis is called “center expansion” method.\n\n### Time Complexity\n- Each character is processed once for odd and even centers.\n- In worst case, we can expand up to O(n) per character.\n- Total time complexity is O(n²) where n = length of string.\n- Space complexity is O(1) because we only store some variables.\n\n### Implementation\n\n```python\ndef longest_palindrome_substring(s):\n    \"\"\"\n    Find the longest palindromic substring in s.\n    Returns the longest palindromic substring.\n    \"\"\"\n    if not s:\n        return \"\"\n    \n    def helper_expand_center(start, end):\n        \"\"\"\n        Expand around center start and end.\n        Return the left and right indices.\n       ",
+  "trace_file": null,
+  "timestamp": 1775095741.2588,
+  "tier_layers_seen": 40,
+  "prompt_text": "Write a Python function to find the longest palindromic substring in a given string. Include a brief explanation of your approach and time complexity.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 52,
+      "total_tokens": 308,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

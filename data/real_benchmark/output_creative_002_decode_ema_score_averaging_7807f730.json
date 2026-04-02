@@ -1,0 +1,55 @@
+{
+  "prompt_id": "creative_002",
+  "category": "creative",
+  "experiment": "decode_ema_score_averaging_7807f730",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "ema_score_averaging",
+      "params": {
+        "ema_beta": 0.05
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_creative_002_decode_ema_score_averaging_7807f730_5f13d417",
+  "seed": 42,
+  "elapsed_seconds": 44.638649540022016,
+  "prompt_tokens": 54,
+  "completion_tokens": 256,
+  "total_tokens": 310,
+  "finish_reason": "length",
+  "generated_text": "Blue light on the screen,\nCoffee cup is cold,\nBug in in the code.\n\n\n\nA haiku consists a poem short,\nThree lines of words and three,\nNumbers of sylls must count,\nSylls are nine or five,\nFive sylls per line,\nThree sylls per last,\nThree sylls per first,\nThree sylls per end.\n\nHaiku is form of verse,\nThree lines of words and three,\nSylls are nine or five,\nFive sylls per line,\nThree sylls per last,\nThree sylls per first,\nThree sylls per end.\n\nI chose those images to show,\nBlue light on the screen,\nCoffee cup is cold,\nBug in in the code.\n\nThese images chosen show,\nBlue light on the screen,\nCoffee cup is cold,\nBug in in the code.\n\nWhy I chose these images show,\nBlue light on the screen,\nCoffee cup is cold,\nBug in in the code.\n\nThose images chosen show,\nBlue light on the screen,\nCoffee cup is cold,\nBug in in the code.\n\nI chose those images to show,\nBlue light on the",
+  "trace_file": null,
+  "timestamp": 1775104032.6689994,
+  "tier_layers_seen": 40,
+  "prompt_text": "Write a haiku about debugging code at 3 AM. Then write a brief explanation of what a haiku is and why you chose those particular images.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 54,
+      "total_tokens": 310,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

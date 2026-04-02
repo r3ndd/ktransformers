@@ -1,0 +1,55 @@
+{
+  "prompt_id": "factual_001",
+  "category": "factual",
+  "experiment": "decode_ema_score_averaging_b5aee75c",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "ema_score_averaging",
+      "params": {
+        "ema_beta": 0.3
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_factual_001_decode_ema_score_averaging_b5aee75c_feaa0600",
+  "seed": 42,
+  "elapsed_seconds": 45.71186161017977,
+  "prompt_tokens": 55,
+  "completion_tokens": 256,
+  "total_tokens": 311,
+  "finish_reason": "length",
+  "generated_text": "Python’s memory management is a hybrid system that combines **reference counting** and a **generational garbage collector**. This design allows Python to be fast for simple objects, but also capable of handling complex cycles.\n\nThe details are as follows:\n\n### 1. Reference Counting (the primary mechanism)\n- Every object in Python has a internal field called ``ob_refcount`.\nWhen every reference to an object is created (a new variable, a list element, a function argument, etc.), the ref count is incremented; When when a reference is destroyed (a variable goes out of scope, an item removed from a list, etc.), the ref count is decreed.\nWhen when the ref count reaches zero, the object is immediately deallocated (memory freed).\nThis is very fast and deterministic, and works for most objects.\nHowever, it cannot handle **cyclic references** (objects that hold each each other).\n\nFor example:\n```python\nclass A:\n    pass\n\na = A()\nb = A()\na.ref = b\nb.ref = a  # creates a cycle\ndel a, del b  # ref counts still never reach 0 because they hold each each other\n```\nIn this case",
+  "trace_file": null,
+  "timestamp": 1775105176.3232126,
+  "tier_layers_seen": 40,
+  "prompt_text": "Explain how garbage collection works in Python. Include a discussion of reference counting, the generational garbage collector, and when memory might not be freed as expected.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 55,
+      "total_tokens": 311,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

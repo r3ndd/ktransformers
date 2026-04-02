@@ -1,0 +1,55 @@
+{
+  "prompt_id": "creative_002",
+  "category": "creative",
+  "experiment": "decode_sliding_window_score_averaging_d4dee748",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "sliding_window_score_averaging",
+      "params": {
+        "window_size": 4
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_creative_002_decode_sliding_window_score_averaging_d4dee748_6706dec3",
+  "seed": 42,
+  "elapsed_seconds": 44.3164288229309,
+  "prompt_tokens": 54,
+  "completion_tokens": 256,
+  "total_tokens": 310,
+  "finish_reason": "length",
+  "generated_text": "Blue light on the face,\nCoffee cold in the cup,\nBug found in the loop.\n\n\n\nA haiku is a traditional Japanese poem form consisting of three lines with a 5-7-5 syllar structure (totaling 17 sylls). It often focuses to capture a moment or nature or an emotion. The haiku here captures the late-night debugging experience: the blue glow from the monitor, the cold coffee, and the frustration when finding a bug that causes infinite loops. These images are chosen because they represent common experiences for programmers working at late night: the screen's blue light, the cold coffee, and the frustration when finding a bug that causes infinite loops. These images are chosen because they represent common experiences for programmers working at late night: the screen's blue light, the cold coffee, and the frustration when finding a bug that causes infinite loops. These images are chosen because they represent common experiences for programmers working at late night: the screen's blue light, the cold coffee, and the frustration when finding a bug that causes infinite loops. These images are chosen because they represent common experiences for programmers working at late night: the screen's blue light, the cold coffee, and the frustration when finding a bug that causes infinite loops. These images",
+  "trace_file": null,
+  "timestamp": 1775103674.502017,
+  "tier_layers_seen": 40,
+  "prompt_text": "Write a haiku about debugging code at 3 AM. Then write a brief explanation of what a haiku is and why you chose those particular images.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 54,
+      "total_tokens": 310,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

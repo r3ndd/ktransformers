@@ -1,0 +1,55 @@
+{
+  "prompt_id": "reasoning_002",
+  "category": "reasoning",
+  "experiment": "decode_two_timescale_ema_601fe0ea",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_ema",
+      "params": {
+        "mix_lambda": 0.4
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_reasoning_002_decode_two_timescale_ema_601fe0ea_4f89bd57",
+  "seed": 42,
+  "elapsed_seconds": 46.85814337502234,
+  "prompt_tokens": 86,
+  "completion_tokens": 256,
+  "total_tokens": 342,
+  "finish_reason": "length",
+  "generated_text": "Based on the the logical constraints, let's ded step step by step.\n\nLet's analyze the seating order from left to right (1) to 4).\n\nThe four people are: Alice, Bob, Carol, Dave.\n\nWe know:\n1. Alice is not at either end (Alice cannot be in position 1 or 4).\n2. Bob is to the left of Carol (Bob must be a position < Carol).\n3. Dave is not next to Alice (Dave cannot be adjacent with Alice).\n\nLet's try all possible arrangements.\n\nFirst, we can place Alice. because Alice is not at either end, so Alice can be in position 2 or 3.\n\nLet's split two cases:\n\nCase A: Alice is in position 2.\nCase B: Alice is in position 3.\n\nLet's check Case A: Alice is in position 2.\n\nThen positions: [1] _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _",
+  "trace_file": null,
+  "timestamp": 1775100505.195548,
+  "tier_layers_seen": 40,
+  "prompt_text": "Four people (Alice, Bob, Carol, Dave) are sitting in a row. We know:\n1. Alice is not at either end\n2. Bob is to the left of Carol\n3. Dave is not next to Alice\n\nDetermine their seating order from left to right, explaining your reasoning.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 86,
+      "total_tokens": 342,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

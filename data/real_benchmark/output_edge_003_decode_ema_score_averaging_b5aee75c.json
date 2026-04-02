@@ -1,0 +1,55 @@
+{
+  "prompt_id": "edge_003",
+  "category": "edge_case",
+  "experiment": "decode_ema_score_averaging_b5aee75c",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "ema_score_averaging",
+      "params": {
+        "ema_beta": 0.3
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_edge_003_decode_ema_score_averaging_b5aee75c_a5943948",
+  "seed": 42,
+  "elapsed_seconds": 44.184225894045085,
+  "prompt_tokens": 38,
+  "completion_tokens": 256,
+  "total_tokens": 294,
+  "finish_reason": "length",
+  "generated_text": "That is certainly a surreal image! I can almost hear the sound of the waffle sizzling and the elephant's ho-ho-ho-ing as it recites: \"no, siht eht\" , \"s'gnirahc\" , \"eht\" , \"s'gnirahc\" (backwards).\n\nThe quantum waffle must be quite a a tricky place to dance on, especially if one has a purple elephant.\n\n It seems like a dream from a very strange book.\n\n Would you like to continue this story? or perhaps we could try to write a poem about this scene? ? Or maybe we could try to solve a riddle related to this? ? Or maybe we could try to create a drawing description for this? ? Or maybe we could try to generate a code for this? ? Or maybe we could try to analyze this? ? Or maybe we could try to translate this? ? Or maybe we could try to summarize this? ? Or maybe we could try to rewrite this? ? Or maybe we could try to expand this? ? Or maybe we could try to compress this? ? Or maybe we could try to simplify this? ? Or maybe we could try to elaborate this? ? Or maybe we could try to",
+  "trace_file": null,
+  "timestamp": 1775114470.740671,
+  "tier_layers_seen": 40,
+  "prompt_text": "The purple elephant danced on the quantum waffle while reciting Shakespeare backwards.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 38,
+      "total_tokens": 294,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

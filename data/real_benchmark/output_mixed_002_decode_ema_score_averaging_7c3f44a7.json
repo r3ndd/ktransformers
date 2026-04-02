@@ -1,0 +1,55 @@
+{
+  "prompt_id": "mixed_002",
+  "category": "mixed",
+  "experiment": "decode_ema_score_averaging_7c3f44a7",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "ema_score_averaging",
+      "params": {
+        "ema_beta": 0.7
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_mixed_002_decode_ema_score_averaging_7c3f44a7_6f729dbc",
+  "seed": 42,
+  "elapsed_seconds": 45.69803996803239,
+  "prompt_tokens": 96,
+  "completion_tokens": 256,
+  "total_tokens": 352,
+  "finish_reason": "length",
+  "generated_text": "```python\nimport pandas as pd\n\n# 1. Load the data from a CSV file\n# Replace 'sales_data.csv' with your actual file path\ntry:\n    df = pd.read_csv('sales_data.csv')\nexcept FileNotFoundError:\n    print(\"Error: The file 'sales_data.csv' was not found.\")\n    exit()\n\n# Ensure required columns exist\nrequired_columns = ['date', 'product_id', 'quantity', 'price']\nif not all(col in df.columns for col in required_columns):\n    print(f\"Error: Missing required columns. Expected: {required_columns}\")\n    exit()\n\n# Convert 'date' column to datetime format for easier time-based analysis\ndf['date'] = pd.to_datetime(df['date'])\n\n# Calculate total revenue per transaction (revenue = quantity * price)\ndf['revenue'] = df['quantity'] * df['price']\n\n# 2. Calculate total revenue per product\n# Group by 'product_id' and sum the 'revenue'\ntotal_revenue_per_product = df.groupby('product_id')['revenue'].sum().reset_index()\ntotal_revenue_per_product.columns = ['product_id', 'total_revenue']\n\nprint(\"Total",
+  "trace_file": null,
+  "timestamp": 1775111331.8280034,
+  "tier_layers_seen": 40,
+  "prompt_text": "I need to analyze a CSV file containing sales data. The file has columns: date, product_id, quantity, price.\n\nWrite a Python script that:\n1. Loads the data\n2. Calculates total revenue per product\n3. Finds the top 5 best-selling products\n4. Generates a simple monthly sales report\n\nInclude comments explaining each section.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 96,
+      "total_tokens": 352,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

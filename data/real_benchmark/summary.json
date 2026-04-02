@@ -1,0 +1,14 @@
+{
+  "total": 459,
+  "successful": 459,
+  "failed": 0,
+  "prompts": 17,
+  "experiments": 27,
+  "seed": 42,
+  "output_files": {
+    "generated_texts_dir": "/root/ktransformers/data/real_benchmark/generated_texts",
+    "results_json": "/root/ktransformers/data/real_benchmark/results.json",
+    "prompt_results_pattern": "/root/ktransformers/data/real_benchmark/results_<prompt_id>.json",
+    "server_log": "/root/ktransformers/data/real_benchmark/benchmark_server.log"
+  }
+}

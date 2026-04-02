@@ -1,0 +1,55 @@
+{
+  "prompt_id": "factual_001",
+  "category": "factual",
+  "experiment": "decode_two_timescale_ema_601fe0ea",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_ema",
+      "params": {
+        "mix_lambda": 0.4
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_factual_001_decode_two_timescale_ema_601fe0ea_e68071b2",
+  "seed": 42,
+  "elapsed_seconds": 46.55666767898947,
+  "prompt_tokens": 55,
+  "completion_tokens": 256,
+  "total_tokens": 311,
+  "finish_reason": "length",
+  "generated_text": "Python’s memory management is a automatic, but it relies on two mechanisms: **reference counting** and the **generational garbage collector**. Both are designed to handle most common cases, but some edge scenarios can still cause unexpected leaks.\n\n\n\nThe reference counting mechanism is the primary way for Python objects. Every every object has a internal field `refcount` that tracks how many references pointing to this object. When when an new reference is created (e.g., assignment, passing as argument), the ref count increments; when when a reference is removed (e.g., variable goes out of scope, or `del` call), the ref count decrements. If if the ref count reaches zero, the object immediately is freed. This is very fast and deterministic, but it does not handle cyclic references.\n\n\n\n The generational garbage collector is a secondary system for handles cycles. It is three generations: **young**, **old**, **and** **ancient**. It is a algorithm that collects objects in each generation periodically. It is a trigger that runs when when the young generation fills (or when when the old generation fills). It is a algorithm that uses a mark-and-sweep algorithm to detect unreachable objects from start from root objects (e.g., global variables, stack frames",
+  "trace_file": null,
+  "timestamp": 1775105452.5787663,
+  "tier_layers_seen": 40,
+  "prompt_text": "Explain how garbage collection works in Python. Include a discussion of reference counting, the generational garbage collector, and when memory might not be freed as expected.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 55,
+      "total_tokens": 311,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

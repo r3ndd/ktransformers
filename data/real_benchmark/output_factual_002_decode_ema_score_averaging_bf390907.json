@@ -1,0 +1,55 @@
+{
+  "prompt_id": "factual_002",
+  "category": "factual",
+  "experiment": "decode_ema_score_averaging_bf390907",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "ema_score_averaging",
+      "params": {
+        "ema_beta": 0.9
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_factual_002_decode_ema_score_averaging_bf390907_91033053",
+  "seed": 42,
+  "elapsed_seconds": 45.076259148074314,
+  "prompt_tokens": 54,
+  "completion_tokens": 256,
+  "total_tokens": 310,
+  "finish_reason": "length",
+  "generated_text": "The shift from Recurrent Neural Networks (RNNs) to Transformer architectures marks one of the most significant paradigm shifts in Natural Language Processing (NLP). While RNNs dominated for over a decade, Transformers have since become the standard backbone for modern large language models (LLMs).\n\nHere is a detailed comparison and an analysis of why Transformers achieved dominance.\n\n### 1. Core Architectural Differences\n\n#### **Recurrent Neural Networks (RNNs)**\n*   **Mechanism:** RNNs process data sequentially, one token at a time. At each time step $t$, the network takes the current input $x_t$ and the hidden state from the previous step $h_{t-1}$ to produce the new hidden state $h_t$.\n*   **Memory:** Information is passed forward through the chain of hidden states. The model \"remembers\" context by compressing it into the vector $h_t$.\n*   **Variants:** Standard RNNs suffer from vanishing/exploding gradients. Long Short-Term Memory (LSTM) and Gated Recurrent Units (GRU) were developed to mitigate this, allowing them to retain information over longer sequences.\n\n#### **Transformers**\n*   **Mechanism",
+  "trace_file": null,
+  "timestamp": 1775106308.5213506,
+  "tier_layers_seen": 40,
+  "prompt_text": "Compare and contrast the transformer architecture with recurrent neural networks (RNNs). What are the key advantages of transformers that led to their dominance in NLP?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 54,
+      "total_tokens": 310,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

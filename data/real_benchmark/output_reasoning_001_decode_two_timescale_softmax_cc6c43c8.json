@@ -1,0 +1,56 @@
+{
+  "prompt_id": "reasoning_001",
+  "category": "reasoning",
+  "experiment": "decode_two_timescale_softmax_cc6c43c8",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 4.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_reasoning_001_decode_two_timescale_softmax_cc6c43c8_9e431504",
+  "seed": 42,
+  "elapsed_seconds": 48.01862395997159,
+  "prompt_tokens": 70,
+  "completion_tokens": 256,
+  "total_tokens": 326,
+  "finish_reason": "length",
+  "generated_text": "To find the distance between the two cities, we will use the formula relationship between **distance**, **speed**, and **time**.\n\nLet's break down the problem step by step.\n\n### Step 1: Define Variables\nLet $ $d$ be the one-way distance from City A to City B (in miles).\nSince the trip is a round trip, the distance going *to* city B is equal to the distance returning *from* city B.\n\n### Step 2: Set Up the Time Equations\nWe know that $\\text{Time} = \\frac{\\text{Distance}}{\\text{Speed}}$.\n\n**Outgoing Trip:**\n*   Speed: $60$ mph\n*   Distance: $d$ miles\n*   Time: $t_1 = \\frac{d}{60}$ hours\n\n**Returning Trip:**\n*   Speed: $40$ mph\n*   Distance: $d$ miles\n*   Time: $t_2 = \\frac{d}{40}$ hours\n\n### Step 3: Formulate the Total Time Equation\nThe problem states that the total round trip time is **5 hours**. Therefore, the sum of time for outgoing trip and returning trip",
+  "trace_file": null,
+  "timestamp": 1775099396.6243274,
+  "tier_layers_seen": 40,
+  "prompt_text": "A train travels from city A to city B at 60 mph and returns at 40 mph. If the total round trip takes 5 hours, how far apart are the two cities? Show your work step by step.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 70,
+      "total_tokens": 326,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "prompt_id": "edge_001",
+  "category": "edge_case",
+  "experiment": "decode_two_timescale_softmax_1652bd04",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 1.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_edge_001_decode_two_timescale_softmax_1652bd04_81fe7d25",
+  "seed": 42,
+  "elapsed_seconds": 45.73263457487337,
+  "prompt_tokens": 28,
+  "completion_tokens": 256,
+  "total_tokens": 284,
+  "finish_reason": "length",
+  "generated_text": "I'd love to tell you about it! just need a little more context! what's \"it\" referring?\n\n could be:\n- **a topic you're curious about** (e.g., technology, history, culture?)\n- **something we discussed earlier** (if there's a previous conversation!)\n- **a specific object/idea** (like a product, concept, event?)\n\njust drop a hint or clarify, and i'll dive into the details! �️�✨�����������������������������������������������������������������������������������������������������������������������������������������������������������",
+  "trace_file": null,
+  "timestamp": 1775113036.4575255,
+  "tier_layers_seen": 40,
+  "prompt_text": "Tell me about it.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 105,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 28,
+      "total_tokens": 284,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

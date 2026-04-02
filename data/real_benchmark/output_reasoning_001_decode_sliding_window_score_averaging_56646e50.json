@@ -1,0 +1,55 @@
+{
+  "prompt_id": "reasoning_001",
+  "category": "reasoning",
+  "experiment": "decode_sliding_window_score_averaging_56646e50",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "sliding_window_score_averaging",
+      "params": {
+        "window_size": 16
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_reasoning_001_decode_sliding_window_score_averaging_56646e50_b609d281",
+  "seed": 42,
+  "elapsed_seconds": 45.903152774088085,
+  "prompt_tokens": 70,
+  "completion_tokens": 256,
+  "total_tokens": 326,
+  "finish_reason": "length",
+  "generated_text": "To find the distance between the two cities, we let's step by step.\n\nLet's define the variables:\nLet $ $ be the distance between the two cities. Let $ be the time (t) in the trip from city A to city B. Let $ be the time (t) in the return from city B to city A. Let $ be the total round trip time. Let $ be the total round trip time. Let $ be the total round trip time. Let $ be the total round trip time. Let $ be the total round trip time. Let $ be the total round trip time. Let $ be the total round trip time. Let $ be the total round trip time. Let $ be the total round trip time. Let $ be the total round trip time. Let $ be the total round trip time. Let $ be the total round trip time. Let $ be the total round trip time. Let $ be the total round trip time. Let $ be the total round trip time. Let $ be the total round trip time. Let $ be the total round trip time. Let $ be the total round trip time. Let $ be the total round trip time. Let $ be the total round trip time. Let $ be the total",
+  "trace_file": null,
+  "timestamp": 1775098742.5314343,
+  "tier_layers_seen": 40,
+  "prompt_text": "A train travels from city A to city B at 60 mph and returns at 40 mph. If the total round trip takes 5 hours, how far apart are the two cities? Show your work step by step.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 70,
+      "total_tokens": 326,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

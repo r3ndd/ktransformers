@@ -1,0 +1,55 @@
+{
+  "prompt_id": "coding_003",
+  "category": "coding",
+  "experiment": "decode_ema_score_averaging_bf390907",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "ema_score_averaging",
+      "params": {
+        "ema_beta": 0.9
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_coding_003_decode_ema_score_averaging_bf390907_802df116",
+  "seed": 42,
+  "elapsed_seconds": 45.84146335511468,
+  "prompt_tokens": 51,
+  "completion_tokens": 256,
+  "total_tokens": 307,
+  "finish_reason": "length",
+  "generated_text": "Here is a design for a simple Todo List REST API, including the endpoint specifications and a complete Python implementation using Flask.\n\n### 1. API Design Overview\n\nThe API will follow standard REST conventions using JSON for data exchange. We will use HTTP methods to perform CRUD (Create, Read, Update, Delete) operations on \"Todo\" resources.\n\n**Base URL:** `http://localhost:5000/api`\n\n#### Endpoints Specification\n\n| Method | Endpoint | Description | Request Body (JSON) | Response (Success) |\n| :--- | :--- | :--- | :--- | :--- |\n| **GET** | `/todos` | Get all todos | None | `200 OK`: List of todo objects |\n| **POST** | `/todos` | Create a new todo | `{ \"title\": \"...\", \"completed\": false }` | `201 Created`: The created todo object |\n| **GET** | `/todos/<id>` | Get a specific todo by ID | None | `200 OK`: Single todo object<br>`404 Not Found` |\n| **PUT** | `/todos/<id>` | Update an existing todo | `{ \"title\": \"...\", \"",
+  "trace_file": null,
+  "timestamp": 1775097602.1699302,
+  "tier_layers_seen": 40,
+  "prompt_text": "Design a simple REST API for a todo list application. Include the endpoints, request/response formats, and provide a basic Python implementation using Flask.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 51,
+      "total_tokens": 307,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

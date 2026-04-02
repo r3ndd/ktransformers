@@ -1,0 +1,56 @@
+{
+  "prompt_id": "coding_001",
+  "category": "coding",
+  "experiment": "decode_two_timescale_softmax_38864957",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 64.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_coding_001_decode_two_timescale_softmax_38864957_159700cf",
+  "seed": 42,
+  "elapsed_seconds": 47.73702264693566,
+  "prompt_tokens": 52,
+  "completion_tokens": 256,
+  "total_tokens": 308,
+  "finish_reason": "length",
+  "generated_text": "Here’s a Python function that finds the longest palindromic substring in a given string, using the “expand around center” approach (also known as Man’s algorithm).\n\n### Approach Explanation\n\n- **Expand Around Center**:  \n  For each character `i` in the string, we treat it as a potential center of a palindrome.\n  - If `i` is an odd character, we expand outward from `i` and `i+1`.\n  - If `i` is an even character, we expand outward from `i` alone.\n  - We continue expanding until characters match on both sides, then stop when mismatch occurs or boundaries are reached.\n  - This gives us the length of palindrome centered at `i`.\n  - The maximum length among all centers is the answer.\n\n time complexity: O(n) because we expand outward for each center, which takes O(n) in worst case.\n\n space complexity: O(1) because we only keep track of current max length and indices.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+  "trace_file": null,
+  "timestamp": 1775095693.888638,
+  "tier_layers_seen": 40,
+  "prompt_text": "Write a Python function to find the longest palindromic substring in a given string. Include a brief explanation of your approach and time complexity.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 52,
+      "total_tokens": 308,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

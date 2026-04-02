@@ -1,0 +1,56 @@
+{
+  "prompt_id": "multi_turn_002",
+  "category": "multi_turn",
+  "experiment": "decode_two_timescale_softmax_ec8a4bbc",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 256.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_multi_turn_002_decode_two_timescale_softmax_ec8a4bbc_dce8b396",
+  "seed": 42,
+  "elapsed_seconds": 45.88969625602476,
+  "prompt_tokens": 70,
+  "completion_tokens": 256,
+  "total_tokens": 326,
+  "finish_reason": "length",
+  "generated_text": "Here are a key optimization strategies beyond your indexes:\n\n1. **Explain the query structure**  \n   - Use `EXPLAIN` to see the execution plan (MySQL EXPLAN or PostgreSQL EXPLAN).  \n   - Look for missing index usage, table scans, join order, and sub‑query nesting.  \n\n2. **Rewrite the query**  \n   - Avoid unnecessary joins; use `JOIN` only on the needed data.  \n   - Replace `SELECT` with `WHERE` clauses that filter early rows.  \n   - If you can, rewrite as `SELECT` from `users`, `orders`, `products` in a single‑pass join.  \n\n3. **Materialize views / Cte**  \n   - If you have frequent repeated patterns, create a materialized view or CTE that pre‑aggregates.  \n\n4. **Partitioning / Indexes**  \n   - If you have large tables, partition them by date ranges or product IDs.  \n   - Add composite indexes on columns used in `WHERE` + `ORDER`.  \n\n5. **Query tuning**  \n   - Use `LIMIT` clause to reduce row count before joining.  \n   - Use `GROUP` clause to aggregate early.  \n\n6. **Cache /",
+  "trace_file": null,
+  "timestamp": 1775109490.7782,
+  "tier_layers_seen": 40,
+  "prompt_text": "I'm trying to optimize a SQL query but it's still running slowly. The query joins three tables: users, orders, and products. I've already added indexes on the foreign keys.\n\nWhat other optimization strategies should I consider?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 70,
+      "total_tokens": 326,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "prompt_id": "edge_003",
+  "category": "edge_case",
+  "experiment": "decode_two_timescale_softmax_cc6c43c8",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 4.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_edge_003_decode_two_timescale_softmax_cc6c43c8_04d7eadf",
+  "seed": 42,
+  "elapsed_seconds": 31.194602191913873,
+  "prompt_tokens": 38,
+  "completion_tokens": 167,
+  "total_tokens": 205,
+  "finish_reason": "stop",
+  "generated_text": "That is a delightfully surreal image! The purple elephant must have been quite the performer.\n\nI imagine the scene:\n*   **Purple Elephant:** A vibrant, whimsical creature with a sense of rhythm.\n*   **Quantum Waffle:** A waffle that exists in superposition of states—both crispy and soft simultaneously, perhaps floating in a different dimension.\n*   **Shakespeare Recitation:** A performance of *Hamlet*, *Macbeth*, or *Othello*... but backwards? (Imagine \"To be or not to be\" becomes \"Not to be or to be\"?)\n\nIt sounds like a perfect plot for a dream or a very strange poem. Would you want to see this scene expanded into a story, or perhaps analyze the \"quantum waffle\" physics?",
+  "trace_file": null,
+  "timestamp": 1775114853.743629,
+  "tier_layers_seen": 40,
+  "prompt_text": "The purple elephant danced on the quantum waffle while reciting Shakespeare backwards.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 170,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 38,
+      "total_tokens": 205,
+      "completion_tokens": 167,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "stop"
+  }
+}

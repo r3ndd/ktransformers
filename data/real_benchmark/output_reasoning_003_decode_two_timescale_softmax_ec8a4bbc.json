@@ -1,0 +1,56 @@
+{
+  "prompt_id": "reasoning_003",
+  "category": "reasoning",
+  "experiment": "decode_two_timescale_softmax_ec8a4bbc",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 256.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_reasoning_003_decode_two_timescale_softmax_ec8a4bbc_19dad98f",
+  "seed": 42,
+  "elapsed_seconds": 46.13346185605042,
+  "prompt_tokens": 67,
+  "completion_tokens": 256,
+  "total_tokens": 323,
+  "finish_reason": "length",
+  "generated_text": "No, this argument is **not valid**. It contains a logical fallacy known as **Affirming the Consequent** (or **Affirming the Consequent**).\n\n### Here's the breakdown:\n\n1.  **Formalizing the Argument:**\n    *   Premise 1: If it rains, the ground gets wet. ($P → Q$)\n    *   Premise 2: The ground is wet. ($Q$)\n    *   Conclusion: Therefore, it rained. ($P$)\n\n2.  **Logical Analysis:**\n    *   The premise 1 establishes that rain is sufficient for wetness, but it does not establish that rain is necessary for wetness. There are other causes for the ground being wet (e.g., sprinkers, pipes, or a fire hydrant).\n    *   The conclusion is that because the ground is wet, it must have rained. This is incorrect because the ground could be wet from another cause.\n\n.\n\n3.  **The Fallacy:**\n    *   This is the **Affirming the Consequent** fallacy. It occurs when you affirm the consequent of a conditional statement (the \"if\" part) to",
+  "trace_file": null,
+  "timestamp": 1775102030.161213,
+  "tier_layers_seen": 40,
+  "prompt_text": "Analyze the following argument: 'If it rains, the ground gets wet. The ground is wet. Therefore, it rained.' Is this valid? What type of logical fallacy might be present, if any?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 67,
+      "total_tokens": 323,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

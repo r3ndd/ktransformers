@@ -1,0 +1,56 @@
+{
+  "prompt_id": "multi_turn_002",
+  "category": "multi_turn",
+  "experiment": "decode_two_timescale_softmax_1652bd04",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 1.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_multi_turn_002_decode_two_timescale_softmax_1652bd04_b341fc7a",
+  "seed": 42,
+  "elapsed_seconds": 46.50954791577533,
+  "prompt_tokens": 70,
+  "completion_tokens": 256,
+  "total_tokens": 326,
+  "finish_reason": "length",
+  "generated_text": "Here are some practical ways to speed up a query (join users, orders, products):\n\n1. **Check the query itself**\n- Make sure you’re only selecting columns you need, not `SELECT *`.\n- Remove unnecessary joins or subqueries that aren’t used in the result.\n- If possible, push logic into application code instead of SQL.\n\n2. **Review indexes beyond foreign keys**\n- Add indexes on:\n  - Columns used in `WHERE` clauses (e.g., `status`, `date_range`, `user_id`).\n  - Columns used in `ORDER BY` if you sort by them.\n- Composite indexes where common patterns appear (e.g., `(user_id, order_date)`).\n- Ensure indexes are covering the join predicates, not just the FKs.\n\n3. **Use proper join types and conditions**\n- Prefer `INNER JOIN` over `LEFT JOIN` unless you need null rows.\n- Avoid `OR`/`NOT IN` patterns; rewrite with `AND` or separate queries.\n- Use `EXISTS` / `FILTER` instead of `COUNT(*)` + `GROUP BY` when possible.\n\n4. **Avoid large intermediate results**\n- Don’t",
+  "trace_file": null,
+  "timestamp": 1775109301.0945718,
+  "tier_layers_seen": 40,
+  "prompt_text": "I'm trying to optimize a SQL query but it's still running slowly. The query joins three tables: users, orders, and products. I've already added indexes on the foreign keys.\n\nWhat other optimization strategies should I consider?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 70,
+      "total_tokens": 326,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "prompt_id": "mixed_002",
+  "category": "mixed",
+  "experiment": "decode_ema_score_averaging_d27b125a",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "ema_score_averaging",
+      "params": {
+        "ema_beta": 0.1
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_mixed_002_decode_ema_score_averaging_d27b125a_58ec24b6",
+  "seed": 42,
+  "elapsed_seconds": 46.37206365191378,
+  "prompt_tokens": 96,
+  "completion_tokens": 256,
+  "total_tokens": 352,
+  "finish_reason": "length",
+  "generated_text": "```python\n# Importing pandas for a data analysis tool\nimport pandas as pd\n\n# Load the CSV file into a DataFrame\n# The 'sales.csv' is assumed in the current directory.\nadjust to your path if you need\npd.read_csv()\nwith parameters: sep='','', encoding='utf-8'\nif you need\npd.read_csv()\nwith parameters: sep='','', encoding='utf-8'\nif you need\npd.read_csv()\nwith parameters: sep='','', encoding='utf-8'\nif you need\npd.read_csv()\nwith parameters: sep='','', encoding='utf-8'\nif you need\npd.read_csv()\nwith parameters: sep='','', encoding='utf-8'\nif you need\npd.read_csv()\nwith parameters: sep='','', encoding='utf-8'\nif you need\npd.read_csv()\nwith parameters: sep='','', encoding='utf-8'\nif you need\npd.read_csv()\nwith parameters: sep='','', encoding='utf-8'\nif you need\npd.read_csv()\nwith parameters: sep='','', encoding='utf-8'\nif you need\n",
+  "trace_file": null,
+  "timestamp": 1775111470.616548,
+  "tier_layers_seen": 40,
+  "prompt_text": "I need to analyze a CSV file containing sales data. The file has columns: date, product_id, quantity, price.\n\nWrite a Python script that:\n1. Loads the data\n2. Calculates total revenue per product\n3. Finds the top 5 best-selling products\n4. Generates a simple monthly sales report\n\nInclude comments explaining each section.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 96,
+      "total_tokens": 352,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

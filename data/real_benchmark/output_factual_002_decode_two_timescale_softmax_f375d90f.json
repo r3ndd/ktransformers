@@ -1,0 +1,56 @@
+{
+  "prompt_id": "factual_002",
+  "category": "factual",
+  "experiment": "decode_two_timescale_softmax_f375d90f",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 16.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_factual_002_decode_two_timescale_softmax_f375d90f_f7b77e2a",
+  "seed": 42,
+  "elapsed_seconds": 47.651868734974414,
+  "prompt_tokens": 54,
+  "completion_tokens": 256,
+  "total_tokens": 310,
+  "finish_reason": "length",
+  "generated_text": "The shift from dominance of Recurrent Neural Networks (RNNs) to Transformer architecture in field of Natural Language Processing (NLP) is a significant milestone. development of deep learning.\n\n following the key differences and advantages:\n\n **Recurrent Neural Networks (RNNs)**\n  \n- **Sequential processing**: RNNs process data sequentially, meaning they read input tokens one by one, often maintaining hidden state that captures previous information. This makes them well suited for tasks like time series or sequential text generation.\n- **Long dependency issues**: RNNs struggle with long dependencies due to vanishing gradients and limited context window size. They can't capture global information across sequences.\n- **Computational cost**: RNNs require sequential computation, which making them slow for parallelization. They can't be trained efficiently on large datasets.\n\n **Transformer Architecture**\n\n- **Parallel processing**: Transformers process data in parallel, meaning they all input tokens simultaneously, often using attention mechanism that captures global information across sequences. This makes them well suited for tasks like time series or sequential text generation.\n- **Long dependency issues**: Transformers can capture global information across sequences, meaning they can handle long dependencies due to attention mechanism that captures global information across sequences.\n- **Computational",
+  "trace_file": null,
+  "timestamp": 1775106908.7595148,
+  "tier_layers_seen": 40,
+  "prompt_text": "Compare and contrast the transformer architecture with recurrent neural networks (RNNs). What are the key advantages of transformers that led to their dominance in NLP?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 54,
+      "total_tokens": 310,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

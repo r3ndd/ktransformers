@@ -1,0 +1,55 @@
+{
+  "prompt_id": "edge_003",
+  "category": "edge_case",
+  "experiment": "decode_ema_score_averaging_bf390907",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "ema_score_averaging",
+      "params": {
+        "ema_beta": 0.9
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_edge_003_decode_ema_score_averaging_bf390907_41ea9a78",
+  "seed": 42,
+  "elapsed_seconds": 45.630565794184804,
+  "prompt_tokens": 38,
+  "completion_tokens": 256,
+  "total_tokens": 294,
+  "finish_reason": "length",
+  "generated_text": "That is a delightfully surreal image! It sounds like the opening line to an absurdly whimsical poem or a scene from a dream logic story.\n\nThe juxtaposition of a **purple elephant** (a classic symbol of impossibility), **quantum waffles** (blending physics with breakfast), and **Shakespeare recited backwards** creates a vivid sense of chaos and creativity.\n\nWould you like to continue this story, turn it into a poem, or perhaps explore what happens next in this quantum kitchen? 🐘🧇⚛️🎭📜🔙🔝🎬🎤🎶🎨🎪🎭🎬🎤🎶🎨🎪🎭🎬🎤🎶🎨🎪🎭🎬🎤🎶🎨🎪🎭🎬🎤🎶🎨🎪🎭🎬🎤🎶🎨🎪🎭🎬🎤🎶🎨🎪🎭🎬�",
+  "trace_file": null,
+  "timestamp": 1775114384.5716166,
+  "tier_layers_seen": 40,
+  "prompt_text": "The purple elephant danced on the quantum waffle while reciting Shakespeare backwards.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 161,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 38,
+      "total_tokens": 294,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

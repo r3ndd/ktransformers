@@ -1,0 +1,56 @@
+{
+  "prompt_id": "reasoning_002",
+  "category": "reasoning",
+  "experiment": "decode_two_timescale_softmax_38864957",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 64.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_reasoning_002_decode_two_timescale_softmax_38864957_3667fe61",
+  "seed": 42,
+  "elapsed_seconds": 46.82095251395367,
+  "prompt_tokens": 86,
+  "completion_tokens": 256,
+  "total_tokens": 342,
+  "finish_reason": "length",
+  "generated_text": "Based on the constraints provided, we can determine the seating order by logical deduction. Let's denote the positions as:\n**1 (Left End)** | **2** | **3** | **4 (Right End)**\n\n### Step-by-Step Reasoning\n\n#### 1. Analyzing Alice's Position\nFirst constraint states that **Alice is not at either end**.\nThis means Alice cannot be in position 1 or position 4.\nTherefore, Alice must be in position 2 or position 3.\n\n#### 2. Analyzing Bob and Carol's Position\nSecond constraint says that **Bob is to the left of Carol**.\nThis implies Bob must be in a position before Carol.\nIf Bob is in position 1, Carol can be in position 2, 3, or 4.\nIf Bob is in position 2, Carol can be in position 3 or 4.\nIf Bob is in position 3, Carol can be in position 4.\nIf Bob is in position 4, Carol cannot be in any position after him.\n\n\n\n#### 3. Analyzing Dave's Position\nThird constraint says that **Dave is not next to Alice**.\nThis means Dave cannot be adjacent to Alice",
+  "trace_file": null,
+  "timestamp": 1775100738.125705,
+  "tier_layers_seen": 40,
+  "prompt_text": "Four people (Alice, Bob, Carol, Dave) are sitting in a row. We know:\n1. Alice is not at either end\n2. Bob is to the left of Carol\n3. Dave is not next to Alice\n\nDetermine their seating order from left to right, explaining your reasoning.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 86,
+      "total_tokens": 342,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

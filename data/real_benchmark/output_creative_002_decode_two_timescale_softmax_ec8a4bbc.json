@@ -1,0 +1,56 @@
+{
+  "prompt_id": "creative_002",
+  "category": "creative",
+  "experiment": "decode_two_timescale_softmax_ec8a4bbc",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 256.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_creative_002_decode_two_timescale_softmax_ec8a4bbc_93f05e22",
+  "seed": 42,
+  "elapsed_seconds": 47.07346416497603,
+  "prompt_tokens": 54,
+  "completion_tokens": 256,
+  "total_tokens": 310,
+  "finish_reason": "length",
+  "generated_text": "Blue screen glow in night,\nCursor cursor cursor,\nOne bug found, one gone.\n\nHaiku is a traditional Japanese poetic form consisting of three lines that typically contain 5-7-5 syllables (or sometimes just the number of words). It was originally used to describe nature and life, but now it can be used to describe anything. I chose those particular images because they represent the common experience of debugging code at 3 AM. The blue screen glow in night represents the common experience of debugging code at 3 AM. The cursor cursor cursor represents the common experience of debugging code at 3 AM. One bug found, one gone represents the common experience of debugging code at 3 AM.\n\nHaiku is a traditional Japanese poetic form consisting of three lines that typically contain 5-7-5 syllables (or sometimes just the number of words). It was originally used to describe nature and life, but now it can be used to describe anything. I chose those particular images because they represent the common experience of debugging code at 3 AM. The blue screen glow in night represents the common experience of debugging code at 3 AM. The cursor cursor cursor represents the common experience of debugging code at 3 AM. One bug found, one gone represents",
+  "trace_file": null,
+  "timestamp": 1775104490.7882402,
+  "tier_layers_seen": 40,
+  "prompt_text": "Write a haiku about debugging code at 3 AM. Then write a brief explanation of what a haiku is and why you chose those particular images.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 54,
+      "total_tokens": 310,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

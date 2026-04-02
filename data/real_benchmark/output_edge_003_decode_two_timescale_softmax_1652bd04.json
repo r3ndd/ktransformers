@@ -1,0 +1,56 @@
+{
+  "prompt_id": "edge_003",
+  "category": "edge_case",
+  "experiment": "decode_two_timescale_softmax_1652bd04",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 1.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_edge_003_decode_two_timescale_softmax_1652bd04_808703be",
+  "seed": 42,
+  "elapsed_seconds": 32.04197313194163,
+  "prompt_tokens": 38,
+  "completion_tokens": 174,
+  "total_tokens": 212,
+  "finish_reason": "stop",
+  "generated_text": "That is a delightfully surreal image! I can imagine the scene:\n\n**Purple Elephant:**\n*   *Dance:* (Bouncing on a quantum waffle, defying gravity)\n*   **Reciting Shakespeare backwards:**\n    \"To be or not to be\" -> \"To be or not to be\" (Wait, that's actually forward!)\n    Let's try harder:\n    \"O Romeo, O Romeo!\" -> \"O Romeo, O Romeo!\"\n    \"What is this?\" -> \"This is what.\"\n    \"The world is a stage.\" -> \"A stage is the world.\"\n\nIt seems the quantum waffle was quite unstable for such a performance. The elephant must have been very careful to keep its balance while reciting the Bard in reverse!\n\nWould you like to hear the next verse?",
+  "trace_file": null,
+  "timestamp": 1775114822.5139258,
+  "tier_layers_seen": 40,
+  "prompt_text": "The purple elephant danced on the quantum waffle while reciting Shakespeare backwards.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 177,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 38,
+      "total_tokens": 212,
+      "completion_tokens": 174,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "stop"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "prompt_id": "edge_001",
+  "category": "edge_case",
+  "experiment": "decode_two_timescale_softmax_38864957",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 64.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_edge_001_decode_two_timescale_softmax_38864957_b55f1988",
+  "seed": 42,
+  "elapsed_seconds": 46.95842600101605,
+  "prompt_tokens": 28,
+  "completion_tokens": 256,
+  "total_tokens": 284,
+  "finish_reason": "length",
+  "generated_text": "I'd love to tell you about it! But I need a little more context. �\n\n Could you clarify what \"it\" refers? Are you talking about:\n\n- A specific topic (e.g., technology, news, history)\n- A person or event (e.g., a famous figure, recent project)\n- An object concept (e.g., a gadget, a book)\n- A general idea (e.g., a philosophy, a theory)\n- Something else (e.g., a situation, a problem)\n\n Let me know so I can give a detailed answer! �️! If you want to share a story, let me know the details! �️! If you want to share a story, let me know the details! �️! If you want to share a story, let me know the details! �️! If you want to share a story, let me know the details! �️! If you want to share a story, let me know the details! �️! If you want to share a story, let me know the details! �️! If you want to share a story, let me know the details! �️! If you want to share a story, let me know the details",
+  "trace_file": null,
+  "timestamp": 1775113177.1465008,
+  "tier_layers_seen": 40,
+  "prompt_text": "Tell me about it.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 28,
+      "total_tokens": 284,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

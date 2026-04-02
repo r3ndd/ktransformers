@@ -1,0 +1,55 @@
+{
+  "prompt_id": "coding_001",
+  "category": "coding",
+  "experiment": "decode_ema_score_averaging_7807f730",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "ema_score_averaging",
+      "params": {
+        "ema_beta": 0.05
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_coding_001_decode_ema_score_averaging_7807f730_ce285f30",
+  "seed": 42,
+  "elapsed_seconds": 44.22189734596759,
+  "prompt_tokens": 52,
+  "completion_tokens": 256,
+  "total_tokens": 308,
+  "finish_reason": "length",
+  "generated_text": "Here’s’s is a approach and the implementation.\n\n**Appro**:\nThe problem is to find the longest palpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpalpal",
+  "trace_file": null,
+  "timestamp": 1775095269.4911437,
+  "tier_layers_seen": 40,
+  "prompt_text": "Write a Python function to find the longest palindromic substring in a given string. Include a brief explanation of your approach and time complexity.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 52,
+      "total_tokens": 308,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

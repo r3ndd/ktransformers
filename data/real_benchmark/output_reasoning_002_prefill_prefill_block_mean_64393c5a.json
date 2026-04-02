@@ -1,0 +1,55 @@
+{
+  "prompt_id": "reasoning_002",
+  "category": "reasoning",
+  "experiment": "prefill_prefill_block_mean_64393c5a",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 128
+      }
+    },
+    "decode": {
+      "scheme": "sliding_window_score_averaging",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_reasoning_002_prefill_prefill_block_mean_64393c5a_27e8e77d",
+  "seed": 42,
+  "elapsed_seconds": 43.34540111897513,
+  "prompt_tokens": 86,
+  "completion_tokens": 256,
+  "total_tokens": 342,
+  "finish_reason": "length",
+  "generated_text": "assistant\n<think>\n\n</think>\n\nBased on the clues provided, here is the step-by-step logical deduction to determine the seating order:\n\n### Step 1: Analyze Clue 1 (Alice's Position)\n*   **Clue:** \"Alice is not at either end.\"\n*   **Deduction:** In a row of four seats (positions 1, 2, 3, 4), the ends are 1 and 4. Therefore, Alice must be in position **2** or **3**.\n\n### Step 2: Analyze Clue 3 (Dave and Alice)\n*   **Clue:** \"Dave is not next to Alice.\"\n*   **Scenario A:** If Alice is in position **2**:\n    *   The neighbors are positions 1 and 3.\n    *   Dave cannot be in 1 or 3.\n    *   This leaves only position 4 for Dave.\n    *   Current arrangement: [?, Alice, ?, Dave]\n*   **Scenario B:** If Alice is in position **3**:\n    *   The neighbors are positions 2 and 4.\n    *   Dave cannot be in 2 or 4.\n",
+  "trace_file": null,
+  "timestamp": 1775101011.3496652,
+  "tier_layers_seen": 40,
+  "prompt_text": "Four people (Alice, Bob, Carol, Dave) are sitting in a row. We know:\n1. Alice is not at either end\n2. Bob is to the left of Carol\n3. Dave is not next to Alice\n\nDetermine their seating order from left to right, explaining your reasoning.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 259,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 86,
+      "total_tokens": 342,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

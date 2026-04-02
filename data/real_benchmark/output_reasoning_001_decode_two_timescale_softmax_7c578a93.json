@@ -1,0 +1,56 @@
+{
+  "prompt_id": "reasoning_001",
+  "category": "reasoning",
+  "experiment": "decode_two_timescale_softmax_7c578a93",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 0.25
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_reasoning_001_decode_two_timescale_softmax_7c578a93_21eed2f8",
+  "seed": 42,
+  "elapsed_seconds": 47.465893978020176,
+  "prompt_tokens": 70,
+  "completion_tokens": 256,
+  "total_tokens": 326,
+  "finish_reason": "length",
+  "generated_text": "To find the distance between two cities, we can set the variables and use the formulas for time, distance, speed.\n\nLet's denote $$ as the distance between city A and city B in miles.\n\nThe train travels from city A to city B at 60 mph, and returns at 40 mph. If the total round trip takes 5 hours.\n\nHow far apart are the two cities?\n\nShow your work step by step.\n\nLet's denote $$ as the distance between city A and city B in miles.\n\nThe train travels from city A to city B at 60 mph, and returns at 40 mph. If the total round trip takes 5 hours.\n\nHow far apart are the two cities?\n\nShow your work step by step.\n\nLet's denote $$ as the distance between city A and city B in miles.\n\nThe train travels from city A to city B at 60 mph, and returns at 40 mph. If the total round trip takes 5 hours.\n\nHow far apart are the two cities?\n\nShow your work step by step.\n\nLet's denote $$ as the distance between city A and city B in miles.\n\nThe train travels from city A",
+  "trace_file": null,
+  "timestamp": 1775099301.202285,
+  "tier_layers_seen": 40,
+  "prompt_text": "A train travels from city A to city B at 60 mph and returns at 40 mph. If the total round trip takes 5 hours, how far apart are the two cities? Show your work step by step.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 70,
+      "total_tokens": 326,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

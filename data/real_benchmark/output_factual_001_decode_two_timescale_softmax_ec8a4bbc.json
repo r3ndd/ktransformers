@@ -1,0 +1,56 @@
+{
+  "prompt_id": "factual_001",
+  "category": "factual",
+  "experiment": "decode_two_timescale_softmax_ec8a4bbc",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 256.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_factual_001_decode_two_timescale_softmax_ec8a4bbc_f86e87c3",
+  "seed": 42,
+  "elapsed_seconds": 48.980460508028045,
+  "prompt_tokens": 55,
+  "completion_tokens": 256,
+  "total_tokens": 311,
+  "finish_reason": "length",
+  "generated_text": "Python’s memory management relies on a combination of **reference counting** and **generational garbage collection**. This approach balances deterministic immediate cleanup with periodic handling of complex cycles.\n\n### 1. Reference Counting (Immediate Cleanup)\n- Every object has a reference count (`refcount`) that tracks how many references to it exist.\n- When `refcount` reaches 0, the object is freed immediately by the interpreter (C C implementation).\n- Python objects are allocated in heap memory; they are tracked via reference counts.\n- The interpreter uses a C C implementation for reference counting: `refcount` increments when an object is created or referenced; decrements when an object is deleted or dereference.\n- The interpreter uses a C C implementation for reference counting: `refcount` increments when an object is created or referenced; decrements when an object is deleted or dereference.\n- The interpreter uses a C C implementation for reference counting: `refcount` increments when an object is created or referenced; decrements when an object is deleted or dereference.\n- The interpreter uses a C C implementation for reference counting: `refcount` increments when an object is created or referenced; decrements when an object is deleted or dereference.\n",
+  "trace_file": null,
+  "timestamp": 1775105739.201363,
+  "tier_layers_seen": 40,
+  "prompt_text": "Explain how garbage collection works in Python. Include a discussion of reference counting, the generational garbage collector, and when memory might not be freed as expected.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 55,
+      "total_tokens": 311,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

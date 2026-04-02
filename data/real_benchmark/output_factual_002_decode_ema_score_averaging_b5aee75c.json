@@ -1,0 +1,55 @@
+{
+  "prompt_id": "factual_002",
+  "category": "factual",
+  "experiment": "decode_ema_score_averaging_b5aee75c",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "ema_score_averaging",
+      "params": {
+        "ema_beta": 0.3
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_factual_002_decode_ema_score_averaging_b5aee75c_ce143367",
+  "seed": 42,
+  "elapsed_seconds": 44.584937090054154,
+  "prompt_tokens": 54,
+  "completion_tokens": 256,
+  "total_tokens": 310,
+  "finish_reason": "length",
+  "generated_text": "The shift of dominance from Recurrent Neural Networks (RNNs) to Transformer architectures in Natural Language Processing (NLP) is a pivotal moment in deep learning history. This transition was driven by the fundamental architectural differences, which directly addressed the bott limitations of RNNs.\n\n\n\n### **Core Architect Differences**\n\n| Feature | Recurrent Neural Networks (RNNs) | Transformer Architecture |\n| :--- | :--- | :--- |\n| **Processing Mechan** | Sequential processing (processes tokens one token at time). | Parallel processing (processes all tokens simultaneously). |\n| **Context Dependency** | Limited context (vanishing gradient problem for long sequences). | Global context (self-attention mechanism captures all dependencies). |\n| **Parallelization** | Low (cannot parallelize due sequential dependency). | High (can fully parallelize due independent attention). |\n| **Memory Complexity** | Linear $O(n) per sequence length. | Quadrish $O(n^2) per sequence length (due self-attention). |\n\n### **Key Advantages of Transformers Leading Dominance**\n\nTransformers' dominance stems not from a single feature but from a combination of architectural innovations that solve the core problems of RNNs:\n\n\n\n",
+  "trace_file": null,
+  "timestamp": 1775106444.5458753,
+  "tier_layers_seen": 40,
+  "prompt_text": "Compare and contrast the transformer architecture with recurrent neural networks (RNNs). What are the key advantages of transformers that led to their dominance in NLP?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 54,
+      "total_tokens": 310,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

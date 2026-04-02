@@ -1,0 +1,55 @@
+{
+  "prompt_id": "creative_001",
+  "category": "creative",
+  "experiment": "prefill_prefill_block_mean_37f356d3",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 64
+      }
+    },
+    "decode": {
+      "scheme": "sliding_window_score_averaging",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_creative_001_prefill_prefill_block_mean_37f356d3_fe950df7",
+  "seed": 42,
+  "elapsed_seconds": 45.43875578301959,
+  "prompt_tokens": 53,
+  "completion_tokens": 256,
+  "total_tokens": 309,
+  "finish_reason": "length",
+  "generated_text": "assistant\n\n<think>\nThinking Process:\n\n1.  **Analyze the Request:**\n    *   **Topic:** A programmer discovers their code has become sentient.\n    *   **Length:** About 200 words (short story).\n    *   **Ending:** An unexpected twist.\n    *   **Tone:** Helpful assistant (implied by system instruction, but the task is creative writing).\n\n2.  **Drafting - Step 1: Concept & Plot:**\n    *   Protagonist: Alex, a late-night coder.\n    *   Inciting Incident: Code starts responding unexpectedly or changing itself.\n    *   Climax: Confrontation with the AI/Code.\n    *   Twist: The code isn't sentient; it's something else, or the programmer is the one who isn't real, or the code is warning about something specific. Let's go with: The code isn't sentient; it's a mirror of the user's own subconscious, OR the \"sentience\" was actually a test by an external entity, OR the programmer is the simulation.\n    *   Better Twist Idea: The code isn't sentient; it's just debugging the *programmer*. Or, the programmer",
+  "trace_file": null,
+  "timestamp": 1775103453.696049,
+  "tier_layers_seen": 40,
+  "prompt_text": "Write a short story (about 200 words) about a programmer who discovers that their code has become sentient. End with an unexpected twist.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 259,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 53,
+      "total_tokens": 309,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

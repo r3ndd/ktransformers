@@ -1,0 +1,56 @@
+{
+  "prompt_id": "reasoning_002",
+  "category": "reasoning",
+  "experiment": "decode_two_timescale_softmax_f375d90f",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 16.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_reasoning_002_decode_two_timescale_softmax_f375d90f_b3bf5516",
+  "seed": 42,
+  "elapsed_seconds": 46.19253006996587,
+  "prompt_tokens": 86,
+  "completion_tokens": 256,
+  "total_tokens": 342,
+  "finish_reason": "length",
+  "generated_text": "Based on the clues provided, we can determine the seating order by following logical deduction step-by-step.\n\n### Step-by-Step Reasoning:\n\n1. **Analyze Alice's Position (Constraint 1):**\n   The rule states that \"Alice is not at either end.\"\n   In a row of four seats (positions 1, 2, 3, 4), the ends are positions 1 and 4.\n   Therefore, **Alice must be in position 2 or position 3.**\n\n2. **Analyze Bob and Carol's Position (Constraint 2):**\n   The rule states that \"Bob is to the left of Carol.\"\n   This means Bob cannot be immediately to the right of Carol, nor can Bob be at the far right if Carol is at the far left.\n   We need to find a pair where Bob is left of Carol.\n\n3. **Analyze Dave's Position (Constraint 3):**\n   The rule states that \"Dave is not next to Alice.\"\n   Since Alice is in position 2 or 3, Dave cannot be adjacent to those positions.\n\n4. **Combine Constraints to Find the Solution:**\n   Let us try to place Alice first.\n   If Alice",
+  "trace_file": null,
+  "timestamp": 1775100691.2864997,
+  "tier_layers_seen": 40,
+  "prompt_text": "Four people (Alice, Bob, Carol, Dave) are sitting in a row. We know:\n1. Alice is not at either end\n2. Bob is to the left of Carol\n3. Dave is not next to Alice\n\nDetermine their seating order from left to right, explaining your reasoning.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 86,
+      "total_tokens": 342,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

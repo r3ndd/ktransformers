@@ -1,0 +1,55 @@
+{
+  "prompt_id": "mixed_002",
+  "category": "mixed",
+  "experiment": "decode_ema_score_averaging_b5aee75c",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "ema_score_averaging",
+      "params": {
+        "ema_beta": 0.3
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_mixed_002_decode_ema_score_averaging_b5aee75c_e98702da",
+  "seed": 42,
+  "elapsed_seconds": 46.04883619397879,
+  "prompt_tokens": 96,
+  "completion_tokens": 256,
+  "total_tokens": 352,
+  "finish_reason": "length",
+  "generated_text": "```python\n# Import necessary libraries for data manipulation and plotting (optional)\nimport pandas as pd\nimport matplotlib.pyplot as plt\n\n# Optional: only needed if you want to generate a simple plot, \n# can be removed if you just need the text report.\n\n# Uncomment if you want to save the plot to a file:\n# import os\n\ndef analyze_sales_data(csv_file_path):\n\"\"\"\n    Analyalyze sales data from a CSV file containing columns: date, product_id, quantity, price.\n    1. Loads the data\n    2. Calculates total revenue per product\n    3. Finds the top 5 best-selling products\n    4. Generates a simple monthly sales report\n\"\"\"\n    \n    # Step 1: Load the data\n    # Read the CSV file into a DataFrame\n    # 'date' column is expected in format like 'YYYY-MM-DD' or 'YYYY/MM/DD'\n    # If you have different formats, you can specify 'parse_dates' parameter here\n    df = pd.read_csv(csv_file_path)\n    \n    # Ensure that 'date' column is datetime type for easier grouping by month\n    # This will handle errors if the parsing fails, setting them to Na",
+  "trace_file": null,
+  "timestamp": 1775111424.1928487,
+  "tier_layers_seen": 40,
+  "prompt_text": "I need to analyze a CSV file containing sales data. The file has columns: date, product_id, quantity, price.\n\nWrite a Python script that:\n1. Loads the data\n2. Calculates total revenue per product\n3. Finds the top 5 best-selling products\n4. Generates a simple monthly sales report\n\nInclude comments explaining each section.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 96,
+      "total_tokens": 352,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

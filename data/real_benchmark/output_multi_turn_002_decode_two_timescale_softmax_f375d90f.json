@@ -1,0 +1,56 @@
+{
+  "prompt_id": "multi_turn_002",
+  "category": "multi_turn",
+  "experiment": "decode_two_timescale_softmax_f375d90f",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 16.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_multi_turn_002_decode_two_timescale_softmax_f375d90f_2cd31b31",
+  "seed": 42,
+  "elapsed_seconds": 47.86943218507804,
+  "prompt_tokens": 70,
+  "completion_tokens": 256,
+  "total_tokens": 326,
+  "finish_reason": "length",
+  "generated_text": "Here are several optimization strategies you can consider beyond indexes on foreign keys:\n\n1. **Review the query structure**\n   - Ensure the join order is logical (e.g., `users → orders → products`) and that you’re not pulling unnecessary columns or rows.\n   - If possible, rewrite the query to use a sub‑query or CTE instead of repeating joins.\n\n2. **Check execution plan**\n   - Run `EXPLAIN`/`EXPLAN` in your database to see the actual execution plan.\n   - Look for missing indexes, table scans, or large row counts.\n\n3. **Filter & Reduce**\n   - Add filters early (e.g., date ranges, status flags) to reduce the number of rows before joining.\n   - Use `WHERE` clauses that push down early filtering.\n\n4. **Materialized views**\n   - If the query pattern repeats often, create a materialized view that pre-aggregates or pre-joins data.\n\n5. **Partitioning**\n   - If tables are huge, partition them by time/date/status so that queries only scan relevant partitions.\n\n6. **Denormalization**\n   - If you have many repeated joins, denormal",
+  "trace_file": null,
+  "timestamp": 1775109397.1334584,
+  "tier_layers_seen": 40,
+  "prompt_text": "I'm trying to optimize a SQL query but it's still running slowly. The query joins three tables: users, orders, and products. I've already added indexes on the foreign keys.\n\nWhat other optimization strategies should I consider?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 70,
+      "total_tokens": 326,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

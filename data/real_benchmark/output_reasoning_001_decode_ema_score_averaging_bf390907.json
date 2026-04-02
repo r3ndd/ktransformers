@@ -1,0 +1,55 @@
+{
+  "prompt_id": "reasoning_001",
+  "category": "reasoning",
+  "experiment": "decode_ema_score_averaging_bf390907",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "ema_score_averaging",
+      "params": {
+        "ema_beta": 0.9
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_reasoning_001_decode_ema_score_averaging_bf390907_7f7dff52",
+  "seed": 42,
+  "elapsed_seconds": 45.835586956935,
+  "prompt_tokens": 70,
+  "completion_tokens": 256,
+  "total_tokens": 326,
+  "finish_reason": "length",
+  "generated_text": "To find the distance between the two cities, we can use the relationship between **distance**, **rate (speed)**, and **time**:\n\n$$ \\text{Distance} = \\text{Rate} \\times \\text{Time} $$\n\n### Step 1: Define Variables\nLet $d$ be the one-way distance between City A and City B (in miles).\n*   Distance from A to B: $d$\n*   Distance from B to A: $d$\n\nWe are given:\n*   Speed from A to B ($v_1$) = $60$ mph\n*   Speed from B to A ($v_2$) = $40$ mph\n*   Total time for the round trip ($T_{total}$) = $5$ hours\n\n### Step 2: Express Time in Terms of Distance\nSince $\\text{Time} = \\frac{\\text{Distance}}{\\text{Rate}}$, we can write the time taken for each leg of the trip:\n\n1.  **Time to go from A to B ($t_1$):**\n    $$ t_1 = \\frac{d}{60} $$\n\n2.  **Time to return from B to",
+  "trace_file": null,
+  "timestamp": 1775098840.2916477,
+  "tier_layers_seen": 40,
+  "prompt_text": "A train travels from city A to city B at 60 mph and returns at 40 mph. If the total round trip takes 5 hours, how far apart are the two cities? Show your work step by step.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 70,
+      "total_tokens": 326,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

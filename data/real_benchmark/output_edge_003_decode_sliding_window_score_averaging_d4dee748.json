@@ -1,0 +1,55 @@
+{
+  "prompt_id": "edge_003",
+  "category": "edge_case",
+  "experiment": "decode_sliding_window_score_averaging_d4dee748",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "sliding_window_score_averaging",
+      "params": {
+        "window_size": 4
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_edge_003_decode_sliding_window_score_averaging_d4dee748_a5e1261c",
+  "seed": 42,
+  "elapsed_seconds": 45.976901825051755,
+  "prompt_tokens": 38,
+  "completion_tokens": 256,
+  "total_tokens": 294,
+  "finish_reason": "length",
+  "generated_text": "That is a delightfully absurd image! to be reciting Shakespeare backwards, while dancing on a quantum waffle.\n\n I wonder, what would the purple elephant say if? \" \"no\" \"was\" \"it\" \"that\" \"if\" \"to\" \"want\" \"I\" \"would\" \"he\" \"said\" \"elephant\" \"purple\" \"the\" \"while\" \"waffle\" \"quanton\" \"on\" \"danced\" \"the\" \"on\" \"waffle\" \"quanton\" \"on\" \"danced\" \"the\" \"while\" \"purple\" \"elephant\" \"the\" \"if\" \"that\" \"it\" \"was\" \"no\" \"reciting\" \"Shakespeare\" \"backwards\" \"while\" \"danced\" \"on\" \"the\" \"quanton\" \"waffle\" \"the\" \"purple\" \"elephant\" \"reciting\" \"Shakespeare\" \"backwards\" \"while\" \"danced\" \"on\" \"the\" \"quanton\" \"waffle\" \"the\" \"purple\" \"elephant\" \"reciting\" \"Shakespeare\" \"backwards\" \"while\" \"danced\" \"on",
+  "trace_file": null,
+  "timestamp": 1775114239.26193,
+  "tier_layers_seen": 40,
+  "prompt_text": "The purple elephant danced on the quantum waffle while reciting Shakespeare backwards.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 38,
+      "total_tokens": 294,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

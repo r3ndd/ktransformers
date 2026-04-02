@@ -1,0 +1,55 @@
+{
+  "prompt_id": "factual_001",
+  "category": "factual",
+  "experiment": "decode_ema_score_averaging_bf390907",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "ema_score_averaging",
+      "params": {
+        "ema_beta": 0.9
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_factual_001_decode_ema_score_averaging_bf390907_ac274677",
+  "seed": 42,
+  "elapsed_seconds": 44.51233954890631,
+  "prompt_tokens": 55,
+  "completion_tokens": 256,
+  "total_tokens": 311,
+  "finish_reason": "length",
+  "generated_text": "Python’s memory management is a hybrid system that combines **reference counting** with a **generational garbage collector**. Together, they handle most allocation and deallocation automatically, but there are edge cases where memory isn’t freed as expected.\n\n---\n\n## 1. Reference Counting (Primary Mechanism)\n\n### How it works\n- Every Python object has an internal **reference count**.\n- This count tracks how many references (names, data structures, etc.) point to the object.\n- When you create an object: `x = [1, 2]` → reference count = 1.\n- When you assign it again: `y = x` → reference count becomes 2.\n- When a reference goes out of scope or is reassigned, its count is decremented.\n- **When the reference count reaches 0**, the object is immediately deallocated and its memory is returned to the allocator.\n\n### Advantages\n- Very fast: deallocation happens as soon as possible.\n- No need for a separate “stop-the-world” collection phase for most objects.\n- Simple and predictable for simple programs.\n\n### Limitations\n- **Cannot detect cycles**: If two objects refer to each other but nothing else refers",
+  "trace_file": null,
+  "timestamp": 1775105039.8157601,
+  "tier_layers_seen": 40,
+  "prompt_text": "Explain how garbage collection works in Python. Include a discussion of reference counting, the generational garbage collector, and when memory might not be freed as expected.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 55,
+      "total_tokens": 311,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

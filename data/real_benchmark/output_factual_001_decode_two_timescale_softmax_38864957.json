@@ -1,0 +1,56 @@
+{
+  "prompt_id": "factual_001",
+  "category": "factual",
+  "experiment": "decode_two_timescale_softmax_38864957",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 64.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_factual_001_decode_two_timescale_softmax_38864957_7fdcb3c4",
+  "seed": 42,
+  "elapsed_seconds": 47.477428098907694,
+  "prompt_tokens": 55,
+  "completion_tokens": 256,
+  "total_tokens": 311,
+  "finish_reason": "length",
+  "generated_text": "Python’s memory management relies on a combination of **reference counting** and the **generational garbage collector**. This approach balances deterministic, fast reference counting for most objects, with a more flexible generational collector for handling complex cases.\n\n### Reference Counting\nReference counting is the primary mechanism in Python. It counts how many references to an object exist. When the count reaches zero, object gets freed immediately.\n\nThis is efficient for simple objects like integers, strings, lists, dicts. But it also has a problem: **cyclic references**. If two objects have each other, they can never be freed even if no external references exist.\n\n### Generational Garbage Collector\nThe Python garbage collector handles cyclic references. It uses a generational approach. The objects are divided into generations. Younger generation contains short-lived objects. Older generation contains long-lived objects.\n\nThe collector runs periodically. It scans older generations. It finds unreachable objects. It frees them.\n\n### Memory Not Freed as Expected\nMemory might not be freed as expected when there are **cyclic references**. If two objects have each other, they can never be freed even if no external references exist.\n\nAlso, if there are **external references**. If an object has external references, it can never be",
+  "trace_file": null,
+  "timestamp": 1775105690.1988354,
+  "tier_layers_seen": 40,
+  "prompt_text": "Explain how garbage collection works in Python. Include a discussion of reference counting, the generational garbage collector, and when memory might not be freed as expected.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 55,
+      "total_tokens": 311,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

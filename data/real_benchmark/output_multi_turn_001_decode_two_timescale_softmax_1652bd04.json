@@ -1,0 +1,56 @@
+{
+  "prompt_id": "multi_turn_001",
+  "category": "multi_turn",
+  "experiment": "decode_two_timescale_softmax_1652bd04",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 1.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_multi_turn_001_decode_two_timescale_softmax_1652bd04_3a724975",
+  "seed": 42,
+  "elapsed_seconds": 48.47883708192967,
+  "prompt_tokens": 66,
+  "completion_tokens": 256,
+  "total_tokens": 322,
+  "finish_reason": "length",
+  "generated_text": "An **LRU (Least Recently Used) cache** is data structure that stores a fixed number of items and removes the least recently used item when new items are added.\n\n### What it is\n- It keeps a limited number of entries (capacity).\n- When you access an item, it becomes ““recently used””.\n- When the capacity is full and a new item arrives:\n  - The *least* recently used entry is removed.\n- This ensures that the most frequently accessed items stay in the cache.\n\n### Why it’s useful\n- **Speed**: Accessing cached items is O(1) instead of recomputing or fetching from a slow source.\n- **Memory**: Keeps only the recent items, not all history.\n- **Common use cases**:\n  - Web caches (HTTP responses, API results)\n  - Database query results\n  - File system caches\n  - UI rendering caches\n  - Any where you want to keep a small set of “hot” data.\n\n### Example usage\n```python\n# Suppose we have a function that takes 5 seconds to compute a result\ndef expensive_compute(key):\n    ...\n\n# We want to cache the results for up to 1",
+  "trace_file": null,
+  "timestamp": 1775108059.3806112,
+  "tier_layers_seen": 40,
+  "prompt_text": "Let's work through a coding problem together. I need to implement a LRU (Least Recently Used) cache in Python.\n\nFirst, can you explain what an LRU cache is and when it's useful?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 66,
+      "total_tokens": 322,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

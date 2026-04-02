@@ -1,0 +1,55 @@
+{
+  "prompt_id": "multi_turn_001",
+  "category": "multi_turn",
+  "experiment": "decode_ema_score_averaging_bf390907",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "ema_score_averaging",
+      "params": {
+        "ema_beta": 0.9
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_multi_turn_001_decode_ema_score_averaging_bf390907_b5d50b79",
+  "seed": 42,
+  "elapsed_seconds": 44.17234641010873,
+  "prompt_tokens": 66,
+  "completion_tokens": 256,
+  "total_tokens": 322,
+  "finish_reason": "length",
+  "generated_text": "An **LRU (Least Recently Used) cache** is a data structure that stores a fixed number of items and automatically removes the least recently accessed item when the cache reaches its capacity. It’s based on the principle that items used most recently are likely to be used again soon, while those not accessed for a long time are less likely to be needed.\n\n### How it works:\n- When you **get** an item from the cache, it becomes the \"most recently used.\"\n- When you **put** a new item into the cache:\n  - If the key already exists, update its value and mark it as recently used.\n  - If the key doesn’t exist and the cache is full, remove the least recently used item before inserting the new one.\n\n### Common operations:\n- `get(key)`: Return the value if present, else return `-1` (or `None`). Mark the key as recently used.\n- `put(key, value)`: Insert or update the key-value pair. Evict the LRU item if at capacity.\n\n### When is it useful?\nLRU caches are ideal in scenarios where:\n- You need fast access to frequently used data.\n- Memory or storage is limited,",
+  "trace_file": null,
+  "timestamp": 1775107549.3458073,
+  "tier_layers_seen": 40,
+  "prompt_text": "Let's work through a coding problem together. I need to implement a LRU (Least Recently Used) cache in Python.\n\nFirst, can you explain what an LRU cache is and when it's useful?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 66,
+      "total_tokens": 322,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

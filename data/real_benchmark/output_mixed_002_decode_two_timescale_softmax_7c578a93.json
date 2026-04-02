@@ -1,0 +1,56 @@
+{
+  "prompt_id": "mixed_002",
+  "category": "mixed",
+  "experiment": "decode_two_timescale_softmax_7c578a93",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 0.25
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_mixed_002_decode_two_timescale_softmax_7c578a93_b97ce6b1",
+  "seed": 42,
+  "elapsed_seconds": 47.72257467196323,
+  "prompt_tokens": 96,
+  "completion_tokens": 256,
+  "total_tokens": 352,
+  "finish_reason": "length",
+  "generated_text": "```python\nimport pandas as pd\n\n# Step 1: Load the data\n# We assume that the file is named 'sales_data.csv' and located in the same directory.\n# If you can change the path, you can use the full path or relative path.\n# The code below will read the CSV file into a DataFrame.\n# The columns are expected: date, product_id, quantity, price.\n# If you can change the column names, you can use the full path or relative path.\n# The code below will read the CSV file into a DataFrame.\n# The columns are expected: date, product_id, quantity, price.\n# If you can change the column names, you can use the full path or relative path.\n# The code below will read the CSV file into a DataFrame.\n# The columns are expected: date, product_id, quantity, price.\n# If you can change the column names, you can use the full path or relative path.\n# The code below will read the CSV file into a DataFrame.\n# The columns are expected: date, product_id, quantity, price.\n# If you can change the column names, you can use the full path or relative path.",
+  "trace_file": null,
+  "timestamp": 1775111749.7627804,
+  "tier_layers_seen": 40,
+  "prompt_text": "I need to analyze a CSV file containing sales data. The file has columns: date, product_id, quantity, price.\n\nWrite a Python script that:\n1. Loads the data\n2. Calculates total revenue per product\n3. Finds the top 5 best-selling products\n4. Generates a simple monthly sales report\n\nInclude comments explaining each section.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 96,
+      "total_tokens": 352,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

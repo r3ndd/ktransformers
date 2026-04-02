@@ -1,0 +1,55 @@
+{
+  "prompt_id": "coding_002",
+  "category": "coding",
+  "experiment": "decode_two_timescale_ema_82f7dbee",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_ema",
+      "params": {
+        "mix_lambda": 0.1
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_coding_002_decode_two_timescale_ema_82f7dbee_76387c4f",
+  "seed": 42,
+  "elapsed_seconds": 49.12083358201198,
+  "prompt_tokens": 145,
+  "completion_tokens": 256,
+  "total_tokens": 401,
+  "finish_reason": "length",
+  "generated_text": "Your code is logic correct. function ` flatten` works:\n\n actually, it does correctly for given test case.\n\n output:\n\n `[1, 2, 3, 4, 5, 6]`.\n\n \n\n you, no, any, error, or, bug, in, this, code.\n\n \n\n if, you, want, to, handle, with, other, edge, cases, like, tuples, or, strings, etc., then, you, can, add, check, for, those, types, too.\n\n \n\n example:\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :\n\n :",
+  "trace_file": null,
+  "timestamp": 1775096597.0649848,
+  "tier_layers_seen": 40,
+  "prompt_text": "I have this Python code that's supposed to flatten a nested list, but it's not working correctly. Can you debug it?\n\ndef flatten(nested):\n    result = []\n    for item in nested:\n        if isinstance(item, list):\n            result.extend(flatten(item))\n        else:\n            result.append(item)\n    return result\n\n# Test\nprint(flatten([1, [2, 3], [[4, 5], 6]]))  # Expected: [1, 2, 3, 4, 5, 6]",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 145,
+      "total_tokens": 401,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

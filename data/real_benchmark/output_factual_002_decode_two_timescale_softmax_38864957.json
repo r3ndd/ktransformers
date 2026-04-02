@@ -1,0 +1,56 @@
+{
+  "prompt_id": "factual_002",
+  "category": "factual",
+  "experiment": "decode_two_timescale_softmax_38864957",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 64.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_factual_002_decode_two_timescale_softmax_38864957_c3ef05d5",
+  "seed": 42,
+  "elapsed_seconds": 47.003049202030525,
+  "prompt_tokens": 54,
+  "completion_tokens": 256,
+  "total_tokens": 310,
+  "finish_reason": "length",
+  "generated_text": "The transition from dominance of Recurrent Neural Networks (RNNs) to the Transformer architecture in field of Natural Language Processing (NLP) is a significant milestone. The following comparison and contrast analysis highlights key advantages that led to Transformers' dominance.\n\n\n\n### **Comparison and Contrast**\n\n| Feature | RNNs (Recurrent Neural Networks) | Transformers (Transformer Architecture) |\n|---|---|---|\n| **Sequence Modeling** | Sequential processing: Each step processes input sequentially, hidden state captures previous information. | Parallel processing: All tokens processed simultaneously, attention mechanism captures global dependencies. |\n| **Context Dependency** | Limited context: Only local dependency on previous steps; long-term dependency via memory cell. | Global dependency: Attention mechanism captures all token relationships; no limitation on distance. |\n| **Computation Complexity** | High complexity: Sequential computation requires high computational cost; sequential processing. | Low complexity: Parallel computation allows high computational efficiency; parallel processing. |\n| **Training Stability** | Gradient vanishing: Long-term dependency via memory cell suffers gradient vanishing; training stability issues. | Stable training: Attention mechanism avoids gradient vanishing; training stability issues. |\n| **Parallelization** | No parallelization: Sequential processing limits",
+  "trace_file": null,
+  "timestamp": 1775106955.807106,
+  "tier_layers_seen": 40,
+  "prompt_text": "Compare and contrast the transformer architecture with recurrent neural networks (RNNs). What are the key advantages of transformers that led to their dominance in NLP?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 54,
+      "total_tokens": 310,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

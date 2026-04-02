@@ -1,0 +1,55 @@
+{
+  "prompt_id": "creative_002",
+  "category": "creative",
+  "experiment": "prefill_prefill_block_mean_64393c5a",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 128
+      }
+    },
+    "decode": {
+      "scheme": "sliding_window_score_averaging",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_creative_002_prefill_prefill_block_mean_64393c5a_ac354ddd",
+  "seed": 42,
+  "elapsed_seconds": 44.09685091604479,
+  "prompt_tokens": 54,
+  "completion_tokens": 256,
+  "total_tokens": 310,
+  "finish_reason": "length",
+  "generated_text": "assistant\n<think>\n\n</think>\n\n### Haiku: The 3 AM Debug\n\nScreen glow on tired eyes,\nRed text scrolls in endless loops,\nCoffee cold, bug found.\n\n***\n\n### Explanation\n\n**What is a Haiku?**\nA haiku is a traditional form of Japanese poetry consisting of three phrases with a **5-7-5 syllable structure**. Traditionally, haikus focus on nature and the present moment, often including a \"kireji\" (cutting word) to create a juxtaposition between two images. In modern English haiku, the strict syllable count is sometimes relaxed in favor of capturing a specific \"moment of awareness\" or a sharp contrast.\n\n**Why these images?**\nI chose these specific images to capture the unique atmosphere of late-night coding:\n\n1.  **\"Screen glow on tired eyes\"**: This establishes the setting (3 AM) and the physical toll of the work. The harsh blue light against exhaustion is a universal experience for developers working late.\n2.  **\"Red text scrolls in endless loops\"**: This represents the frustration of the problem itself. Red error messages are the visual language of failure, and \"endless loops\" serves as a double entendre—referring both to",
+  "trace_file": null,
+  "timestamp": 1775104716.1182861,
+  "tier_layers_seen": 40,
+  "prompt_text": "Write a haiku about debugging code at 3 AM. Then write a brief explanation of what a haiku is and why you chose those particular images.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 259,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 54,
+      "total_tokens": 310,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

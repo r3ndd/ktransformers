@@ -1,0 +1,55 @@
+{
+  "prompt_id": "reasoning_003",
+  "category": "reasoning",
+  "experiment": "decode_sliding_window_score_averaging_d4dee748",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "sliding_window_score_averaging",
+      "params": {
+        "window_size": 4
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_reasoning_003_decode_sliding_window_score_averaging_d4dee748_f7c08d5b",
+  "seed": 42,
+  "elapsed_seconds": 43.903491040924564,
+  "prompt_tokens": 67,
+  "completion_tokens": 256,
+  "total_tokens": 323,
+  "finish_reason": "length",
+  "generated_text": "No, this argument is **not valid**. It contains a logical fall called the **affirming the consequent** (a formal fall).\n\nThe structure of the argument is:\nIf $P$ then $Q$ ($P \\rightarrow Q$).\n$Q$.\nTherefore $P$.\n\nHere, \"P\" = \"it rains\" and \"Q\" = \"the ground gets wet.\"\n\n The premise is true: If it rains, the ground gets wet. But the conclusion is false: The ground is wet does not necessarily mean that it rained; other causes can make the ground wet (e.g., sprinkers, spilled water, etc.). This is a **affirming the consequent** fall. Because the form of the argument is invalid, the conclusion cannot be guaranteed from the premises.\n\n The fall is **affirming the consequent** (a formal fall). Because the form of the argument is invalid, the conclusion cannot be guaranteed from the premises.\n\n The fall is **affirming the consequent** (a formal fall). Because the form of the argument is invalid, the conclusion cannot be guaranteed from the premises.\n\n The fall is **affirming the consequent** (a formal fall). Because",
+  "trace_file": null,
+  "timestamp": 1775101188.0679495,
+  "tier_layers_seen": 40,
+  "prompt_text": "Analyze the following argument: 'If it rains, the ground gets wet. The ground is wet. Therefore, it rained.' Is this valid? What type of logical fallacy might be present, if any?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 67,
+      "total_tokens": 323,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

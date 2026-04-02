@@ -1,0 +1,56 @@
+{
+  "prompt_id": "factual_001",
+  "category": "factual",
+  "experiment": "decode_two_timescale_softmax_7c578a93",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 0.25
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_factual_001_decode_two_timescale_softmax_7c578a93_f8b9f840",
+  "seed": 42,
+  "elapsed_seconds": 46.68694158899598,
+  "prompt_tokens": 55,
+  "completion_tokens": 256,
+  "total_tokens": 311,
+  "finish_reason": "length",
+  "generated_text": "Python’s memory management relies on two of two mechanisms: **reference counting** and a **generational garbage collector**. The reference counting is the primary mechanism for most objects, but the generational collector handles to handle cycles.\n\nHere is how it works:\n\n### 1. Reference Counting (The Primary Mechan)\nEvery object in Python has a a internal field called `refcount`. When every object created, its ref count starts to 1. When when every object created, its ref count starts to 1. When when every object created, its ref count starts to 1. When when every object created, its ref count starts to 1. When when every object created, its ref count starts to 1. When when every object created, its ref count starts to 1. When when every object created, its ref count starts to 1. When when every object created, its ref count starts to 1. When when every object created, its ref count starts to 1. When when every object created, its ref count starts to 1. When when every object created, its ref count starts to 1. When when every object created, its ref count starts to 1. When when every object created, its ref count starts",
+  "trace_file": null,
+  "timestamp": 1775105499.3127182,
+  "tier_layers_seen": 40,
+  "prompt_text": "Explain how garbage collection works in Python. Include a discussion of reference counting, the generational garbage collector, and when memory might not be freed as expected.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 55,
+      "total_tokens": 311,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

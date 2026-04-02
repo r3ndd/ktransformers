@@ -1,0 +1,55 @@
+{
+  "prompt_id": "mixed_002",
+  "category": "mixed",
+  "experiment": "decode_sliding_window_score_averaging_d4dee748",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "sliding_window_score_averaging",
+      "params": {
+        "window_size": 4
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_mixed_002_decode_sliding_window_score_averaging_d4dee748_fb65266f",
+  "seed": 42,
+  "elapsed_seconds": 45.470172511879355,
+  "prompt_tokens": 96,
+  "completion_tokens": 256,
+  "total_tokens": 352,
+  "finish_reason": "length",
+  "generated_text": "```python\n# Import necessary libraries\nimport pandas as pd\n\n# Load the data from a CSV file\n# Replace 'sales_data.csv' with your actual file name\n# If you need to handle different paths, use os.path.join or pathlib\nfrom pathlib import Path\nfile_path = Path('sales_data.csv')\ndata_df = pd.read_csv(file_path)\n\n# Check ensure that the columns exist\n# If you need to handle missing columns, add error handling here\nassert all(col in data_df.columns for col in ['date', 'product_id', 'quantity', 'price'])\n\n# Calculate total revenue per product\n# Create new column 'revenue' by quantity * price\n# If you need to handle missing values, fill them or drop them\ndata_df['revenue'] = data_df['quantity'] * data_df['price']\n# Group by product_id and sum of revenue\n# If you need to handle empty groups, filter them\nproduct_revenue = data_df.groupby('product_id')['revenue'].sum().reset_index()\n# Rename index to product_id\nproduct_revenue.index.name = 'product_id'\n# Sort descending by revenue\n# If you need to handle ties, sort them\nproduct_re",
+  "trace_file": null,
+  "timestamp": 1775111139.327183,
+  "tier_layers_seen": 40,
+  "prompt_text": "I need to analyze a CSV file containing sales data. The file has columns: date, product_id, quantity, price.\n\nWrite a Python script that:\n1. Loads the data\n2. Calculates total revenue per product\n3. Finds the top 5 best-selling products\n4. Generates a simple monthly sales report\n\nInclude comments explaining each section.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 96,
+      "total_tokens": 352,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

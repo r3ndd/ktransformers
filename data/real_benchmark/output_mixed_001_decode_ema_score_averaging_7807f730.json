@@ -1,0 +1,55 @@
+{
+  "prompt_id": "mixed_001",
+  "category": "mixed",
+  "experiment": "decode_ema_score_averaging_7807f730",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "ema_score_averaging",
+      "params": {
+        "ema_beta": 0.05
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_mixed_001_decode_ema_score_averaging_7807f730_b3410549",
+  "seed": 42,
+  "elapsed_seconds": 45.54644976486452,
+  "prompt_tokens": 59,
+  "completion_tokens": 256,
+  "total_tokens": 315,
+  "finish_reason": "length",
+  "generated_text": "Here’s is a implementation of a binary search tree (BST) in Python with `insert, search, and delete` operations.\n\nEach each operation: explain the time complexity and walk through how the algorithm works using a small example.\n\nHere’s is a implementation of a binary search tree (BST) in Python with `insert, search, and delete` operations.\n\nEach each operation: explain the time complexity and walk through how the algorithm works using a small example.\n\nHere’s is a implementation of a binary search tree (BST) in Python with `insert, search, and delete` operations.\n\nEach each operation: explain the time complexity and walk through how the algorithm works using a small example.\n\nHere’s is a implementation of a binary search tree (BST) in Python with `insert, search, and delete` operations.\n\nEach each operation: explain the time complexity and walk through how the algorithm works using a small example.\n\nHere’s is a implementation of a binary search tree (BST) in Python with `insert, search, and delete` operations.\n\nEach each operation: explain the time complexity and walk through how the algorithm works using a small example.\n\nHere’s is a implementation of a binary search tree (BST) in Python with",
+  "trace_file": null,
+  "timestamp": 1775110265.0484765,
+  "tier_layers_seen": 40,
+  "prompt_text": "Implement a binary search tree in Python with insert, search, and delete operations. For each operation, explain the time complexity and walk through how the algorithm works using a small example.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 59,
+      "total_tokens": 315,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

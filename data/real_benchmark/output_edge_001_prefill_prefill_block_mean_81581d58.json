@@ -1,0 +1,55 @@
+{
+  "prompt_id": "edge_001",
+  "category": "edge_case",
+  "experiment": "prefill_prefill_block_mean_81581d58",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "sliding_window_score_averaging",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_edge_001_prefill_prefill_block_mean_81581d58_5efd3df8",
+  "seed": 42,
+  "elapsed_seconds": 44.24368336494081,
+  "prompt_tokens": 28,
+  "completion_tokens": 256,
+  "total_tokens": 284,
+  "finish_reason": "length",
+  "generated_text": "I'd love to help! But could you clarify **what** you'd like to know about? For example:  \n- A specific topic (e.g., space, AI, history)?  \n- Something I mentioned earlier in our conversation?  \n- A general concept or skill?  \n\nLet me know, and I'll tailor my answer! 😊🔍✨  \n\n*(If this is your first message, feel free to ask anything from \"How does photosynthesis work?\" to \"Tell me a fun fact about octopuses!\")* 🐙🌱🚀  \n\nJust say the word! 💬✨  \n*(P.S. If you meant \"Tell me about *you*,\" here's a quick intro: I'm an AI assistant designed to help with questions, creativity, problem-solving, and friendly chats!)* 🤖💡🎨📚🌍🎉🧠🌟🔮📖🎯🌈🚀🌱🌞🌙⭐🌌🌠🌺🌻🌷🌼🌹🌸🌾🌿🍃🍂�",
+  "trace_file": null,
+  "timestamp": 1775113312.593411,
+  "tier_layers_seen": 40,
+  "prompt_text": "Tell me about it.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 198,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 28,
+      "total_tokens": 284,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

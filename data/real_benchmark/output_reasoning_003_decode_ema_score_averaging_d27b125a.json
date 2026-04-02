@@ -1,0 +1,55 @@
+{
+  "prompt_id": "reasoning_003",
+  "category": "reasoning",
+  "experiment": "decode_ema_score_averaging_d27b125a",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "ema_score_averaging",
+      "params": {
+        "ema_beta": 0.1
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_reasoning_003_decode_ema_score_averaging_d27b125a_f5b18b1c",
+  "seed": 42,
+  "elapsed_seconds": 44.84110596682876,
+  "prompt_tokens": 67,
+  "completion_tokens": 256,
+  "total_tokens": 323,
+  "finish_reason": "length",
+  "generated_text": "No, this argument is **invalid**. It contains a logical fall called the **affing of the consequ** (affirming the consequ).\n\nThe form of the argument:\nIf $P$ then $Q$.\n$Q*.\nTherefore $P*.\n\nThis is a fall of the affirming the consequ. because it is the that the ground wet can be caused by other things like sprinking or a leak etc. but not necessarily rain. The conclusion is not logically follow from the premise. The fall is the affirming the consequ. because it is the that the ground wet can be caused by other things like sprinking or a leak etc. but not necessarily rain. The conclusion is not logically follow from the premise. The fall is the affirming the consequ. because it is the that the ground wet can be caused by other things like sprinking or a leak etc. but not necessarily rain. The conclusion is not logically follow from the premise. The fall is the affirming the consequ. because it is the that the ground wet can be caused by other things like sprinking or a leak etc. but not necessarily rain. The conclusion is not logically follow from the premise. The fall is the affirming the consequ. because it is the that the",
+  "trace_file": null,
+  "timestamp": 1775101512.3875496,
+  "tier_layers_seen": 40,
+  "prompt_text": "Analyze the following argument: 'If it rains, the ground gets wet. The ground is wet. Therefore, it rained.' Is this valid? What type of logical fallacy might be present, if any?",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 67,
+      "total_tokens": 323,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}

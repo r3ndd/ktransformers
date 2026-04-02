@@ -1,0 +1,56 @@
+{
+  "prompt_id": "creative_002",
+  "category": "creative",
+  "experiment": "decode_two_timescale_softmax_cc6c43c8",
+  "moe_routing": {
+    "prefill": {
+      "scheme": "prefill_block_mean",
+      "params": {
+        "window_size": 1
+      }
+    },
+    "decode": {
+      "scheme": "two_timescale_softmax",
+      "params": {
+        "mix_lambda": 0.2,
+        "rho": 4.0
+      }
+    },
+    "scope": "request"
+  },
+  "context_id": "ctx_creative_002_decode_two_timescale_softmax_cc6c43c8_53cb60f9",
+  "seed": 42,
+  "elapsed_seconds": 47.791146392934024,
+  "prompt_tokens": 54,
+  "completion_tokens": 256,
+  "total_tokens": 310,
+  "finish_reason": "length",
+  "generated_text": "Blue light on the screen,\nCoffee cup is cold now,\nBug found at 3 AM.\n\nA haiku is a traditional Japanese poetic form consisting of three lines with a specific syllable structure: 5-7-5 (first line has five syllables, second line seven, third line five). It originated from it as a concise way to capture a moment or an image. I chose these images because they represent the universal experience of late-night coding: the glow of monitor's blue light, the physical exhaustion of cold coffee, and the sudden relief of finding the solution after hours of frustration... The rhythm of 5-7-5 creates a sense of pause and resolution, mirroring the debugging process itself. The rhythm of 5-7-5 creates a sense of pause and resolution, mirroring the debugging process itself. The rhythm of 5-7-5 creates a sense of pause and resolution, mirroring the debugging process itself. The rhythm of 5-7-5 creates a sense of pause and resolution, mirroring the debugging process itself. The rhythm of 5-7-5 creates a sense of pause and resolution, mirroring the debugging process itself. The rhythm of 5-7-5 creates a",
+  "trace_file": null,
+  "timestamp": 1775104349.9464123,
+  "tier_layers_seen": 40,
+  "prompt_text": "Write a haiku about debugging code at 3 AM. Then write a brief explanation of what a haiku is and why you chose those particular images.",
+  "sampling_params": {
+    "seed": 42,
+    "max_tokens": 256,
+    "min_tokens": 256,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "top_k": 1,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repetition_penalty": 1.0
+  },
+  "stream_meta": {
+    "chunks": 260,
+    "done_seen": true,
+    "usage": {
+      "prompt_tokens": 54,
+      "total_tokens": 310,
+      "completion_tokens": 256,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "finish_reason": "length"
+  }
+}
