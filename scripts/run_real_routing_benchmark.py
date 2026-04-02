@@ -368,6 +368,14 @@ def _normalize_tier_delta_in_row(row: dict) -> dict:
     total_uses = float(nd.get("gpu_hits", 0) + nd.get("cpu_hits", 0) + nd.get("ssd_loads", 0))
     nd["ssd_load_rate"] = (float(nd.get("ssd_loads", 0)) / total_uses) if total_uses > 0 else 0.0
     out["tier_stats_delta"] = nd
+    for k in TIER_STAT_KEYS:
+        key = f"tier_delta_{k}"
+        if out.get(key) is None:
+            out[key] = int(nd.get(k, 0))
+    if out.get("tier_delta_ssd_load_rate") is None:
+        out["tier_delta_ssd_load_rate"] = float(nd.get("ssd_load_rate", 0.0))
+    if out.get("tier_layers_seen") is None:
+        out["tier_layers_seen"] = int(nd.get("layers_seen", 0))
     return out
 
 
@@ -964,6 +972,7 @@ def _apply_baseline_relative_metrics(rec: dict, baseline: dict | None) -> dict:
         rr["ssd_load_ratio"] = None
         rr["latency_ratio"] = None
         rr["quality_speed_score"] = None
+        rr["quality_ssd_load_score"] = None
         rr["exact_text_match"] = None
         return rr
 
@@ -992,19 +1001,28 @@ def _apply_baseline_relative_metrics(rec: dict, baseline: dict | None) -> dict:
     rr["latency_ratio"] = (cur_e2e / base_e2e) if base_e2e > 0 and cur_e2e > 0 else None
 
     rr["quality_speed_score"] = jac * rr["speedup_ratio"] if rr["speedup_ratio"] is not None else None
+    rr["quality_ssd_load_score"] = (
+        jac * (1.0 - rr["ssd_load_ratio"]) if rr["ssd_load_ratio"] is not None else None
+    )
     rr["exact_text_match"] = bool((rr.get("generated_text") or "") == (baseline.get("generated_text") or ""))
     return rr
 
 
-def _aggregate_results(results: list[dict], experiments: list[dict]) -> dict:
+def _aggregate_results(results: list[dict], experiments: list[dict] | None = None) -> dict:
     normalized_results: list[dict] = [_normalize_tier_delta_in_row(r) for r in results]
-    enriched: list[dict] = [_strip_results_detail_row(r) for r in normalized_results]
 
     exp_runs: dict[str, list[dict]] = {}
-    for r in enriched:
+    for r in normalized_results:
         exp_runs.setdefault(str(r.get("experiment")), []).append(r)
 
-    exp_defs = {str(e["name"]): e.get("moe_routing") for e in experiments}
+    exp_defs: dict[str, dict | None] = {}
+    if experiments is not None:
+        exp_defs.update({str(e["name"]): e.get("moe_routing") for e in experiments})
+    for r in normalized_results:
+        exp_name = str(r.get("experiment"))
+        if exp_name not in exp_defs and "moe_routing" in r:
+            exp_defs[exp_name] = r.get("moe_routing")
+
     runs_summary: list[dict] = []
 
     def _avg(rows: list[dict], key: str) -> float | None:
@@ -1021,6 +1039,16 @@ def _aggregate_results(results: list[dict], experiments: list[dict]) -> dict:
 
     for exp_name, rows in exp_runs.items():
         ok_rows = [r for r in rows if r.get("success")]
+        avg_quality_jaccard = _avg(ok_rows, "quality_jaccard")
+        avg_ssd_load_ratio = _avg(ok_rows, "ssd_load_ratio")
+        avg_quality_ssd_load_score = _avg(ok_rows, "quality_ssd_load_score")
+        if (
+            avg_quality_ssd_load_score is None
+            and avg_quality_jaccard is not None
+            and avg_ssd_load_ratio is not None
+        ):
+            avg_quality_ssd_load_score = avg_quality_jaccard * (1.0 - avg_ssd_load_ratio)
+
         run = {
             "experiment": exp_name,
             "moe_routing": exp_defs.get(exp_name),
@@ -1049,13 +1077,14 @@ def _aggregate_results(results: list[dict], experiments: list[dict]) -> dict:
             "avg_tier_delta_demotions_from_cpu": _avg(ok_rows, "tier_delta_demotions_from_cpu"),
             "avg_tier_delta_ssd_load_rate": _avg(ok_rows, "tier_delta_ssd_load_rate"),
             "avg_tier_layers_seen": _avg(ok_rows, "tier_layers_seen"),
-            "quality_jaccard": _avg(ok_rows, "quality_jaccard"),
+            "quality_jaccard": avg_quality_jaccard,
             "quality_degradation": _avg(ok_rows, "quality_degradation"),
             "speedup_ratio": _avg(ok_rows, "speedup_ratio"),
             "decode_speedup_ratio": _avg(ok_rows, "decode_speedup_ratio"),
-            "avg_ssd_load_ratio": _avg(ok_rows, "ssd_load_ratio"),
+            "avg_ssd_load_ratio": avg_ssd_load_ratio,
             "latency_ratio": _avg(ok_rows, "latency_ratio"),
             "quality_speed_score": _avg(ok_rows, "quality_speed_score"),
+            "quality_ssd_load_score": avg_quality_ssd_load_score,
             "exact_text_match_rate": _rate(ok_rows, "exact_text_match"),
         }
         runs_summary.append(run)
@@ -1089,6 +1118,7 @@ def _aggregate_results(results: list[dict], experiments: list[dict]) -> dict:
             "speedup_ratio": "e2e_tokens_per_second / baseline_e2e_tokens_per_second for same prompt_id",
             "decode_speedup_ratio": "decode_tokens_per_second / baseline_decode_tokens_per_second for same prompt_id",
             "quality_speed_score": "quality_jaccard * speedup_ratio",
+            "quality_ssd_load_score": "quality_jaccard * (1 - ssd_load_ratio)",
             "latency_ratio": "elapsed_seconds / baseline_elapsed_seconds for same prompt_id",
         },
     }
@@ -1113,11 +1143,47 @@ def parse_args() -> argparse.Namespace:
             "and min_tokens=max_tokens=256"
         ),
     )
+    parser.add_argument(
+        "--recompute-from-prompt-results",
+        action="store_true",
+        help=(
+            "Rebuild data/real_benchmark/results.json by aggregating existing "
+            "data/real_benchmark/results_<prompt_id>.json files without running inference"
+        ),
+    )
     return parser.parse_args()
+
+
+def _load_existing_prompt_results_rows() -> list[dict]:
+    rows: list[dict] = []
+    for path in sorted(OUTPUT_DIR.glob("results_*.json")):
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        run_rows = data.get("runs") if isinstance(data, dict) else None
+        if not isinstance(run_rows, list):
+            continue
+        for row in run_rows:
+            if isinstance(row, dict):
+                rows.append(dict(row))
+    return rows
 
 
 def main() -> int:
     args = parse_args()
+    if args.recompute_from_prompt_results:
+        OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+        existing_rows = _load_existing_prompt_results_rows()
+        if not existing_rows:
+            raise RuntimeError(
+                f"No per-prompt result files found at {OUTPUT_DIR}/results_<prompt_id>.json"
+            )
+        agg = _aggregate_results(existing_rows, experiments=None)
+        RESULTS_JSON.write_text(json.dumps(agg, indent=2, ensure_ascii=False), encoding="utf-8")
+        print(f"[recompute] Wrote {RESULTS_JSON} from {len(existing_rows)} per-prompt rows.", flush=True)
+        return 0
+
     fail_fast = not args.no_fail_fast
 
     weight_path, kt_method = _resolve_weight_path_and_method()
